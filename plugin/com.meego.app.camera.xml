@@ -1,0 +1,7 @@
+<node>
+  <interface name="com.meego.app.camera">
+    <signal name="Captured">
+      <arg name="filename" type="s" direction="out" />
+    </signal>
+  </interface>
+</node>
