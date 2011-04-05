@@ -39,6 +39,7 @@ Column {
             x: parent.width - width
             anchors.verticalCenter: parent.verticalCenter
             source: camera.imageLocation
+            type: camera.state
 
             onClicked: {
                 if (reviewBin.type == "photo") {
