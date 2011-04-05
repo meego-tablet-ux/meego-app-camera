@@ -15,30 +15,12 @@ Image {
 
     source: {
         if (orientation == 1 || orientation == 3) {
-            console.debug ("landscape...");
             return "image://theme/titlebar_l";
         } else {
-            console.debug ("portrait...");
             return "image://theme/titleBar_p";
         }
     }
 
-    // We can't use anchors for layout because anchors don't follow
-    // transformations like rotation.
-    // http://bugreports.qt.nokia.com/browse/QTBUG-10644
-/*
-    PushButton {
-        anchors.verticalCenter: parent.verticalCenter
-        x: 40
-        width: 60
-        height: 60
-        id: quit
-        source: "image://theme/icn_home_up"
-        activeSource: "image://theme/icn_home_dn"
-
-        onClicked: Qt.quit ();
-    }
-*/
     ToggleSwitch {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
