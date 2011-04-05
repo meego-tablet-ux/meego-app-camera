@@ -55,14 +55,6 @@ Window {
                 width: container.width
                 height: container.height
 
-/*
-                rotateViewFinder: if (orientation == 0 || orientation == 2) {
-                    return true;
-                } else {
-                    return false;
-                }
-*/
-
                 rotateAngle: {
                     switch (orientation) {
                     case 0:
