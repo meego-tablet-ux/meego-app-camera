@@ -127,6 +127,13 @@ Window {
                 y: 0
             }
 
+	    Image {
+		id: toolbarShadow
+		source: "image://theme/toolbar-shadow"
+		anchors.top: topBar.bottom
+		width: topBar.width
+	    }
+
             ZoomSlider {
                 id: zoomer
                 x: 12
