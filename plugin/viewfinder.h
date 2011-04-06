@@ -131,7 +131,7 @@ class ViewFinder : public QDeclarativeItem
 
   private:
     static QString generateImageFilename ();
-    static QString generateVideoFilename ();
+    QString generateVideoFilename ();
     void completeImage (const QString &filename);
     void setRecording (bool r) { _recording = r; emit recordingChanged (); }
     void setDuration (qint64 d) { _duration = d; emit durationChanged (); }
@@ -157,6 +157,7 @@ class ViewFinder : public QDeclarativeItem
     QCameraImageCapture *_imageCapture;
     QAudioCaptureSource *_audioSource;
     QMediaRecorder *_mediaRecorder;
+    QString _videoFilenameExtension;
 
     Settings *_settings;
 

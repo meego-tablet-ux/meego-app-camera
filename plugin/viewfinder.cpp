@@ -208,14 +208,49 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   foreach (QSize resolution, _mediaRecorder->supportedResolutions ()) {
     qDebug () << "Video resolution: " << resolution.width () << "x" << resolution.height ();
   }
+
+  QList<QStringList> preferredCodecCombos;
+  preferredCodecCombos << QString("audio/aac, video/h-264, mp4").split(", ");
+  preferredCodecCombos << QString("audio/vorbis, video/theora, ogg").split(", ");
+  QStringList audioCodecs;
+  QStringList videoCodecs;
+  QStringList containers;
+
+  foreach (QString codec, _mediaRecorder->supportedAudioCodecs ()) {
+    qDebug () << "Codec: " << codec;
+    audioCodecs << codec;
+  }
   foreach (QString codec, _mediaRecorder->supportedVideoCodecs ()) {
     qDebug () << "Codec: " << codec;
+    videoCodecs << codec;
   }
   foreach (QString container, _mediaRecorder->supportedContainers ()) {
     qDebug () << "Container: " << container;
+    containers.append(container);
   }
+  bool foundMatch = false;
+  foreach (QStringList codecCombo, preferredCodecCombos) {
+    qDebug() << "tuple: " << codecCombo;
+    qDebug() << "codecCombo[0]" << codecCombo[0];
+    if (audioCodecs.contains(codecCombo[0]) &&
+	videoCodecs.contains(codecCombo[1]) &&
+	containers.contains(codecCombo[2])) {
 
-  _mediaRecorder->setEncodingSettings (audioSettings, videoSettings, "ogg");
+      qDebug() << "preferred tuple found: " << codecCombo;
+      foundMatch = true;
+      audioSettings.setCodec(codecCombo[0]);
+      videoSettings.setCodec(codecCombo[1]);
+      _mediaRecorder->setEncodingSettings(audioSettings, videoSettings, codecCombo[2]);
+      _videoFilenameExtension = codecCombo[2];
+    }
+  }
+  if (!foundMatch) {
+    qDebug() << "No codec combos found!  pretending that ogg works";
+    videoSettings.setCodec ("video/theora");
+    audioSettings.setCodec ("audio/vorbis");
+    _mediaRecorder->setEncodingSettings (audioSettings, videoSettings, "ogg");
+    _videoFilenameExtension = "ogg";
+  }
 
   qDebug () << "Selected container: " << _mediaRecorder->containerMimeType ();
   connect (_mediaRecorder, SIGNAL (stateChanged (QMediaRecorder::State)),
@@ -536,7 +571,7 @@ ViewFinder::generateVideoFilename ()
 
   // FIXME: What video format do we want to use?
   noSpaces = now.toString ().replace (QChar (' '), QChar ('-'));
-  return path.append (noSpaces).append (".ogg");
+  return path.append (noSpaces).append (".%1").arg(_videoFilenameExtension);
 }
 
 void
