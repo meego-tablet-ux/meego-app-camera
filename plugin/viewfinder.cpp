@@ -210,7 +210,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   }
 
   QList<QStringList> preferredCodecCombos;
-  preferredCodecCombos << QString("audio/aac, video/h-264, mp4").split(", ");
+  preferredCodecCombos << QString("audio/mpeg, video/x-h264, mp4").split(", ");
   preferredCodecCombos << QString("audio/vorbis, video/theora, ogg").split(", ");
   QStringList audioCodecs;
   QStringList videoCodecs;
