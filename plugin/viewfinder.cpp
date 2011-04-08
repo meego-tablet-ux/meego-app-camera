@@ -285,6 +285,12 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 
   _viewFinder->setSize (imageSize);
   _viewFinder->setTransformOriginPoint (imageSize.width () / 2, imageSize.height () / 2);
+  // Centre this in the view
+  QRectF itemBounds = this->boundingRect ();
+  float x = (itemBounds.width () - imageSize.width ()) / 2;
+  float y = (itemBounds.height () - imageSize.height ()) / 2;
+  _viewFinder->setPos (x, y);
+
   _camera->setViewfinder (_viewFinder);
   _camera->setCaptureMode (QCamera::CaptureStillImage);
 
