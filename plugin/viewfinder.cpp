@@ -303,7 +303,6 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
            this, SLOT (updateLockStatus (QCamera::LockStatus,
                                          QCamera::LockChangeReason)));
 
-
   connect (_imageCapture, SIGNAL (imageCaptured (int, const QImage &)),
            this, SLOT (imageCaptured (int, const QImage &)));
   connect (_imageCapture, SIGNAL (imageSaved (int, const QString &)),
@@ -330,6 +329,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     _camera->focus ()->zoomTo (1.0 + (_zoom * _camera->focus ()->maximumOpticalZoom ()), 1.0);
   }
 
+  // FIXME: Work out what flash modes can be supported
   _camera->start ();
 
   // Fire this on an idle so that the signal will be picked up when the
@@ -419,6 +419,12 @@ void
 ViewFinder::setFlashMode (ViewFinder::FlashMode mode)
 {
   QCameraExposure::FlashMode m = QCameraExposure::FlashOff;
+
+  // This is an ugly hack to prevent the flash when the user-facing camera
+  // is selected. Qt-mobility cannot associate a camera with a flash
+  if (_currentCamera == 1) {
+    return;
+  }
 
   switch (mode) {
   case ViewFinder::Off:
