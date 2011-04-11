@@ -562,10 +562,10 @@ ViewFinder::generateImageFilename ()
 {
   QString path = QDir::homePath ().append ("/Pictures/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
-  QString noSpaces;
+  QByteArray escaped;
 
-  noSpaces = now.toString ().replace (QChar (' '), QChar ('-'));
-  return path.append (noSpaces).append (".jpg");
+  escaped = QUrl::toPercentEncoding (now.toString ());
+  return path.append (escaped).append (".jpg");
 }
 
 QString
@@ -573,11 +573,10 @@ ViewFinder::generateVideoFilename ()
 {
   QString path = QDir::homePath ().append ("/Videos/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
-  QString noSpaces;
+  QByteArray escaped;
 
-  // FIXME: What video format do we want to use?
-  noSpaces = now.toString ().replace (QChar (' '), QChar ('-'));
-  return path.append (noSpaces).append (".%1").arg(_videoFilenameExtension);
+  escaped = QUrl::toPercentEncoding (now.toString ());
+  return path.append (escaped).append (".%1").arg(_videoFilenameExtension);
 }
 
 void
