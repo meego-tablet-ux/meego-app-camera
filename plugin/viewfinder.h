@@ -2,7 +2,7 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 	
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -48,9 +48,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (bool ready READ ready NOTIFY readyChanged);
     bool ready () { return _ready; }
 
-    Q_PROPERTY (ViewFinder::FlashMode flashMode READ flashMode WRITE setFlashMode NOTIFY flashModeChanged);
-    ViewFinder::FlashMode flashMode ();
-    void setFlashMode (ViewFinder::FlashMode mode);
+    Q_PROPERTY (int flashMode READ flashMode WRITE setFlashMode NOTIFY flashModeChanged);
+    int flashMode ();
+    void setFlashMode (int mode);
 
     Q_PROPERTY (int cameraCount READ cameraCount NOTIFY cameraCountChanged);
     int cameraCount () { return _cameraCount; }
@@ -79,6 +79,12 @@ class ViewFinder : public QDeclarativeItem
     int rotateAngle () { return _rotateAngle; }
     void setRotateAngle (int angle);
 
+    Q_PROPERTY (QVariant flashModel READ flashModel NOTIFY flashModelChanged);
+    QVariant flashModel () { return _flashModel; }
+
+    Q_PROPERTY (bool cameraHasFlash READ cameraHasFlash NOTIFY cameraHasFlashChanged);
+    bool cameraHasFlash () { return _cameraHasFlash; }
+
   Q_SIGNALS:
     void readyChanged ();
     void flashModeChanged ();
@@ -91,6 +97,8 @@ class ViewFinder : public QDeclarativeItem
     void canFocusChanged ();
     void cameraChanged ();
     void rotateAngleChanged ();
+    void flashModelChanged ();
+    void cameraHasFlashChanged ();
 
     void imageCaptured ();
     void noSpaceOnDevice ();
@@ -149,6 +157,10 @@ class ViewFinder : public QDeclarativeItem
     QString _currentLocation;
     bool _canFocus;
     bool _rotateAngle;
+
+    bool _cameraHasFlash;
+    bool _cameraHasAutoFlash;
+    QVariant _flashModel;
 
     Thumbnailer *_thumbnailer;
     CameraService *_cameraService;

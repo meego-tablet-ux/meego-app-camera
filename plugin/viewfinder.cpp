@@ -2,7 +2,7 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 	
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -64,6 +64,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     _zoom (1.0),
     _canFocus (false),
     _rotateAngle (0),
+    _cameraHasFlash (true),
     _thumbnailer (0),
     _cameraService (0),
     _camera (0),
@@ -285,6 +286,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 
   _viewFinder->setSize (imageSize);
   _viewFinder->setTransformOriginPoint (imageSize.width () / 2, imageSize.height () / 2);
+
   // Centre this in the view
   QRectF itemBounds = this->boundingRect ();
   float x = (itemBounds.width () - imageSize.width ()) / 2;
@@ -329,7 +331,20 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     _camera->focus ()->zoomTo (1.0 + (_zoom * _camera->focus ()->maximumOpticalZoom ()), 1.0);
   }
 
-  // FIXME: Work out what flash modes can be supported
+  // Generate the flash menu
+  _cameraHasFlash = _camera->exposure ()->isFlashModeSupported (QCameraExposure::FlashOn);
+  emit cameraHasFlashChanged ();
+
+  QStringList menu;
+  _cameraHasAutoFlash = _camera->exposure ()->isFlashModeSupported (QCameraExposure::FlashAuto);
+  if (_cameraHasAutoFlash) {
+    menu.append (tr ("Auto"));
+  }
+  menu.append (tr ("Off"));
+  menu.append (tr ("On"));
+  _flashModel = QVariant::fromValue (menu);
+  emit flashModelChanged ();
+
   _camera->start ();
 
   // Fire this on an idle so that the signal will be picked up when the
@@ -415,8 +430,14 @@ ViewFinder::imageReadyForCaptureChanged (bool ready)
   emit readyChanged ();
 }
 
+/*
 void
-ViewFinder::setFlashMode (ViewFinder::FlashMode mode)
+ViewFinder::checkSupportedFlashModes ()
+{
+}
+*/
+void
+ViewFinder::setFlashMode (int mode)
 {
   QCameraExposure::FlashMode m = QCameraExposure::FlashOff;
 
@@ -424,6 +445,12 @@ ViewFinder::setFlashMode (ViewFinder::FlashMode mode)
   // is selected. Qt-mobility cannot associate a camera with a flash
   if (_currentCamera == 1) {
     return;
+  }
+
+  // If the flash menu doesn't have an Auto option then the mode will be
+  // off by one.
+  if (_cameraHasAutoFlash == false) {
+    mode += 1;
   }
 
   switch (mode) {
@@ -442,14 +469,14 @@ ViewFinder::setFlashMode (ViewFinder::FlashMode mode)
 
   qDebug () << "Setting flash to " << mode << "(" << m << ")";
 
-  _settings->setFlashMode (mode);
+  _settings->setFlashMode ((ViewFinder::FlashMode) mode);
   _camera->exposure ()->setFlashMode (m);
   emit (flashModeChanged ());
 }
 
-ViewFinder::FlashMode
+int
 ViewFinder::flashMode () {
-  return _settings->flashMode ();
+  return (int) _settings->flashMode ();
 }
 
 bool

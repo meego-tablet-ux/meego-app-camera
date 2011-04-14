@@ -38,7 +38,8 @@ Image {
         x: parent.width - width
         //y: (parent.height - height) / 2
         anchors.verticalCenter: parent.verticalCenter
-        value: camera.flashMode;
+        value: camera.flashMode
+        visible: camera.cameraHasFlash
 
         source: "image://theme/camera/camera_bottombar_up"
         activeSource: "image://theme/camera/camera_bottombar_dn"

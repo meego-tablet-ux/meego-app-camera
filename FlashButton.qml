@@ -53,7 +53,7 @@ PushButton {
     ContextMenu {
         id: flashMenu
 
-        model: [qsTr ("Auto"), qsTr ("On"), qsTr ("Off")]
+        model: camera.flashModel
         onTriggered: {
             payload.flashMode = index;
         }
