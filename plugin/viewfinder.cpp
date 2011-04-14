@@ -61,7 +61,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     _currentCamera (0),
     _recording (false),
     _duration (0),
-    _zoom (1.0),
+    _zoom (0.0),
     _canFocus (false),
     _rotateAngle (0),
     _cameraHasFlash (true),
