@@ -605,7 +605,7 @@ ViewFinder::generateImageFilename ()
   QString path = QDir::homePath ().append ("/Pictures/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
 
-  return path.append (now.toString ("hh.mm.ss-dd.MM.yyyy'.jpg'"));
+  return path.append (now.toString ("yyyy.MM.dd-hh.mm.ss'.jpg'"));
 }
 
 QString
@@ -614,7 +614,7 @@ ViewFinder::generateVideoFilename ()
   QString path = QDir::homePath ().append ("/Videos/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
 
-  return path.append (now.toString ("hh.mm.ss-dd.MM.yyyy")).append (".%1").arg(_videoFilenameExtension);
+  return path.append (now.toString ("yyyy.MM.dd-hh.mm.ss")).append (".%1").arg(_videoFilenameExtension);
 }
 
 void
