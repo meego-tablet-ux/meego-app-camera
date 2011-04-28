@@ -33,8 +33,8 @@ class ViewFinder : public QDeclarativeItem
 
     enum FlashMode {
         Auto,
-        On,
-        Off
+        Off,
+        On
     };
 
     enum CaptureMode {

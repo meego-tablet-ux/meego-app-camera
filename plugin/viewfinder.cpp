@@ -152,9 +152,6 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     _camera = new QCamera (cameraDevice);
   }
 
-  qDebug () << "Supported maximum optical zoom" << _camera->focus ()->maximumOpticalZoom ();
-  qDebug () << "Supported maximum digital zoom" << _camera->focus ()->maximumDigitalZoom ();
-
   if (_camera->isMetaDataAvailable ()) {
     qDebug () << "Metadata is available";
 
@@ -323,6 +320,26 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
 
+  _camera->start ();
+
+  // Fire this on an idle so that the signal will be picked up when the
+  // object has been created
+  QTimer::singleShot(0, this, SLOT(checkSpace ()));
+  return true;
+}
+
+void
+ViewFinder::updateCameraState (QCamera::State state)
+{
+  qDebug () << "Updated state: " << state;
+
+  if (state != QCamera::ActiveState) {
+    return;
+  }
+
+  qDebug () << "Supported maximum optical zoom" << _camera->focus ()->maximumOpticalZoom ();
+  qDebug () << "Supported maximum digital zoom" << _camera->focus ()->maximumDigitalZoom ();
+
   _canFocus = _camera->focus ()->isAvailable ();
   emit canFocusChanged ();
 
@@ -344,19 +361,6 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   menu.append (tr ("On"));
   _flashModel = QVariant::fromValue (menu);
   emit flashModelChanged ();
-
-  _camera->start ();
-
-  // Fire this on an idle so that the signal will be picked up when the
-  // object has been created
-  QTimer::singleShot(0, this, SLOT(checkSpace ()));
-  return true;
-}
-
-void
-ViewFinder::updateCameraState (QCamera::State state)
-{
-  qDebug () << "Updated state: " << state;
 }
 
 void
@@ -476,7 +480,12 @@ ViewFinder::setFlashMode (int mode)
 
 int
 ViewFinder::flashMode () {
-  return (int) _settings->flashMode ();
+  int m = (int) _settings->flashMode ();
+  if (_cameraHasAutoFlash == false) {
+    m -= 1;
+  }
+
+  return m;
 }
 
 bool
@@ -595,10 +604,8 @@ ViewFinder::generateImageFilename ()
 {
   QString path = QDir::homePath ().append ("/Pictures/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
-  QByteArray escaped;
 
-  escaped = QUrl::toPercentEncoding (now.toString ());
-  return path.append (escaped).append (".jpg");
+  return path.append (now.toString ("hh.mm.ss-dd.MM.yyyy'.jpg'"));
 }
 
 QString
@@ -606,10 +613,8 @@ ViewFinder::generateVideoFilename ()
 {
   QString path = QDir::homePath ().append ("/Videos/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
-  QByteArray escaped;
 
-  escaped = QUrl::toPercentEncoding (now.toString ());
-  return path.append (escaped).append (".%1").arg(_videoFilenameExtension);
+  return path.append (now.toString ("hh.mm.ss-dd.MM.yyyy")).append (".%1").arg(_videoFilenameExtension);
 }
 
 void
