@@ -21,7 +21,7 @@ ModalDialog {
     onDialogClicked: {
         if (button == 1) {
             console.log ("Open Photos");
-            processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-photos");
+            qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-photos.desktop");
         } else {
             console.log ("Cancelling");
         }
