@@ -138,8 +138,8 @@ class ViewFinder : public QDeclarativeItem
     void metadataAvailableChanged (bool avail);
 
   private:
-    static QString generateImageFilename ();
-    QString generateVideoFilename ();
+    QString generateImageFilename () const;
+    QString generateVideoFilename () const;
     void completeImage (const QString &filename);
     void setRecording (bool r) { _recording = r; emit recordingChanged (); }
     void setDuration (qint64 d) { _duration = d; emit durationChanged (); }

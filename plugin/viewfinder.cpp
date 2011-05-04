@@ -379,7 +379,7 @@ ViewFinder::updateLockStatus (QCamera::LockStatus status,
 void
 ViewFinder::takePhoto ()
 {
-  QString filename = ViewFinder::generateImageFilename ();
+  QString filename = generateImageFilename ();
 
   qDebug () << "Filename: " << filename;
 
@@ -600,7 +600,7 @@ ViewFinder::endRecording ()
 }
 
 QString
-ViewFinder::generateImageFilename ()
+ViewFinder::generateImageFilename () const
 {
   QString path = QDir::homePath ().append ("/Pictures/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
@@ -609,7 +609,7 @@ ViewFinder::generateImageFilename ()
 }
 
 QString
-ViewFinder::generateVideoFilename ()
+ViewFinder::generateVideoFilename () const
 {
   QString path = QDir::homePath ().append ("/Videos/Camera/");
   QDateTime now = QDateTime::currentDateTime ();
