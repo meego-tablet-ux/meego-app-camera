@@ -563,7 +563,7 @@ ViewFinder::setZoom (qreal z)
 void
 ViewFinder::startRecording ()
 {
-  QString filename = ViewFinder::generateVideoFilename ();
+  QString filename = generateVideoFilename ();
   QUrl url;
   qDebug () << "Starting recording" << filename;
 
