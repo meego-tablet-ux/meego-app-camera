@@ -2,8 +2,10 @@ TEMPLATE = lib
 TARGET = Camera
 QT += declarative dbus
 CONFIG += qt plugin mobility dbus link_pkgconfig
-MOBILITY += multimedia
-PKGCONFIG += gconf-2.0
+MOBILITY += multimedia location
+PKGCONFIG += gconf-2.0 libexif
+
+QMAKE_LFLAGS += -ljpeg
 
 TARGET = $$qtLibraryTarget($$TARGET)
 DESTDIR = $$TARGET
@@ -18,7 +20,9 @@ SOURCES += 			\
 	settings.cpp		\
 	thumbnailer.cpp		\
 	viewfinder.cpp		\
-	zoomarea.cpp
+	zoomarea.cpp            \
+        exifdatafactory.cpp     \
+        jpegexiferizer.cpp
 HEADERS += 			\
 	cameraifadaptor.h	\
 	cameraservice.h		\
@@ -28,7 +32,9 @@ HEADERS += 			\
 	settings.h		\
 	thumbnailer.h		\
 	viewfinder.h		\
-	zoomarea.h
+        zoomarea.h              \
+        exifdatafactory.h       \
+        jpegexiferizer.h
 
 OTHER_FILES += \
     Camera/qmldir

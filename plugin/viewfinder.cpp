@@ -12,10 +12,15 @@
 #include <QDateTime>
 #include <QDir>
 #include <QAudioEncoderSettings>
+#include <QtLocation/QGeoCoordinate> //temporary ?
 
 #include "cameraifadaptor.h"
 #include "viewfinder.h"
 #include "settings.h"
+#include "exifdatafactory.h"
+#include "jpegexiferizer.h"
+
+QTM_USE_NAMESPACE
 
 bool compare_sizes (const QSize &s1,
                     const QSize &s2)
@@ -113,6 +118,8 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     qDebug () << "Error registering object";
     return;
   }
+  _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
+  _positionSource->startUpdates ();
 }
 
 ViewFinder::~ViewFinder ()
@@ -379,9 +386,12 @@ ViewFinder::updateLockStatus (QCamera::LockStatus status,
 void
 ViewFinder::takePhoto ()
 {
-  QString filename = generateImageFilename ();
+  QString filename = generateTemporaryImageFilename();
 
   qDebug () << "Filename: " << filename;
+
+  _lastPosition = _positionSource->lastKnownPosition();
+  qDebug () << "last position: " << _lastPosition;
 
   // FIXME: Use toUTF8?
   _imageCapture->capture (filename.toAscii ());
@@ -409,9 +419,17 @@ void ViewFinder::completeImage (const QString &filename)
 void
 ViewFinder::imageSaved (int id, const QString &filename)
 {
+  QString realFileName = generateImageFilename();
   qDebug () << "Image saved: " << id << " - " << filename;
 
-  completeImage (filename);
+  ExifDataFactory *factory = new ExifDataFactory(_lastPosition.coordinate());
+  JpegExiferizer exifer(filename, realFileName);
+  exifer.setExifDataFactory(factory);
+  exifer.doIt();
+  
+  delete factory;
+
+  completeImage (realFileName);
 }
 
 void
@@ -600,12 +618,25 @@ ViewFinder::endRecording ()
 }
 
 QString
+ViewFinder::generateTemporaryImageFilename () const
+{
+  return QString("/var/tmp/%1").arg(generateBaseImageFilename ());
+}
+
+QString
 ViewFinder::generateImageFilename () const
 {
   QString path = QDir::homePath ().append ("/Pictures/Camera/");
+
+  return path.append(generateBaseImageFilename ());
+}
+
+QString
+ViewFinder::generateBaseImageFilename () const
+{
   QDateTime now = QDateTime::currentDateTime ();
 
-  return path.append (now.toString ("yyyy.MM.dd-hh.mm.ss'.jpg'"));
+  return now.toString ("yyyy.MM.dd-hh.mm.ss'.jpg'");
 }
 
 QString
