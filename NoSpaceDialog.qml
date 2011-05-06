@@ -7,24 +7,18 @@
  */
 
 import Qt 4.7
+import MeeGo.Components 0.1
 import MeeGo.Labs.Components 0.1
 
 ModalDialog {
-    dialogTitle: qsTr ("Memory Full")
-    leftButtonText: qsTr ("Open Photos")
-    rightButtonText: qsTr ("Cancel")
+    title: qsTr ("Memory Full")
+    acceptButtonText: qsTr ("Open Photos")
 
-    contentLoader.sourceComponent: DialogText {
+    content: DialogText {
         text: qsTr ("There is no storage space left on the device. To take more photos or video, you may want to delete some existing content.")
     }
 
-    onDialogClicked: {
-        if (button == 1) {
-            console.log ("Open Photos");
-            qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-photos.desktop");
-        } else {
-            console.log ("Cancelling");
-        }
-        dialogLoader.sourceComponent = undefined
+    onAccepted: {
+        qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-photos.desktop");
     }
 }

@@ -29,10 +29,6 @@ Window {
 
             fullContent: true
 
-            Launcher {
-                id: processLauncher;
-            }
-
             Connections {
                 target: scene
                 onForegroundChanged: {

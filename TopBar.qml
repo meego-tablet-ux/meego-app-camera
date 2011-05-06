@@ -43,9 +43,9 @@ Column {
 
             onClicked: {
                 if (reviewBin.type == "photo") {
-                    processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-photos");
+                    scene.qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-photos");
                 } else {
-                    processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-video");
+                    scene.qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-video");
                 }
             }
         }
