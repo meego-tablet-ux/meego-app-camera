@@ -17,11 +17,15 @@
 #include <qgraphicsvideoitem.h>
 
 #include <QDeclarativeItem>
+#include <QtLocation/QGeoPositionInfoSource>
+#include <QtLocation/QGeoPositionInfo>
 
 #include "cameraservice.h"
 #include "thumbnailer.h"
 
 class Settings;
+
+QTM_USE_NAMESPACE
 
 class ViewFinder : public QDeclarativeItem
 {
@@ -138,8 +142,10 @@ class ViewFinder : public QDeclarativeItem
     void metadataAvailableChanged (bool avail);
 
   private:
-    static QString generateImageFilename ();
-    QString generateVideoFilename ();
+    QString generateTemporaryImageFilename () const;
+    QString generateBaseImageFilename () const;
+    QString generateImageFilename () const;
+    QString generateVideoFilename () const;
     void completeImage (const QString &filename);
     void setRecording (bool r) { _recording = r; emit recordingChanged (); }
     void setDuration (qint64 d) { _duration = d; emit durationChanged (); }
@@ -174,6 +180,8 @@ class ViewFinder : public QDeclarativeItem
     Settings *_settings;
 
     QTimer *_freeSpaceCheckTimer;
+    QGeoPositionInfoSource *_positionSource;
+    QGeoPositionInfo _lastPosition;
 };
 
 #endif
