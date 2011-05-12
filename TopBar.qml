@@ -7,6 +7,8 @@
  */
 
 import Qt 4.7
+import MeeGo.App.Camera 0.1
+
 
 Column {
     width: parent.width
@@ -19,9 +21,9 @@ Column {
 
         source: {
             if (orientation == 1 || orientation == 3) {
-                return "image://theme/titlebar_l";
+                return "image://themedimage/images/titlebar_l";
             } else {
-                return "image://theme/titleBar_p";
+                return "image://themedimage/images/titleBar_p";
             }
         }
 
@@ -41,11 +43,15 @@ Column {
             source: camera.imageLocation
             type: camera.state
 
+            Launcher {
+                id: processLauncher;
+            }
+
             onClicked: {
                 if (reviewBin.type == "photo") {
-                    scene.qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-photos");
+                    processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-photos");
                 } else {
-                    scene.qApp.launchDesktopByName ("/usr/share/meego-ux-appgrid/applications/meego-app-video");
+                    processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-video");
                 }
             }
         }
@@ -54,6 +60,6 @@ Column {
     Image {
         id: topBarShadow
         width: parent.width
-        source: "image://theme/toolbar-shadow"
+        source: "image://themedimage/images/toolbar-shadow"
     }
 }

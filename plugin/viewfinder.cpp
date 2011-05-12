@@ -503,7 +503,7 @@ ViewFinder::flashMode () {
     m -= 1;
   }
 
-  return m;
+  return qMax(m,0);
 }
 
 bool

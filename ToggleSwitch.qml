@@ -26,7 +26,7 @@ Item {
             id: photo
             width: 85
             height: 55
-//            activeSource: "image://theme/camera/camera_topbar_dn"
+//            activeSource: "image://themedimage/images/camera/camera_topbar_dn"
             onClicked: {
                 toggle.state = "photo";
                 toggle.toggled ();
@@ -37,9 +37,9 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
 
                 source: if (photo.state == "unchecked") {
-                    return "image://theme/camera/camera_lens_sm_up";
+                    return "image://themedimage/images/camera/camera_lens_sm_up";
                 } else {
-                    return "image://theme/camera/camera_lens_sm_dn";
+                    return "image://themedimage/images/camera/camera_lens_sm_dn";
                 }
             }
         }
@@ -48,7 +48,7 @@ Item {
             id: video
             width: 85
             height: 55
-//            activeSource: "image://theme/camera/camera_topbar_dn"
+//            activeSource: "image://themedimage/images/camera/camera_topbar_dn"
             onClicked: {
                 toggle.state = "video";
                 toggle.toggled ();
@@ -59,9 +59,9 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
 
                 source: if (video.state == "unchecked") {
-                    return "image://theme/camera/camera_video_sm_up";
+                    return "image://themedimage/images/camera/camera_video_sm_up";
                 } else {
-                    return "image://theme/camera/camera_video_sm_dn";
+                    return "image://themedimage/images/camera/camera_video_sm_dn";
                 }
             }
         }

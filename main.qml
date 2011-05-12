@@ -9,30 +9,32 @@
 import Qt 4.7
 
 import QtMultimediaKit 1.1
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.Camera 0.1
 
 Window {
-    id: scene
+    id: window
 
-    showtoolbar: false
-    statusBar.visible: false
+    fullScreen: true
+    fullContent: true
 
-    fullscreen: true
-    applicationPage: cameraContent
+    Component.onCompleted: {
+        console.log("load MainPage");
+        switchBook(cameraContent);
+    }
 
     Component {
         id: cameraContent
 
-        ApplicationPage {
+        AppPage {
             id: cameraPage
 
             fullContent: true
 
             Connections {
-                target: scene
+                target: window
                 onForegroundChanged: {
-                    if (scene.foreground)
+                    if (window.foreground)
                     {
                         standbyCover.visible = false;
                         camera.leaveStandbyMode ();
@@ -47,8 +49,8 @@ Window {
 
             Rectangle {
                 id: background
-                width: container.width
-                height: container.height
+                width: window.width
+                height: window.height
 
                 color: "black"
             }
@@ -56,8 +58,8 @@ Window {
             ViewFinder {
                 id: camera
 
-                width: container.width
-                height: container.height
+                width: window.width
+                height: window.height
 
                 rotateAngle: {
                     switch (orientation) {
@@ -98,8 +100,7 @@ Window {
                     if (camera.recording) {
                         camera.endRecording ();
                     }
-
-                    showModalDialog (noSpaceDialogComponent);
+                    noSpaceDialogComponent.show()
                 }
 
                 onCameraChanged: {
@@ -110,8 +111,8 @@ Window {
             Rectangle {
                 id: standbyCover
 
-                width: container.width
-                height: container.height + statusBar.height
+                width: window.width
+                height: window.height + statusBar.height
 
                 color: "black"
                 visible: false
@@ -134,7 +135,7 @@ Window {
             ZoomSlider {
                 id: zoomer
                 x: 12
-                y: (container.height - height) / 2
+                y: (window.height - height) / 2
                 opacity: camera.canFocus ? 1.0: 0.0
 
                 transitions: Transition {
@@ -151,18 +152,18 @@ Window {
                 id: bottomBar
                 x: 0
 
-                y: container.height - height
+                y: window.height - height
             }
 
             PushButton {
                 id: photoButton
-                x: container.width - width
+                x: window.width - width
                 anchors.verticalCenter: parent.verticalCenter
 
                 visible: camera.state == "photo"
 
-                source: "image://theme/camera/camera_takephoto_up"
-                activeSource: "image://theme/camera/camera_takephoto_dn"
+                source: "image://themedimage/images/camera/camera_takephoto_up"
+                activeSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onClicked: {
                     camera.takePhoto ();
@@ -171,21 +172,21 @@ Window {
 
             PushButton {
                 id: recordButton
-                x: container.width - width
+                x: window.width - width
                 anchors.verticalCenter: parent.verticalCenter
 
                 visible: camera.state == "video"
 
-                source: "image://theme/camera/camera_record"
+                source: "image://themedimage/images/camera/camera_record"
                 activeSource: source
 
                 onClicked: {
                     if (camera.recording) {
                         camera.endRecording ();
-                        source = "image://theme/camera/camera_record"
+                        source = "image://themedimage/images/camera/camera_record"
                     } else {
                         camera.startRecording ();
-                        source = "image://theme/camera/camera_record_dn"
+                        source = "image://themedimage/images/camera/camera_record_dn"
                     }
                 }
             }
@@ -194,12 +195,11 @@ Window {
 
     Loader {
         id: dialogLoader
-        width: container.width
-        height: container.height + statusBar.height
+        width: window.width
+        height: window.height + statusBar.height
     }
 
-    Component {
+    NoSpaceDialog {
         id: noSpaceDialogComponent
-        NoSpaceDialog {}
     }
 }

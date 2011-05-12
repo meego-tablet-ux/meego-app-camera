@@ -51,7 +51,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
 
-        source: "image://theme/camera/camera_zoomtrack_bg_l"
+        source: "image://themedimage/images/camera/camera_zoomtrack_bg_l"
 
         Image {
             id: scrub
@@ -60,7 +60,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             y: parent.height - (height / 2)
 
-            source: "image://theme/camera/camera_scrub_head_lrg"
+            source: "image://themedimage/images/camera/camera_scrub_head_lrg"
         }
 
         MouseArea {
@@ -85,8 +85,8 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         y: (trough.y / 2) - (height / 2)
 
-        source: "image://theme/camera/camera_icn_add_up"
-        activeSource: "image://theme/camera/camera_icn_add_dn"
+        source: "image://themedimage/images/camera/camera_icn_add_up"
+        activeSource: "image://themedimage/images/camera/camera_icn_add_dn"
 
         onClicked: {
             moveScrub (scrub.y - stepSize);
@@ -99,8 +99,8 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         y: trough.y + trough.height + (((parent.height - (trough.y + trough.height)) / 2) - (height / 2)) - 9 // -9 for dropshadow
 
-        source: "image://theme/camera/camera_icn_minus_up"
-        activeSource: "image://theme/camera/camera_icn_minus_dn"
+        source: "image://themedimage/images/camera/camera_icn_minus_up"
+        activeSource: "image://themedimage/images/camera/camera_icn_minus_dn"
 
         onClicked: {
             moveScrub (scrub.y + stepSize);
@@ -120,7 +120,7 @@ Item {
             }
             PropertyChanges {
                 target: background
-                source: "image://theme/camera/camera_zoom_panel_p"
+                source: "image://themedimage/images/camera/camera_zoom_panel_p"
             }
             StateChangeScript {
 //                name: repositionScrubScript
@@ -139,7 +139,7 @@ Item {
             }
             PropertyChanges {
                 target: background
-                source: "image://theme/camera/camera_zoom_panel_l"
+                source: "image://themedimage/images/camera/camera_zoom_panel_l"
             }
             StateChangeScript {
 //                name: repositionScrubScript

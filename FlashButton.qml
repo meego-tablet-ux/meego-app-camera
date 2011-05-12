@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 
 PushButton {
     id: button
@@ -31,31 +31,34 @@ PushButton {
 
             anchors.verticalCenter: parent.verticalCenter
 
-            source: "image://theme/camera/camera_icn_flash_dn";
+            source: "image://themedimage/images/camera/camera_icn_flash_dn";
         }
 
         Text {
             width: row.width - flashImage.width - 3
             anchors.verticalCenter: parent.verticalCenter
-            text: flashMenu.model[camera.flashMode]
+            text: actionMenu.model[camera.flashMode]
             color: "white"
             font { pixelSize: 28; weight: Font.Bold }
         }
     }
 
     onClicked: {
-        var map = mapToItem (scene.content, button.x + (button.width / 2), button.y);
+        var map = mapToItem (window, button.x + (button.width / 2), button.y);
 
-        flashMenu.payload = camera;
-        flashMenu.displayContextMenu (button.x + (button.width / 2), map.y);
+        flashMenu.setPosition( button.x + (button.width / 2), map.y)
+        flashMenu.show()
     }
 
     ContextMenu {
         id: flashMenu
 
-        model: camera.flashModel
-        onTriggered: {
-            payload.flashMode = index;
+        content: ActionMenu {
+            id: actionMenu
+            model: camera.flashModel
+            onTriggered: {
+                camera.flashMode = index
+            }
         }
     }
 }

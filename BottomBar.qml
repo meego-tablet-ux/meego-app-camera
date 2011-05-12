@@ -14,9 +14,9 @@ Image {
     width: parent.width
     source: {
         if (orientation == 1 || orientation == 3) {
-            return "image://theme/camera/camera_bottombar_l";
+            return "image://themedimage/images/camera/camera_bottombar_l";
         } else {
-            return "image://theme/camera/camera_bottombar_p";
+            return "image://themedimage/images/camera/camera_bottombar_p";
         }
     }
 
@@ -24,8 +24,8 @@ Image {
     PushButton {
         id: changeCameras
         anchors.verticalCenter: parent.verticalCenter
-        source: "image://theme/camera/camera_rotate_up"
-        activeSource: "image://theme/camera/camera_rotate_dn"
+        source: "image://themedimage/images/camera/camera_rotate_up"
+        activeSource: "image://themedimage/images/camera/camera_rotate_dn"
 
         visible: camera.cameraCount > 1
         onClicked: {
@@ -41,8 +41,8 @@ Image {
         value: camera.flashMode
         visible: camera.cameraHasFlash
 
-        source: "image://theme/camera/camera_bottombar_up"
-        activeSource: "image://theme/camera/camera_bottombar_dn"
+        source: "image://themedimage/images/camera/camera_bottombar_up"
+        activeSource: "image://themedimage/images/camera/camera_bottombar_dn"
 
         onFlashMode: {
             camera.flashMode = flashValue;

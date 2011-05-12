@@ -50,14 +50,14 @@ Item {
             name: "up"
             PropertyChanges {
                 target: frame
-                source: "image://theme/camera/camera_thumb_up"
+                source: "image://themedimage/images/camera/camera_thumb_up"
             }
         },
         State {
             name: "down"
             PropertyChanges {
                 target: frame
-                source: "image://theme/camera/camera_thumb_dn"
+                source: "image://themedimage/images/camera/camera_thumb_dn"
             }
         }
     ]
