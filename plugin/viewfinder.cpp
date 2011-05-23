@@ -195,7 +195,8 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
                                  _settings->videoHeight ());
     qDebug () << "Using requested resolution: " << _settings->videoWidth () << "x" << _settings->videoHeight ();
   } else {
-    qDebug () << "Using default resolution";
+    videoSettings.setResolution (1280, 720);
+    qDebug () << "Using default resolution: 1280x720";
   }
 
   _mediaRecorder = new QMediaRecorder (_camera);
@@ -207,7 +208,8 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     videoSettings.setFrameRate (_settings->videoFPS ());
     qDebug () << "Using requested FPS: " << _settings->videoFPS ();
   } else {
-    qDebug () << "Using default FPS";
+    videoSettings.setFrameRate (30);
+    qDebug () << "Using default FPS: 30";
   }
 
   foreach (QSize resolution, _mediaRecorder->supportedResolutions ()) {
@@ -288,13 +290,14 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 
   qDebug () << "Using resolution: " << _imageCapture->encodingSettings ().resolution ().width () << "x" << _imageCapture->encodingSettings ().resolution ().height ();
 
-  _viewFinder->setSize (imageSize);
-  _viewFinder->setTransformOriginPoint (imageSize.width () / 2, imageSize.height () / 2);
+  QSize viewFinderSize(1280, 800);
+  _viewFinder->setSize (viewFinderSize);
+  _viewFinder->setTransformOriginPoint (viewFinderSize.width () / 2, viewFinderSize.height () / 2);
 
   // Centre this in the view
   QRectF itemBounds = this->boundingRect ();
-  float x = (itemBounds.width () - imageSize.width ()) / 2;
-  float y = (itemBounds.height () - imageSize.height ()) / 2;
+  float x = (itemBounds.width () - viewFinderSize.width ()) / 2;
+  float y = (itemBounds.height () - viewFinderSize.height ()) / 2;
   _viewFinder->setPos (x, y);
 
   _camera->setViewfinder (_viewFinder);
