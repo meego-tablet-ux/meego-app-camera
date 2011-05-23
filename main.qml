@@ -65,11 +65,11 @@ Window {
                     case 0:
                         return 90;
                     case 1:
-                        return 0;
+                        return (camera.currentCamera == camera.cameraCount - 1) ? 0: 180;
                     case 2:
                         return 270;
                     case 3:
-                        return 180;
+                        return (camera.currentCamera == camera.cameraCount - 1) ? 180: 0;
                     }
                 }
                 zoom: zoomer.zoomLevel

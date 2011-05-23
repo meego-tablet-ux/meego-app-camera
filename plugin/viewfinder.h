@@ -59,6 +59,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (int cameraCount READ cameraCount NOTIFY cameraCountChanged);
     int cameraCount () { return _cameraCount; }
 
+    Q_PROPERTY (int currentCamera READ currentCamera NOTIFY cameraChanged);
+    int currentCamera () { return _currentCamera; }
+
     Q_PROPERTY (ViewFinder::CaptureMode captureMode READ captureMode WRITE setCaptureMode NOTIFY captureModeChanged);
     ViewFinder::CaptureMode captureMode ();
     void setCaptureMode (ViewFinder::CaptureMode mode);
