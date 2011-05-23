@@ -13,6 +13,7 @@ import MeeGo.App.Camera 0.1
 Column {
     width: parent.width
     height: topBarBackground.height + topBarShadow.height
+    visible: !camera.recording
 
     Image {
         id: topBarBackground
@@ -34,6 +35,8 @@ Column {
             onToggled: {
                 camera.state = state;
             }
+
+
         }
 
         PhotoReviewBin {

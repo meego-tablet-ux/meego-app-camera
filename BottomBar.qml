@@ -11,6 +11,8 @@ import Qt 4.7
 Image {
     id: bottomBarBackground
 
+    visible: !camera.recording
+
     width: parent.width
     source: {
         if (orientation == 1 || orientation == 3) {

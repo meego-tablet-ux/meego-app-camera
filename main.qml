@@ -6,7 +6,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import Qt 4.7
+import QtQuick 1.0
 
 import QtMultimediaKit 1.1
 import MeeGo.Components 0.1
@@ -28,13 +28,14 @@ Window {
 
         AppPage {
             id: cameraPage
+            anchors.fill: parent
 
             fullContent: true
 
             Connections {
                 target: window
-                onForegroundChanged: {
-                    if (window.foreground)
+                onIsActiveWindowChanged: {
+                    if (isActiveWindow)
                     {
                         standbyCover.visible = false;
                         camera.leaveStandbyMode ();
@@ -49,17 +50,15 @@ Window {
 
             Rectangle {
                 id: background
-                width: window.width
-                height: window.height
 
+                anchors.fill: parent
                 color: "black"
             }
 
             ViewFinder {
                 id: camera
 
-                width: window.width
-                height: window.height
+                anchors.fill: parent
 
                 rotateAngle: {
                     switch (orientation) {
