@@ -30,7 +30,7 @@ Window {
             id: cameraPage
             anchors.fill: parent
 
-            fullContent: true
+            fullScreen: true
 
             Connections {
                 target: window
@@ -110,8 +110,8 @@ Window {
             Rectangle {
                 id: standbyCover
 
-                width: window.width
-                height: window.height + statusBar.height
+                width: parent.width
+                height: parent.height + statusBar.height
 
                 color: "black"
                 visible: false
@@ -134,7 +134,7 @@ Window {
             ZoomSlider {
                 id: zoomer
                 x: 12
-                y: (window.height - height) / 2
+                y: (parent.height - height) / 2
                 opacity: camera.canFocus ? 1.0: 0.0
 
                 transitions: Transition {
@@ -151,12 +151,12 @@ Window {
                 id: bottomBar
                 x: 0
 
-                y: window.height - height
+                y: parent.height - height
             }
 
             PushButton {
                 id: photoButton
-                x: window.width - width
+                x: parent.width - width
                 anchors.verticalCenter: parent.verticalCenter
 
                 visible: camera.state == "photo"
@@ -171,7 +171,7 @@ Window {
 
             PushButton {
                 id: recordButton
-                x: window.width - width
+                x: parent.width - width
                 anchors.verticalCenter: parent.verticalCenter
 
                 visible: camera.state == "video"
@@ -194,8 +194,8 @@ Window {
 
     Loader {
         id: dialogLoader
-        width: window.width
-        height: window.height + statusBar.height
+        width: parent.width
+        height: parent.height + statusBar.height
     }
 
     NoSpaceDialog {
