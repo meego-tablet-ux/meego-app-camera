@@ -69,6 +69,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (qint64 duration READ duration NOTIFY durationChanged);
     qint64 duration () { return _duration; }
 
+    Q_PROPERTY (qreal maxZoom READ maxZoom NOTIFY maxZoomChanged);
+    qreal maxZoom () { return _maxZoom; }
+
     Q_PROPERTY (qreal zoom READ zoom WRITE setZoom NOTIFY zoomChanged);
     qreal zoom () { return _zoom; }
     void setZoom (qreal z);
@@ -96,6 +99,7 @@ class ViewFinder : public QDeclarativeItem
     void captureModeChanged ();
     void recordingChanged ();
     void durationChanged ();
+    void maxZoomChanged();
     void zoomChanged ();
     void imageLocationChanged ();
     void canFocusChanged ();
@@ -159,6 +163,7 @@ class ViewFinder : public QDeclarativeItem
     bool _recording;
     qint64 _duration;
     qreal _zoom;
+    qreal _maxZoom;
     QString _imageLocation;
     QString _currentLocation;
     bool _canFocus;

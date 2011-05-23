@@ -344,13 +344,13 @@ ViewFinder::updateCameraState (QCamera::State state)
     return;
   }
 
-  qDebug () << "Supported maximum optical zoom" << _camera->focus ()->maximumOpticalZoom ();
-  qDebug () << "Supported maximum digital zoom" << _camera->focus ()->maximumDigitalZoom ();
-
   _canFocus = _camera->focus ()->isAvailable ();
   emit canFocusChanged ();
 
   if (_canFocus) {
+    _maxZoom = _camera->focus()->maximumDigitalZoom() * _camera->focus()->maximumOpticalZoom();
+    emit maxZoomChanged ();
+
     // Recalculate the zoom as relative to the current camera's max zoom
     _camera->focus ()->zoomTo (1.0 + (_zoom * _camera->focus ()->maximumOpticalZoom ()), 1.0);
   }

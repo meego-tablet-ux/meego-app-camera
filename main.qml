@@ -105,6 +105,10 @@ Window {
                 onCameraChanged: {
                     zoomer.resetZoom ();
                 }
+
+                onMaxZoomChanged: {
+                    zoomer.visible = (camera.maxZoom > 1.0);
+                }
             }
 
             Rectangle {
@@ -135,7 +139,7 @@ Window {
                 id: zoomer
                 x: 12
                 y: (parent.height - height) / 2
-                opacity: camera.canFocus ? 1.0: 0.0
+                visible: false
 
                 transitions: Transition {
                     NumberAnimation {
