@@ -190,30 +190,40 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   QVideoEncoderSettings videoSettings;
   videoSettings.setCodec ("video/theora");
 
+  _mediaRecorder = new QMediaRecorder (_camera);
+
+  foreach (QSize resolution, _mediaRecorder->supportedResolutions ()) {
+    qDebug () << "Supported video resolution: " << resolution.width () << "x" << resolution.height ();
+  }
+
   if (_settings->videoWidth () != 0 && _settings->videoHeight () != 0) {
     videoSettings.setResolution (_settings->videoWidth (),
                                  _settings->videoHeight ());
     qDebug () << "Using requested resolution: " << _settings->videoWidth () << "x" << _settings->videoHeight ();
-  } else {
-    videoSettings.setResolution (1280, 720);
-    qDebug () << "Using default resolution: 1280x720";
   }
-
-  _mediaRecorder = new QMediaRecorder (_camera);
+  else if(_mediaRecorder->supportedResolutions ().contains(QSize(1280,720))) {
+    videoSettings.setResolution (1280, 720);
+    qDebug () << "Using preferred resolution: 1280x720";
+  }
+  else
+  {
+    qDebug () << "Using default resolution";
+  }
 
   foreach (qreal framerate, _mediaRecorder->supportedFrameRates ()) {
-    qDebug () << "Frame rate: " << framerate;
+    qDebug () << "Supported video frame rate: " << framerate;
   }
+
   if (_settings->videoFPS () != 0) {
     videoSettings.setFrameRate (_settings->videoFPS ());
     qDebug () << "Using requested FPS: " << _settings->videoFPS ();
-  } else {
+  } else if(_mediaRecorder->supportedFrameRates ().contains(30)) {
     videoSettings.setFrameRate (30);
-    qDebug () << "Using default FPS: 30";
+    qDebug () << "Using preferred FPS: 30";
   }
-
-  foreach (QSize resolution, _mediaRecorder->supportedResolutions ()) {
-    qDebug () << "Video resolution: " << resolution.width () << "x" << resolution.height ();
+  else
+  {
+      qDebug () << "Using default FPS";
   }
 
   QList<QStringList> preferredCodecCombos;
