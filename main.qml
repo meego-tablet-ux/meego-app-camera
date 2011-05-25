@@ -168,7 +168,7 @@ Window {
                 source: "image://themedimage/images/camera/camera_takephoto_up"
                 activeSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
-                onClicked: {
+                onPressed: {
                     camera.takePhoto ();
                 }
             }

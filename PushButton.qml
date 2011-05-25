@@ -18,6 +18,7 @@ Item {
     property string activeSource
 
     signal clicked (variant mouse)
+    signal pressed (variant mouse)
 
     state: "up"
 
@@ -31,7 +32,10 @@ Item {
         anchors.fill: parent
 
         onClicked: parent.clicked (mouse)
-        onPressed: parent.state = "down"
+        onPressed: {
+            parent.state = "down"
+            parent.pressed(mouse)
+        }
         onReleased: parent.state = "up"
     }
 
