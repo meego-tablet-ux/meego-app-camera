@@ -72,6 +72,7 @@ Window {
                         return 180;
                     }
                 }
+
                 zoom: zoomer.zoomLevel
 
                 state: (camera.captureMode == 0? "photo" : "video");
@@ -109,6 +110,13 @@ Window {
                 onMaxZoomChanged: {
                     zoomer.visible = (camera.maxZoom > 1.0);
                 }
+            }
+
+            ShutterAnimationComponent {
+                id: shutterAnimation
+                anchors.fill: parent
+                width: parent.width
+                height: parent.height
             }
 
             Rectangle {
@@ -169,6 +177,7 @@ Window {
                 activeSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onClicked: {
+                    shutterAnimation.start();
                     camera.takePhoto ();
                 }
             }
