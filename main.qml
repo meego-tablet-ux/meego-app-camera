@@ -63,13 +63,13 @@ Window {
                 rotateAngle: {
                     switch (orientation) {
                     case 0:
-                        return 90;
+                        return (camera.currentCamera == camera.cameraCount - 1) ? 90 : 270;
                     case 1:
-                        return (camera.currentCamera == camera.cameraCount - 1) ? 0: 180;
+                        return 0;
                     case 2:
-                        return 270;
+                        return (camera.currentCamera == camera.cameraCount - 1) ? 270 : 90;
                     case 3:
-                        return (camera.currentCamera == camera.cameraCount - 1) ? 180: 0;
+                        return 180;
                     }
                 }
                 zoom: zoomer.zoomLevel
