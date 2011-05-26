@@ -11,9 +11,12 @@ import MeeGo.App.Camera 0.1
 
 
 Column {
+    id: container
     width: parent.width
     height: topBarBackground.height + topBarShadow.height
-    visible: !camera.recording
+    //visible: !camera.recording
+    anchors.left: parent.left
+    anchors.right: parent.right
 
     Image {
         id: topBarBackground
@@ -64,5 +67,42 @@ Column {
         id: topBarShadow
         width: parent.width
         source: "image://themedimage/images/toolbar-shadow"
+    }
+
+    Item {
+        id: internal
+        states: [
+            State {
+                name: "topbarvisible"
+                when: !camera.recording
+                AnchorChanges {
+                    target: container
+                    anchors.top: container.parent.top
+                    anchors.bottom: undefined
+                }
+            },
+            State {
+                name: "bottombarhidden"
+                when: camera.recording
+                AnchorChanges {
+                    target: container
+                    anchors.top: undefined
+                    anchors.bottom: container.parent.top
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: "topbarvisible"
+                to: "bottombarhidden"
+                AnchorAnimation { duration: 300}
+            },
+            Transition {
+                from: "bottombarhidden"
+                to: "topbarvisible"
+                AnchorAnimation { duration: 300}
+            }
+        ]
     }
 }

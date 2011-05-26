@@ -685,6 +685,12 @@ ViewFinder::mediaRecorderDurationChanged (qint64 duration)
   setDuration (duration);
 }
 
+QString ViewFinder::durationString()
+{
+    qint64 val = _duration / 1000;
+    return QObject::tr("%1:%2:%3").arg((val / 3600), 0).arg(((val % 3600) / 60), 2, 'g', -1, '0').arg((val % 60), 2, 'g', -1, '0');
+}
+
 void
 ViewFinder::repositionViewFinder (const QRectF &geometry)
 {

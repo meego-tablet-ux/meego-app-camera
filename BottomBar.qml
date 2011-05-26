@@ -7,11 +7,10 @@
  */
 
 import Qt 4.7
+import MeeGo.Components 0.1
 
 Image {
     id: bottomBarBackground
-
-    visible: !camera.recording
 
     width: parent.width
     source: {
@@ -22,17 +21,64 @@ Image {
         }
     }
 
+    Item {
+        id: internal
+        states: [
+            State {
+                name: "recording"
+                when: camera.recording
+                PropertyChanges {
+                    target: changeCameras
+                    enabled: false
+                    //this should be an icon specific for disabled button
+                    source: "image://themedimage/images/camera/camera_rotate_up"
+                }
+                PropertyChanges {
+                    target: flashButton
+                    enabled: false
+                    //this should be an icon specific for disabled button
+                    source: "image://themedimage/images/camera/camera_bottombar_up"
+                }
+                PropertyChanges {
+                    target: duration
+                    visible: true
+                }
+            },
+            State {
+                name: "stopped"
+                when: !camera.recording
+                PropertyChanges {
+                    target: changeCameras
+                    enabled: true
+                    source: "image://themedimage/images/camera/camera_rotate_up"
+                }
+                PropertyChanges {
+                    target: flashButton
+                    enabled: true
+                    source: "image://themedimage/images/camera/camera_bottombar_up"
+                }
+                PropertyChanges {
+                    target: duration
+                    visible: false
+                }
+            }
+        ]
+    }
+
     // Switch cameras
     PushButton {
         id: changeCameras
         anchors.verticalCenter: parent.verticalCenter
-        source: "image://themedimage/images/camera/camera_rotate_up"
+        //source: "image://themedimage/images/camera/camera_rotate_up"
         activeSource: "image://themedimage/images/camera/camera_rotate_dn"
 
         visible: camera.cameraCount > 1
         onClicked: {
             camera.changeCamera ();
         }
+
+
+
     }
 
     FlashButton {
@@ -43,11 +89,27 @@ Image {
         value: camera.flashMode
         visible: camera.cameraHasFlash
 
-        source: "image://themedimage/images/camera/camera_bottombar_up"
+        //source: "image://themedimage/images/camera/camera_bottombar_up"
         activeSource: "image://themedimage/images/camera/camera_bottombar_dn"
 
         onFlashMode: {
             camera.flashMode = flashValue;
         }
+    }
+
+
+    Theme {
+        id: theme
+    }
+
+    Text {
+        id: duration
+        text: camera.durationString
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.family: theme.fontFamily
+        font.pixelSize: theme.fontPixelSizeLarge
+        color: theme.fontColorNormal
     }
  }

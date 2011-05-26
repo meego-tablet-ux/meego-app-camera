@@ -72,6 +72,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (qint64 duration READ duration NOTIFY durationChanged);
     qint64 duration () { return _duration; }
 
+    Q_PROPERTY(QString durationString READ durationString NOTIFY durationStringChanged)
+    QString durationString();
+
     Q_PROPERTY (qreal maxZoom READ maxZoom NOTIFY maxZoomChanged);
     qreal maxZoom () { return _maxZoom; }
 
@@ -102,6 +105,7 @@ class ViewFinder : public QDeclarativeItem
     void captureModeChanged ();
     void recordingChanged ();
     void durationChanged ();
+    void durationStringChanged();
     void maxZoomChanged();
     void zoomChanged ();
     void imageLocationChanged ();
@@ -155,7 +159,7 @@ class ViewFinder : public QDeclarativeItem
     QString generateVideoFilename () const;
     void completeImage (const QString &filename);
     void setRecording (bool r) { _recording = r; emit recordingChanged (); }
-    void setDuration (qint64 d) { _duration = d; emit durationChanged (); }
+    void setDuration (qint64 d) { _duration = d; emit durationChanged (); emit durationStringChanged();}
 
     bool setCamera (const QByteArray &cameraDevice);
     void repositionViewFinder (const QRectF &geometry);

@@ -131,8 +131,7 @@ Window {
 
             TopBar {
                 id: topBar
-                x: 0
-                y: 0
+
             }
 
             ZoomSlider {
