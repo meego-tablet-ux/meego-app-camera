@@ -152,12 +152,14 @@ class ViewFinder : public QDeclarativeItem
                            const QString &md5sum);
     void metadataAvailableChanged (bool avail);
 
+    void completeImage ();
+
   private:
     QString generateTemporaryImageFilename () const;
     QString generateBaseImageFilename () const;
     QString generateImageFilename () const;
     QString generateVideoFilename () const;
-    void completeImage (const QString &filename);
+
     void setRecording (bool r) { _recording = r; emit recordingChanged (); }
     void setDuration (qint64 d) { _duration = d; emit durationChanged (); emit durationStringChanged();}
 
@@ -194,6 +196,8 @@ class ViewFinder : public QDeclarativeItem
     QTimer *_freeSpaceCheckTimer;
     QGeoPositionInfoSource *_positionSource;
     QGeoPositionInfo _lastPosition;
+
+    QFutureWatcher<QString> _futureWatcher;
 };
 
 #endif

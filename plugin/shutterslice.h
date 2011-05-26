@@ -16,11 +16,12 @@ public:
     void setRect(QRectF rect);
 
 protected:
-    void setRotation(int angle);
+    void setRotation();
     qreal m_baseAngle;
     qreal m_r; //radius
     QRectF m_dd;
     QGraphicsItem *m_item;
+    qreal m_angle;
 
 private:
     qreal angle();

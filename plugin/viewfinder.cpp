@@ -12,13 +12,29 @@
 #include <QDateTime>
 #include <QDir>
 #include <QAudioEncoderSettings>
-#include <QtLocation/QGeoCoordinate> //temporary ?
+#include <QtLocation/QGeoCoordinate>
+#include <QFutureWatcher>
+#include <QFuture>
 
 #include "cameraifadaptor.h"
 #include "viewfinder.h"
 #include "settings.h"
 #include "exifdatafactory.h"
 #include "jpegexiferizer.h"
+
+namespace  {
+QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord)
+{
+    ExifDataFactory *factory = new ExifDataFactory(coord);
+    JpegExiferizer exifer(tmpPath, destPath);
+    exifer.setExifDataFactory(factory);
+    exifer.doIt();
+
+    delete factory;
+    return destPath;
+}
+
+}
 
 QTM_USE_NAMESPACE
 
@@ -123,6 +139,8 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 #endif
     return;
   }
+
+  connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
   _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
   _positionSource->startUpdates ();
 }
@@ -484,8 +502,9 @@ ViewFinder::imageCaptured (int id, const QImage &preview)
   emit imageCaptured ();
 }
 
-void ViewFinder::completeImage (const QString &filename)
+void ViewFinder::completeImage ()
 {
+    QString filename = _futureWatcher.future().result();
 #ifdef SHOW_DEBUG
   qDebug () << "Image completed: " << filename;
 #endif
@@ -504,14 +523,10 @@ ViewFinder::imageSaved (int id, const QString &filename)
   qDebug () << "Image saved: " << id << " - " << filename;
 #endif
 
-  ExifDataFactory *factory = new ExifDataFactory(_lastPosition.coordinate());
-  JpegExiferizer exifer(filename, realFileName);
-  exifer.setExifDataFactory(factory);
-  exifer.doIt();
-  
-  delete factory;
+  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, _lastPosition.coordinate());
+  _futureWatcher.setFuture(future);
 
-  completeImage (realFileName);
+  //completeImage (realFileName);
 }
 
 void

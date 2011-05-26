@@ -8,6 +8,7 @@ ShutterSlice::ShutterSlice(qreal radius, qreal baseAngle, QGraphicsItem *item, Q
     , m_r(radius)
     , m_dd(d)
     , m_item(item)
+    , m_angle(90)
 {
 }
 
@@ -18,7 +19,8 @@ qreal ShutterSlice::angle()
 
 void ShutterSlice::setAngle(qreal angle)
 {
-    setRotation(angle);
+    m_angle = angle;
+    setRotation();
 }
 
 void ShutterSlice::setRect(QRectF rect)
@@ -26,7 +28,7 @@ void ShutterSlice::setRect(QRectF rect)
     m_dd = rect;
 }
 
-void ShutterSlice::setRotation(int angle)
+void ShutterSlice::setRotation()
 {
-    m_item->setTransform(QTransform().translate(m_dd.width()/2,m_dd.height()/2).rotate(m_baseAngle).translate(0,m_r).rotate(angle).translate(0,-m_r));
+    m_item->setTransform(QTransform().translate(m_dd.width()/2,m_dd.height()/2).rotate(m_baseAngle).translate(0,m_r).rotate(m_angle).translate(0,-m_r));
 }

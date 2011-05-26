@@ -9,6 +9,7 @@
 #include <QtCore/qmath.h>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QtConcurrentRun>
 
 
 ShutterAnimationComponent::ShutterAnimationComponent(QDeclarativeItem *parent):
@@ -20,6 +21,7 @@ ShutterAnimationComponent::ShutterAnimationComponent(QDeclarativeItem *parent):
 
     // setFlag(ItemHasNoContents, false);
     setVisible(false);
+    connect(&animationGroup, SIGNAL(finished()), this, SLOT(animationEnded()));
 }
 
 ShutterAnimationComponent::~ShutterAnimationComponent()
@@ -61,7 +63,7 @@ void ShutterAnimationComponent::componentComplete()
         QGraphicsPolygonItem *polyItem = new QGraphicsPolygonItem(poly,this);
         polyItem->setPen(QPen(Qt::black));
         polyItem->setBrush(QColor("gray"));
-        //polyItem->setTransform(QTransform().translate(width()/2,height()/2).rotate(angle).translate(0,r).rotate(80).translate(0,-r));
+        //polyItem->setTransform(QTransform().translate(width()/2,height()/2).rotate(angle).translate(0,r).rotate(90).translate(0,-r));
 
        ShutterSlice *sh= new ShutterSlice(r,angle,polyItem,boundingRect());
        shList.append(sh);
@@ -74,8 +76,6 @@ void ShutterAnimationComponent::componentComplete()
         anim->setKeyValueAt(1,90.0);
         animationGroup.addAnimation(anim);
     }
-
-
 }
 
 void ShutterAnimationComponent::start()
