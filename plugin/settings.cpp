@@ -32,7 +32,9 @@ Settings::Settings () :
   _flashMode = (enum ViewFinder::FlashMode) gconf_client_get_int
     (_client, FLASHMODE_KEY, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error getting flashmode:" << error->message;
+#endif
     g_error_free (error);
     error = NULL;
   }
@@ -40,7 +42,9 @@ Settings::Settings () :
   _captureMode = (enum ViewFinder::CaptureMode) gconf_client_get_int
     (_client, CAPTUREMODE_KEY, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error getting capturemode:" << error->message;
+#endif
     g_error_free (error);
     error = NULL;
   }
@@ -48,7 +52,9 @@ Settings::Settings () :
   _videoWidth = gconf_client_get_int
     (_client, VIDEO_RESOLUTION_WIDTH_KEY, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error getting video width:" << error->message;
+#endif
     g_error_free (error);
     error = NULL;
   }
@@ -56,21 +62,26 @@ Settings::Settings () :
   _videoHeight = gconf_client_get_int
     (_client, VIDEO_RESOLUTION_HEIGHT_KEY, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error getting video height:" << error->message;
+#endif
     g_error_free (error);
     error = NULL;
   }
 
   _videoFPS = gconf_client_get_float (_client, VIDEO_FPS_KEY, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error getting video fps:" << error->message;
+#endif
     g_error_free (error);
     error = NULL;
   }
-
+#ifdef SHOW_DEBUG
   qDebug () << "Settings*************";
   qDebug () << "Flash Mode: " << _flashMode;
   qDebug () << "Capture Mode: " << _captureMode;
+#endif
 }
 
 Settings::~Settings ()
@@ -84,7 +95,9 @@ Settings::setFlashMode (enum ViewFinder::FlashMode fm)
 
   gconf_client_set_int (_client, FLASHMODE_KEY, fm, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error setting flashmode:" << error->message;
+#endif
     g_error_free (error);
   }
 
@@ -98,7 +111,9 @@ Settings::setCaptureMode (enum ViewFinder::CaptureMode cm)
 
   gconf_client_set_int (_client, CAPTUREMODE_KEY, cm, &error);
   if (error != NULL) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error setting capturemode:" << error->message;
+#endif
     g_error_free (error);
   }
 

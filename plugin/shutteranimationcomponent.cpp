@@ -43,7 +43,6 @@ void ShutterAnimationComponent::componentComplete()
     base->setFlag(QGraphicsItem::ItemClipsChildrenToShape,true);
 
     qreal d = qMax(base->boundingRect().width(),base->boundingRect().height());
-    qDebug() << d;
     qreal r = d/2.0;
     r *= 1.4;
 

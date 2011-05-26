@@ -11,6 +11,7 @@ TARGET = $$qtLibraryTarget($$TARGET)
 DESTDIR = $$TARGET
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
+#DEFINES += SHOW_DEBUG
 
 # Input
 SOURCES += 			\

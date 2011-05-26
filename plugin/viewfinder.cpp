@@ -81,8 +81,9 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 
   foreach (const QByteArray &deviceName, QCamera::availableDevices ()) {
     QString description = QCamera::deviceDescription (deviceName);
-
+#ifdef SHOW_DEBUG
     qDebug () << deviceName << " " << description;
+#endif
   }
 
   _cameraCount = QCamera::availableDevices ().count ();
@@ -109,13 +110,17 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   QDBusConnection connection = QDBusConnection::sessionBus ();
   bool ret = connection.registerService ("com.meego.app.camera");
   if (ret == false) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error registering service";
+#endif
     return;
   }
 
   ret = connection.registerObject ("/", _cameraService);
   if (ret == false) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error registering object";
+#endif
     return;
   }
   _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
@@ -124,7 +129,9 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 
 ViewFinder::~ViewFinder ()
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Shutting down";
+#endif
   _camera->stop ();
 
   if (_freeSpaceCheckTimer) {
@@ -152,13 +159,18 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   delete _camera;
 
   if (cameraDevice.isEmpty ()) {
+#ifdef SHOW_DEBUG
     qDebug () << "Setting default camera";
+#endif
     _camera = new QCamera;
   } else {
+#ifdef SHOW_DEBUG
     qDebug () << "Setting camera to " << cameraDevice;
+#endif
     _camera = new QCamera (cameraDevice);
   }
 
+#ifdef SHOW_DEBUG
   if (_camera->isMetaDataAvailable ()) {
     qDebug () << "Metadata is available";
 
@@ -172,16 +184,22 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 
   } else {
     qDebug () << "Metadata is not available";
+
   }
+#endif
 
   connect (_camera, SIGNAL (metaDataAvailableChanged (bool)),
            this, SLOT (metadataAvailableChanged (bool)));
 
   _audioSource = new QAudioCaptureSource (_camera);
+
+#ifdef SHOW_DEBUG
   foreach (const QString &audioInput, _audioSource->audioInputs ()) {
     qDebug () << "Audio input: " << audioInput << " - " << _audioSource->audioDescription (audioInput);
   }
+
   qDebug () << "Default source: " << _audioSource->defaultAudioInput ();
+#endif
 
   QAudioEncoderSettings audioSettings;
   audioSettings.setCodec ("audio/vorbis");
@@ -192,38 +210,54 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 
   _mediaRecorder = new QMediaRecorder (_camera);
 
+#ifdef SHOW_DEBUG
   foreach (QSize resolution, _mediaRecorder->supportedResolutions ()) {
     qDebug () << "Supported video resolution: " << resolution.width () << "x" << resolution.height ();
   }
+#endif
 
   if (_settings->videoWidth () != 0 && _settings->videoHeight () != 0) {
     videoSettings.setResolution (_settings->videoWidth (),
                                  _settings->videoHeight ());
+#ifdef SHOW_DEBUG
     qDebug () << "Using requested resolution: " << _settings->videoWidth () << "x" << _settings->videoHeight ();
+#endif
   }
   else if(_mediaRecorder->supportedResolutions ().contains(QSize(1280,720))) {
     videoSettings.setResolution (1280, 720);
+#ifdef SHOW_DEBUG
     qDebug () << "Using preferred resolution: 1280x720";
+#endif
   }
   else
   {
+#ifdef SHOW_DEBUG
     qDebug () << "Using default resolution";
+#endif
   }
 
+#ifdef SHOW_DEBUG
   foreach (qreal framerate, _mediaRecorder->supportedFrameRates ()) {
     qDebug () << "Supported video frame rate: " << framerate;
   }
+#endif
 
   if (_settings->videoFPS () != 0) {
     videoSettings.setFrameRate (_settings->videoFPS ());
+#ifdef SHOW_DEBUG
     qDebug () << "Using requested FPS: " << _settings->videoFPS ();
+#endif
   } else if(_mediaRecorder->supportedFrameRates ().contains(30)) {
     videoSettings.setFrameRate (30);
+#ifdef SHOW_DEBUG
     qDebug () << "Using preferred FPS: 30";
+#endif
   }
   else
   {
+#ifdef SHOW_DEBUG
       qDebug () << "Using default FPS";
+#endif
   }
 
   QList<QStringList> preferredCodecCombos;
@@ -234,26 +268,37 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   QStringList containers;
 
   foreach (QString codec, _mediaRecorder->supportedAudioCodecs ()) {
+#ifdef SHOW_DEBUG
     qDebug () << "Codec: " << codec;
+#endif
     audioCodecs << codec;
   }
   foreach (QString codec, _mediaRecorder->supportedVideoCodecs ()) {
+#ifdef SHOW_DEBUG
     qDebug () << "Codec: " << codec;
+#endif
     videoCodecs << codec;
   }
   foreach (QString container, _mediaRecorder->supportedContainers ()) {
+#ifdef SHOW_DEBUG
     qDebug () << "Container: " << container;
+#endif
     containers.append(container);
   }
   bool foundMatch = false;
   foreach (QStringList codecCombo, preferredCodecCombos) {
+#ifdef SHOW_DEBUG
     qDebug() << "tuple: " << codecCombo;
     qDebug() << "codecCombo[0]" << codecCombo[0];
+#endif
     if (audioCodecs.contains(codecCombo[0]) &&
 	videoCodecs.contains(codecCombo[1]) &&
 	containers.contains(codecCombo[2])) {
 
+#ifdef SHOW_DEBUG
       qDebug() << "preferred tuple found: " << codecCombo;
+#endif
+
       foundMatch = true;
       audioSettings.setCodec(codecCombo[0]);
       videoSettings.setCodec(codecCombo[1]);
@@ -262,14 +307,20 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     }
   }
   if (!foundMatch) {
+#ifdef SHOW_DEBUG
     qDebug() << "No codec combos found!  pretending that ogg works";
+#endif
+
     videoSettings.setCodec ("video/theora");
     audioSettings.setCodec ("audio/vorbis");
     _mediaRecorder->setEncodingSettings (audioSettings, videoSettings, "ogg");
     _videoFilenameExtension = "ogg";
   }
 
+#ifdef SHOW_DEBUG
   qDebug () << "Selected container: " << _mediaRecorder->containerMimeType ();
+#endif
+
   connect (_mediaRecorder, SIGNAL (stateChanged (QMediaRecorder::State)),
            this, SLOT (mediaRecorderStateChanged (QMediaRecorder::State)));
   connect (_mediaRecorder, SIGNAL (error (QMediaRecorder::Error)),
@@ -285,9 +336,11 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 
   if (!resolutions.isEmpty ()) {
     qSort (resolutions.begin (), resolutions.end (), compare_sizes);
+#ifdef SHOW_DEBUG
     foreach (QSize size, resolutions) {
       qDebug () << "Sorted resolution: " << size.width () << "x" << size.height ();
     }
+#endif
 
     imageSize = resolutions.first ();
   } else {
@@ -298,7 +351,9 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   imageSettings.setResolution (imageSize);
   _imageCapture->setEncodingSettings (imageSettings);
 
+#ifdef SHOW_DEBUG
   qDebug () << "Using resolution: " << _imageCapture->encodingSettings ().resolution ().width () << "x" << _imageCapture->encodingSettings ().resolution ().height ();
+#endif
 
   QSize viewFinderSize(1280, 800);
   _viewFinder->setSize (viewFinderSize);
@@ -351,7 +406,9 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 void
 ViewFinder::updateCameraState (QCamera::State state)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Updated state: " << state;
+#endif
 
   if (state != QCamera::ActiveState) {
     return;
@@ -393,7 +450,9 @@ void
 ViewFinder::updateLockStatus (QCamera::LockStatus status,
                               QCamera::LockChangeReason reason)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Camera lock changed: " << status << " (Reason " << reason << ")";
+#endif
 }
 
 void
@@ -401,10 +460,14 @@ ViewFinder::takePhoto ()
 {
   QString filename = generateTemporaryImageFilename();
 
+#ifdef SHOW_DEBUG
   qDebug () << "Filename: " << filename;
+#endif
 
   _lastPosition = _positionSource->lastKnownPosition();
+#ifdef SHOW_DEBUG
   qDebug () << "last position: " << _lastPosition;
+#endif
 
   // FIXME: Use toUTF8?
   _imageCapture->capture (filename.toAscii ());
@@ -414,14 +477,18 @@ void
 ViewFinder::imageCaptured (int id, const QImage &preview)
 {
   Q_UNUSED(preview)
+#ifdef SHOW_DEBUG
   qDebug () << "Image captured: " << id;
+#endif
 
   emit imageCaptured ();
 }
 
 void ViewFinder::completeImage (const QString &filename)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Image completed: " << filename;
+#endif
 
   _imageLocation = filename;
   emit imageLocationChanged ();
@@ -433,7 +500,9 @@ void
 ViewFinder::imageSaved (int id, const QString &filename)
 {
   QString realFileName = generateImageFilename();
+#ifdef SHOW_DEBUG
   qDebug () << "Image saved: " << id << " - " << filename;
+#endif
 
   ExifDataFactory *factory = new ExifDataFactory(_lastPosition.coordinate());
   JpegExiferizer exifer(filename, realFileName);
@@ -454,13 +523,17 @@ ViewFinder::imageCaptureError (int id,
     emit noSpaceOnDevice ();
   }
 
+#ifdef SHOW_DEBUG
   qDebug () << "Image error: " << id << " - " << message << "(" << error << ")";
+#endif
 }
 
 void
 ViewFinder::imageReadyForCaptureChanged (bool ready)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Image ready for capture: " << (ready ? "true" : "false");
+#endif
   _ready = ready;
   emit readyChanged ();
 }
@@ -502,7 +575,9 @@ ViewFinder::setFlashMode (int mode)
     break;
   }
 
+#ifdef SHOW_DEBUG
   qDebug () << "Setting flash to " << mode << "(" << m << ")";
+#endif
 
   _settings->setFlashMode ((ViewFinder::FlashMode) mode);
   _camera->exposure ()->setFlashMode (m);
@@ -528,7 +603,9 @@ ViewFinder::changeCamera ()
     nextCamera = 0;
   }
 
+#ifdef SHOW_DEBUG
   qDebug () << "Switching from camera " << _currentCamera << " to " << nextCamera;
+#endif
 
   if (nextCamera == _currentCamera) {
     // If we're still on the same camera then we don't need to do anything
@@ -554,21 +631,29 @@ ViewFinder::changeCamera ()
 void
 ViewFinder::setCaptureMode (ViewFinder::CaptureMode mode)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Setting capture mode: " << mode;
+#endif
 
   switch (mode) {
   case ViewFinder::Still:
+#ifdef SHOW_DEBUG
     qDebug () << "Image capture";
+#endif
     _camera->setCaptureMode (QCamera::CaptureStillImage);
     break;
 
   case ViewFinder::Video:
+#ifdef SHOW_DEBUG
     qDebug () << "Video capture";
+#endif
     _camera->setCaptureMode (QCamera::CaptureVideo);
     break;
 
   default:
+#ifdef SHOW_DEBUG
     qDebug () << "Unknown capture mode";
+#endif
     break;
   }
 
@@ -587,7 +672,9 @@ ViewFinder::setZoom (qreal z)
   _zoom = z;
   _camera->focus ()->zoomTo (1.0 + (z * _camera->focus ()->maximumOpticalZoom ()), 1.0);
 
+#ifdef SHOW_DEBUG
   qDebug () << "Setting zoom to:" << _zoom;
+#endif
   emit zoomChanged ();
 }
 
@@ -596,7 +683,9 @@ ViewFinder::startRecording ()
 {
   QString filename = generateVideoFilename ();
   QUrl url;
+#ifdef SHOW_DEBUG
   qDebug () << "Starting recording" << filename;
+#endif
 
   url = QUrl::fromLocalFile (filename);
   _currentLocation = url.toString ();
@@ -617,7 +706,9 @@ void
 ViewFinder::endRecording ()
 {
   QString mimetype = QString ("video/mpeg");
+#ifdef SHOW_DEBUG
   qDebug () << "Ending recording";
+#endif
 
   _freeSpaceCheckTimer->stop ();
   delete _freeSpaceCheckTimer;
@@ -664,7 +755,9 @@ ViewFinder::generateVideoFilename () const
 void
 ViewFinder::mediaRecorderStateChanged (QMediaRecorder::State state)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Media recorder state changed: " << state;
+#endif
 }
 
 void
@@ -674,14 +767,17 @@ ViewFinder::mediaRecorderError (QMediaRecorder::Error error)
     // We don't get a more specific error so it might be out of space
     checkSpace ();
   }
-
+#ifdef SHOW_DEBUG
   qDebug () << "Media recorder error: " << _mediaRecorder->errorString ();
+#endif
 }
 
 void
 ViewFinder::mediaRecorderDurationChanged (qint64 duration)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Duration: " << duration;
+#endif
   setDuration (duration);
 }
 
@@ -695,7 +791,9 @@ void
 ViewFinder::repositionViewFinder (const QRectF &geometry)
 {
   QSizeF size = _viewFinder->size ();
+#ifdef SHOW_DEBUG
   qDebug () << "Viewfinder size: " << size.width () << "x" << size.height ();
+#endif
 
   float x, y;
 
@@ -728,7 +826,9 @@ void
 ViewFinder::geometryChanged (const QRectF &newGeometry,
                              const QRectF &oldGeometry)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Geometry changed: " << oldGeometry.width () << "x" << oldGeometry.height () << " -> " << newGeometry.width () << "x" << newGeometry.height ();
+#endif
 
   if (newGeometry != oldGeometry) {
     if (newGeometry.width () > 0 && newGeometry.height () > 0) {
@@ -746,17 +846,22 @@ ViewFinder::checkSpace ()
   struct statvfs buf;
 
   if (statvfs (homePath.toAscii (), &buf) < 0) {
+#ifdef SHOW_DEBUG
     qDebug () << " Error stating filesystem";
+#endif
     emit noSpaceOnDevice ();
     return;
   }
-
+#ifdef SHOW_DEBUG
   qDebug () << "Free space: " << buf.f_bsize * buf.f_bavail << "(" <<
     buf.f_bavail << " * " << buf.f_bsize << ")";
+#endif
 
   // Limit to 5mb space
   if (buf.f_bsize * buf.f_bavail < (1024 * 1024 * 5)) {
+#ifdef SHOW_DEBUG
     qDebug () << "No free space";
+#endif
     emit noSpaceOnDevice ();
     return;
   }
@@ -768,8 +873,9 @@ ViewFinder::thumbnailCreated (const QString &url,
 {
   Q_UNUSED(url)
   _imageLocation = QString ("%1/.thumbnails/normal/%2.jpeg").arg (QDir::homePath ()).arg (md5sum);
-
+#ifdef SHOW_DEBUG
   qDebug () << "Thumbnail completed: " << _imageLocation;
+#endif
   emit imageLocationChanged ();
 }
 
@@ -785,7 +891,9 @@ ViewFinder::thumbnailError (const QStringList &urls,
 void
 ViewFinder::metadataAvailableChanged (bool avail)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Metadata available: " << avail;
+#endif
 }
 
 void

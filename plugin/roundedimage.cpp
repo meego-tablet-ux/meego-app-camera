@@ -60,7 +60,9 @@ RoundedImage::setSource (QString &s)
 
   _tmp = QImage (s);
   if (_tmp.isNull ()) {
+#ifdef SHOW_DEBUG
     qDebug () << "Error loading " << s;
+#endif
     return;
   }
 
@@ -84,9 +86,10 @@ RoundedImage::setSource (QString &s)
     x = 0;
     y = (sh - IMAGE_SIZE) / 2;
   }
-
+#ifdef SHOW_DEBUG
   qDebug () << "Resizing to: " << sw << "x" << sh;
   qDebug () << "Cropping to: " << x << "," << y;
+#endif
 
   _scaled = _tmp.scaled (sw, sh, Qt::IgnoreAspectRatio,
                          Qt::SmoothTransformation);

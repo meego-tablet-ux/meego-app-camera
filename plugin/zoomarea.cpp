@@ -15,7 +15,9 @@ ZoomArea::ZoomArea (QGraphicsItem *_parent) :
   QGraphicsWidget (_parent),
   _scaleFactor (1)
 {
+#ifdef SHOW_DEBUG
   qDebug () << "Created zoom area";
+#endif
   setAcceptTouchEvents (true);
 }
 
