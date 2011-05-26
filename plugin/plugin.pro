@@ -22,7 +22,9 @@ SOURCES += 			\
 	viewfinder.cpp		\
 	zoomarea.cpp            \
         exifdatafactory.cpp     \
-        jpegexiferizer.cpp
+        jpegexiferizer.cpp \
+    shutterslice.cpp \
+    shutteranimationcomponent.cpp
 HEADERS += 			\
 	cameraifadaptor.h	\
 	cameraservice.h		\
@@ -34,7 +36,9 @@ HEADERS += 			\
 	viewfinder.h		\
         zoomarea.h              \
         exifdatafactory.h       \
-        jpegexiferizer.h
+        jpegexiferizer.h \
+    shutterslice.h \
+    shutteranimationcomponent.h
 
 OTHER_FILES += \
     Camera/qmldir
