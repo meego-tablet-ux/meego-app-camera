@@ -70,8 +70,8 @@ void ShutterAnimationComponent::componentComplete()
 
         // Could be QRectF
         QGraphicsPolygonItem *polyItem = new QGraphicsPolygonItem(poly,this);
-        polyItem->setPen(QPen(Qt::white));
-        polyItem->setBrush(QColor("gray"));
+        polyItem->setPen(QPen(Qt::black));
+        polyItem->setBrush(QColor("gray").darker().darker());
 
 //        QGraphicsPixmapItem *polyItem = new QGraphicsPixmapItem(px,this);
        ShutterSlice *sh= new ShutterSlice(r,angle,polyItem,boundingRect());
