@@ -23,6 +23,22 @@ Window {
         switchBook(cameraContent);
     }
 
+    orientationLock: 1
+    property int componentsRotationAngle
+    componentsRotationAngle : {
+        switch(sensorOrientation) {
+        case 1:
+            return 0;
+        case 2:
+            return 90;
+        case 3:
+            return 180;
+        case 4:
+            return 270;
+        }
+    }
+
+
     Component {
         id: cameraContent
 
@@ -61,6 +77,7 @@ Window {
                 anchors.fill: parent
 
                 rotateAngle: {
+                    //rotating this element might not be required
                     switch (orientation) {
                     case 0:
                         return (camera.currentCamera == camera.cameraCount - 1) ? 90 : 270;
@@ -170,6 +187,7 @@ Window {
                 x: parent.width - width
                 anchors.verticalCenter: parent.verticalCenter
 
+                //rotationAngle: componentsRotationAngle
                 visible: camera.state == "photo"
 
                 source: "image://themedimage/images/camera/camera_takephoto_up"

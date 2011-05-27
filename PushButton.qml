@@ -22,9 +22,14 @@ Item {
 
     state: "up"
 
+    property int rotationAngle: 0
     Image {
         id: img
         source: button.source
+        transformOrigin: Item.Center
+        rotation: rotationAngle
+        Behavior on rotation { RotationAnimation { duration: 500}}
+
     }
 
     MouseArea {
