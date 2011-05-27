@@ -28,7 +28,7 @@ Item {
         source: button.source
         transformOrigin: Item.Center
         rotation: rotationAngle
-        Behavior on rotation { RotationAnimation { duration: 500}}
+        Behavior on rotation { RotationAnimation { duration: 200}}
 
     }
 

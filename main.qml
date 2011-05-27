@@ -157,6 +157,7 @@ Window {
 
             TopBar {
                 id: topBar
+                rotationAngle: window.componentsRotationAngle
 
             }
 
@@ -181,6 +182,7 @@ Window {
                 x: 0
 
                 y: parent.height - height
+                rotationAngle: componentsRotationAngle
             }
 
             PushButton {

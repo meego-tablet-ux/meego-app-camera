@@ -15,6 +15,8 @@ Item {
 
     signal toggled
 
+    property int rotationAngle: 0
+
     state: "photo"
 
     Row {
@@ -35,6 +37,10 @@ Item {
             Image {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
+
+                transformOrigin: Item.Center
+                rotation: rotationAngle
+                Behavior on rotation { RotationAnimation { duration: 200}}
 
                 source: if (photo.state == "unchecked") {
                     return "image://themedimage/images/camera/camera_lens_sm_up";
@@ -57,6 +63,10 @@ Item {
             Image {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
+
+                transformOrigin: Item.Center
+                rotation: rotationAngle
+                Behavior on rotation { RotationAnimation { duration: 200}}
 
                 source: if (video.state == "unchecked") {
                     return "image://themedimage/images/camera/camera_video_sm_up";

@@ -12,6 +12,8 @@ import MeeGo.Components 0.1
 Image {
     id: bottomBarBackground
 
+    property int rotationAngle: 0
+
     width: parent.width
     source: {
         if (orientation == 1 || orientation == 3) {
@@ -71,6 +73,10 @@ Image {
         anchors.verticalCenter: parent.verticalCenter
         //source: "image://themedimage/images/camera/camera_rotate_up"
         activeSource: "image://themedimage/images/camera/camera_rotate_dn"
+
+        transformOrigin: Item.Center
+        rotation: rotationAngle
+        Behavior on rotation { RotationAnimation { duration: 200}}
 
         visible: camera.cameraCount > 1
         onClicked: {

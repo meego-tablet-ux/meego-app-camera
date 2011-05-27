@@ -18,6 +18,8 @@ Column {
     anchors.left: parent.left
     anchors.right: parent.right
 
+    property int rotationAngle: 0
+
     Image {
         id: topBarBackground
 
@@ -39,6 +41,8 @@ Column {
                 camera.state = state;
             }
 
+            rotationAngle: container.rotationAngle
+
 
         }
 
@@ -48,6 +52,10 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             source: camera.imageLocation
             type: camera.state
+
+            transformOrigin: Item.Center
+            rotation: rotationAngle
+            Behavior on rotation { RotationAnimation { duration: 200}}
 
             Launcher {
                 id: processLauncher;
