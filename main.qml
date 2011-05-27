@@ -76,19 +76,20 @@ Window {
 
                 anchors.fill: parent
 
-                rotateAngle: {
-                    //rotating this element might not be required
-                    switch (orientation) {
-                    case 0:
-                        return (camera.currentCamera == camera.cameraCount - 1) ? 90 : 270;
-                    case 1:
-                        return 0;
-                    case 2:
-                        return (camera.currentCamera == camera.cameraCount - 1) ? 270 : 90;
-                    case 3:
-                        return 180;
-                    }
-                }
+                rotateAngle: 0
+//                {
+//                    //rotating this element might not be required
+//                    switch (orientation) {
+//                    case 0:
+//                        return (camera.currentCamera == camera.cameraCount - 1) ? 90 : 270;
+//                    case 1:
+//                        return 0;
+//                    case 2:
+//                        return (camera.currentCamera == camera.cameraCount - 1) ? 270 : 90;
+//                    case 3:
+//                        return 180;
+//                    }
+//                }
 
                 zoom: zoomer.zoomLevel
 
