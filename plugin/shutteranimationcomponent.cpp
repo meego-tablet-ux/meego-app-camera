@@ -56,25 +56,29 @@ void ShutterAnimationComponent::componentComplete()
     poly << QPointF(0,0) << QPointF(0,r) << QPointF(b,r) << QPointF(0,0);
 
 
+  //  QPixmap px = QPixmap(":/images/camera-bg-triangle.png").scaled(b,r,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+
+    QPropertyAnimation *anim = new QPropertyAnimation(this,"angle");
+    anim->setDuration(3500);
+    anim->setKeyValueAt(0,90.0);
+    anim->setKeyValueAt(0.15, 0.0);
+    anim->setKeyValueAt(0.8, 0.0);
+    anim->setKeyValueAt(1,90.0);
+    animationGroup.addAnimation(anim);
     int i=0;
     for (qreal angle = 0.0; angle < 360; angle += incrementAngle, i++) {
 
         // Could be QRectF
         QGraphicsPolygonItem *polyItem = new QGraphicsPolygonItem(poly,this);
-        polyItem->setPen(QPen(Qt::black));
+        polyItem->setPen(QPen(Qt::white));
         polyItem->setBrush(QColor("gray"));
-        //polyItem->setTransform(QTransform().translate(width()/2,height()/2).rotate(angle).translate(0,r).rotate(90).translate(0,-r));
 
+//        QGraphicsPixmapItem *polyItem = new QGraphicsPixmapItem(px,this);
        ShutterSlice *sh= new ShutterSlice(r,angle,polyItem,boundingRect());
        shList.append(sh);
 
-        QPropertyAnimation *anim = new QPropertyAnimation(sh,"angle");
-        anim->setDuration(3000);
-        anim->setKeyValueAt(0,90.0);
-        anim->setKeyValueAt(0.15, 0.0);
-        anim->setKeyValueAt(0.8, 0.0);
-        anim->setKeyValueAt(1,90.0);
-        animationGroup.addAnimation(anim);
+
+
     }
 }
 
@@ -82,6 +86,7 @@ void ShutterAnimationComponent::start()
 {
     setVisible(true);
     animationGroup.start();
+
 }
 
 void ShutterAnimationComponent::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
@@ -96,4 +101,11 @@ void ShutterAnimationComponent::geometryChanged(const QRectF &newGeometry, const
 void ShutterAnimationComponent::animationEnded()
 {
     setVisible(false);
+}
+void ShutterAnimationComponent::setAngle(qreal angle)
+{
+foreach (ShutterSlice *slice, shList) {
+    slice->setAngle(angle);
+
+}
 }

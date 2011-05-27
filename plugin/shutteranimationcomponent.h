@@ -11,6 +11,8 @@ class ShutterAnimationComponent : public QDeclarativeItem
     Q_DISABLE_COPY(ShutterAnimationComponent)
 
     Q_PROPERTY(qreal size READ size WRITE setSize NOTIFY sizeChanged)
+    Q_PROPERTY(qreal angle READ angle WRITE setAngle)
+    qreal angle(){return 0;}
 
 public:
     ShutterAnimationComponent(QDeclarativeItem *parent = 0);
@@ -31,6 +33,7 @@ protected:
 
 protected slots:
    void animationEnded();
+   void setAngle(qreal angle);
 
 
 private:
