@@ -143,6 +143,8 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
   _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
   _positionSource->startUpdates ();
+
+  photoThread.start();
 }
 
 ViewFinder::~ViewFinder ()
@@ -488,7 +490,9 @@ ViewFinder::takePhoto ()
 #endif
 
   // FIXME: Use toUTF8?
-  _imageCapture->capture (filename.toAscii ());
+  //_imageCapture->capture (filename.toAscii ());
+  photoThread.takePhoto(filename,_imageCapture);
+
 }
 
 void

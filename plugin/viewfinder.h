@@ -23,6 +23,8 @@
 #include "cameraservice.h"
 #include "thumbnailer.h"
 
+#include "capturephotothread.h"
+
 class Settings;
 
 QTM_USE_NAMESPACE
@@ -198,6 +200,8 @@ class ViewFinder : public QDeclarativeItem
     QGeoPositionInfo _lastPosition;
 
     QFutureWatcher<QString> _futureWatcher;
+
+    CapturePhotoThread photoThread;
 };
 
 #endif

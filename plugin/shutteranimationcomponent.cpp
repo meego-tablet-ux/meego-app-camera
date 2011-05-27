@@ -71,7 +71,7 @@ void ShutterAnimationComponent::componentComplete()
         QPropertyAnimation *anim = new QPropertyAnimation(sh,"angle");
         anim->setDuration(3000);
         anim->setKeyValueAt(0,90.0);
-        anim->setKeyValueAt(0.2, 0.0);
+        anim->setKeyValueAt(0.15, 0.0);
         anim->setKeyValueAt(0.8, 0.0);
         anim->setKeyValueAt(1,90.0);
         animationGroup.addAnimation(anim);
