@@ -40,7 +40,7 @@ Item {
 
                 transformOrigin: Item.Center
                 rotation: rotationAngle
-                Behavior on rotation { RotationAnimation { duration: 200}}
+                Behavior on rotation { RotationAnimation { duration: 200; direction: RotationAnimation.Counterclockwise}}
 
                 source: if (photo.state == "unchecked") {
                     return "image://themedimage/images/camera/camera_lens_sm_up";
@@ -66,7 +66,7 @@ Item {
 
                 transformOrigin: Item.Center
                 rotation: rotationAngle
-                Behavior on rotation { RotationAnimation { duration: 200}}
+                Behavior on rotation { RotationAnimation { duration: 200; direction: RotationAnimation.Counterclockwise}}
 
                 source: if (video.state == "unchecked") {
                     return "image://themedimage/images/camera/camera_video_sm_up";

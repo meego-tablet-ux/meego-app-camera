@@ -74,9 +74,10 @@ Image {
         //source: "image://themedimage/images/camera/camera_rotate_up"
         activeSource: "image://themedimage/images/camera/camera_rotate_dn"
 
-        transformOrigin: Item.Center
-        rotation: rotationAngle
-        Behavior on rotation { RotationAnimation { duration: 200}}
+        rotationAngle: bottomBarBackground.rotationAngle
+        //transformOrigin: Item.Center
+//        rotation: rotationAngle
+//        Behavior on rotation { RotationAnimation { duration: 200; direction: RotationAnimation.Counterclockwise}}
 
         visible: camera.cameraCount > 1
         onClicked: {

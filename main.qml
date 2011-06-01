@@ -25,18 +25,20 @@ Window {
 
     orientationLock: 1
     property int componentsRotationAngle
-    componentsRotationAngle : {
-        switch(sensorOrientation) {
-        case 1:
-            return 0;
-        case 2:
-            return 90;
-        case 3:
-            return 180;
-        case 4:
-            return 270;
-        }
+    componentsRotationAngle: {
+        //rotating this element might not be required
+        switch (sensorOrientation) {
+            case 0:
+                return 90;
+            case 1:
+                return 0;
+            case 2:
+                return 270;
+            case 3:
+                return 180;
     }
+}
+
 
 
     Component {
@@ -157,7 +159,7 @@ Window {
 
             TopBar {
                 id: topBar
-                rotationAngle: window.componentsRotationAngle
+                rotationAngle: componentsRotationAngle
 
             }
 
@@ -171,6 +173,7 @@ Window {
                     NumberAnimation {
                         properties: opacity
                         duration: 100
+
                     }
                 }
 
