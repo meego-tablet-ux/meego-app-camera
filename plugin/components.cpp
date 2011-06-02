@@ -19,18 +19,6 @@ components::components ()
 {
   // Initialise the GObject type system
   g_type_init ();
-
-  if (QDir::home ().mkpath ("Pictures/Camera") == false) {
-#ifdef SHOW_DEBUG
-    qDebug () << "Error making camera directory: " << QDir::homePath () << "/Pictures/Camera";
-#endif
-  }
-
-  if (QDir::home ().mkpath ("Videos/Camera") == false) {
-#ifdef SHOW_DEBUG
-    qDebug () << "Error making camera directory: " << QDir::homePath () << "/Pictures/Camera";
-#endif
-  }
 }
 
 void components::registerTypes(const char *uri)

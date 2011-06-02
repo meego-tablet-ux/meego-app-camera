@@ -162,6 +162,9 @@ class ViewFinder : public QDeclarativeItem
     QString generateImageFilename () const;
     QString generateVideoFilename () const;
 
+    const QString & picturesDir () const { return _strPicturesDir; }
+    const QString & videosDir () const { return _strVideosDir; }
+
     void setRecording (bool r) { _recording = r; emit recordingChanged (); }
     void setDuration (qint64 d) { _duration = d; emit durationChanged (); emit durationStringChanged();}
 
@@ -202,6 +205,8 @@ class ViewFinder : public QDeclarativeItem
     QFutureWatcher<QString> _futureWatcher;
 
     CapturePhotoThread photoThread;
+
+    QString _strPicturesDir, _strVideosDir;
 };
 
 #endif
