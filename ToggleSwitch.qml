@@ -16,6 +16,8 @@ Item {
     signal toggled
 
     property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int rotationAnimationDuration: 0
 
     state: "photo"
 
@@ -28,7 +30,8 @@ Item {
             id: photo
             width: 85
             height: 55
-//            activeSource: "image://themedimage/images/camera/camera_topbar_dn"
+            source: "image://themedimage/images/camera/camera_video_sm_up"
+            activeSource: "image://themedimage/images/camera/camera_video_sm_dn"
             onClicked: {
                 toggle.state = "photo";
                 toggle.toggled ();
@@ -40,12 +43,12 @@ Item {
 
                 transformOrigin: Item.Center
                 rotation: rotationAngle
-                Behavior on rotation { RotationAnimation { duration: 200; direction: RotationAnimation.Counterclockwise}}
+                Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
                 source: if (photo.state == "unchecked") {
-                    return "image://themedimage/images/camera/camera_lens_sm_up";
+                    return "image://themedimage/icons/toolbar/camera-photo";
                 } else {
-                    return "image://themedimage/images/camera/camera_lens_sm_dn";
+                    return "image://themedimage/icons/toolbar/camera-photo-active";
                 }
             }
         }
@@ -54,7 +57,8 @@ Item {
             id: video
             width: 85
             height: 55
-//            activeSource: "image://themedimage/images/camera/camera_topbar_dn"
+            source: "image://themedimage/images/camera/camera_video_sm_up"
+            activeSource: "image://themedimage/images/camera/camera_video_sm_dn"
             onClicked: {
                 toggle.state = "video";
                 toggle.toggled ();
@@ -66,12 +70,12 @@ Item {
 
                 transformOrigin: Item.Center
                 rotation: rotationAngle
-                Behavior on rotation { RotationAnimation { duration: 200; direction: RotationAnimation.Counterclockwise}}
+                Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
                 source: if (video.state == "unchecked") {
-                    return "image://themedimage/images/camera/camera_video_sm_up";
+                    return "image://themedimage/icons/toolbar/camera-video";
                 } else {
-                    return "image://themedimage/images/camera/camera_video_sm_dn";
+                    return "image://themedimage/icons/toolbar/camera-video-active";
                 }
             }
         }

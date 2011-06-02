@@ -24,22 +24,36 @@ Window {
     }
 
     orientationLock: 1
-    property int componentsRotationAngle
-    componentsRotationAngle: {
-        //rotating this element might not be required
-        switch (sensorOrientation) {
-            case 0:
-                return 90;
-            case 1:
-                return 0;
-            case 2:
-                return 270;
-            case 3:
-                return 180;
+    property int componentsRotationAngle: 0
+    property bool isCounterClockwise: false
+    property bool isSensorLandscape: (sensorOrientation == 1 || sensorOrientation == 3) ? true : false
+    property int rotationAnimationSpeed: 200
+
+    property bool isInRecordingMode
+
+    onSensorOrientationChanged: calculateRotation()
+    onIsInRecordingModeChanged: calculateRotation()
+
+    function calculateRotation(){
+            //rotating this element might not be required, do nothing when in video record mode
+            var angle;
+            switch (sensorOrientation) {
+                case 0:
+                    angle = 90; break;
+                case 1:
+                    angle = 0; break;
+                case 2:
+                    angle = 270; break;
+                case 3:
+                    angle = 180; break;
+        }
+            if(isInRecordingMode)  angle = 0;
+            if((angle > componentsRotationAngle && !(angle == 270 && componentsRotationAngle == 0)) || (componentsRotationAngle == 270 && angle == 0) )
+                isCounterClockwise = false;
+            else
+                isCounterClockwise = true;
+            componentsRotationAngle = angle;
     }
-}
-
-
 
     Component {
         id: cameraContent
@@ -79,20 +93,6 @@ Window {
                 anchors.fill: parent
 
                 rotateAngle: 0
-//                {
-//                    //rotating this element might not be required
-//                    switch (orientation) {
-//                    case 0:
-//                        return (camera.currentCamera == camera.cameraCount - 1) ? 90 : 270;
-//                    case 1:
-//                        return 0;
-//                    case 2:
-//                        return (camera.currentCamera == camera.cameraCount - 1) ? 270 : 90;
-//                    case 3:
-//                        return 180;
-//                    }
-//                }
-
                 zoom: zoomer.zoomLevel
 
                 state: (camera.captureMode == 0? "photo" : "video");
@@ -104,6 +104,10 @@ Window {
                             target: camera
                             captureMode: 0
                         }
+                        PropertyChanges {
+                            target: window
+                            isInRecordingMode: false
+                        }
                     },
                     State {
                         name: "video"
@@ -111,10 +115,14 @@ Window {
                             target: camera
                             captureMode: 1
                         }
+                        PropertyChanges {
+                            target: window
+                            isInRecordingMode: true
+                        }
                     }
                 ]
 
-                onImageCaptured: { console.log ("Photo taken"); }
+                //onImageCaptured: { console.log ("Photo taken"); }
                 onNoSpaceOnDevice: {
                     // Stop the recording
                     if (camera.recording) {
@@ -130,6 +138,7 @@ Window {
                 onMaxZoomChanged: {
                     zoomer.visible = (camera.maxZoom > 1.0);
                 }
+
             }
 
             ShutterAnimationComponent {
@@ -160,6 +169,8 @@ Window {
             TopBar {
                 id: topBar
                 rotationAngle: componentsRotationAngle
+                rotationCounterClockwise: isCounterClockwise
+                rotationAnimationDuration: rotationAnimationSpeed
 
             }
 
@@ -178,14 +189,19 @@ Window {
                 }
 
                 state: (orientation == 0 || orientation == 2) ? "portrait" : "landscape"
+
+                rotationAngle: componentsRotationAngle
+                rotationCounterClockwise: isCounterClockwise
+                rotationAnimationDuration: rotationAnimationSpeed
             }
 
             BottomBar {
                 id: bottomBar
                 x: 0
-
                 y: parent.height - height
                 rotationAngle: componentsRotationAngle
+                rotationCounterClockwise: isCounterClockwise
+                rotationAnimationDuration: window.rotationAnimationSpeed
             }
 
             PushButton {
@@ -193,12 +209,17 @@ Window {
                 x: parent.width - width
                 anchors.verticalCenter: parent.verticalCenter
 
-                //rotationAngle: componentsRotationAngle
+                rotationAngle: componentsRotationAngle
+                rotationCounterClockwise: isCounterClockwise
+                rotationAnimationDuration: rotationAnimationSpeed
                 visible: camera.state == "photo"
 
-                source: "image://themedimage/images/camera/camera_takephoto_up"
-                activeSource: "image://themedimage/images/camera/camera_takephoto_dn"
+                iconSource: "image://themedimage/icons/toolbar/camera-photo"
+                activeIconSource: "image://themedimage/icons/toolbar/camera-photo-active"
+                iconScale: 1.5
 
+                backgroundSource: "image://themedimage/images/camera/camera_record"
+                activeBackgroundSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onPressed: {
                     shutterAnimation.start();
@@ -213,16 +234,38 @@ Window {
 
                 visible: camera.state == "video"
 
-                source: "image://themedimage/images/camera/camera_record"
-                activeSource: source
+                backgroundSource: "image://themedimage/images/camera/camera_record"
+                activeBackgroundSource: "image://themedimage/images/camera/camera_takephoto_dn"
+
+                Item {
+                    id: recordingIconState
+                    states: [
+                        State {
+                            name: "recording"
+                            when: camera.recording
+                            PropertyChanges {
+                                target: recordButton
+                                iconSource: "image://themedimage/images/camera/camera-record-icn-dn"
+                                activeIconSource: "image://themedimage/images/camera/camera-record-icn-dn"
+                            }
+                        },
+                        State {
+                            name: "stopped"
+                            when: !camera.recording
+                            PropertyChanges {
+                                target: recordButton
+                                iconSource: "image://themedimage/images/camera/camera-record-icn"
+                                activeIconSource: "image://themedimage/images/camera/camera-record-icn-dn"
+                            }
+                        }
+                    ]
+                }
 
                 onClicked: {
                     if (camera.recording) {
                         camera.endRecording ();
-                        source = "image://themedimage/images/camera/camera_record"
                     } else {
                         camera.startRecording ();
-                        source = "image://themedimage/images/camera/camera_record_dn"
                     }
                 }
             }

@@ -19,6 +19,8 @@ Column {
     anchors.right: parent.right
 
     property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int rotationAnimationDuration: 0
 
     Image {
         id: topBarBackground
@@ -42,8 +44,8 @@ Column {
             }
 
             rotationAngle: container.rotationAngle
-
-
+            rotationCounterClockwise: container.rotationCounterClockwise
+            rotationAnimationDuration: container.rotationAnimationDuration
         }
 
         PhotoReviewBin {
@@ -55,7 +57,7 @@ Column {
 
             transformOrigin: Item.Center
             rotation: rotationAngle
-            Behavior on rotation { RotationAnimation { duration: 200; direction: RotationAnimation.Counterclockwise}}
+            Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
             Launcher {
                 id: processLauncher;
