@@ -19,6 +19,10 @@ Item {
     property real troughSize: troughEnd - troughStart
     property real stepSize: troughSize / 10
 
+    property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int rotationAnimationDuration: 0
+
     // zoomLevel is in range [0.0, 1.0]
     // FIXME: zoomLevel should be the "model" and scrub should be the "view"
     // currently this is reversed and is wrong.
@@ -91,6 +95,10 @@ Item {
         onClicked: {
             moveScrub (scrub.y - stepSize);
         }
+
+        rotationAngle: slider.rotationAngle
+        rotationCounterClockwise: slider.rotationCounterClockwise
+        rotationAnimationDuration: slider.rotationAnimationDuration
     }
 
     RepeatButton {
@@ -105,6 +113,10 @@ Item {
         onClicked: {
             moveScrub (scrub.y + stepSize);
         }
+
+        rotationAngle: slider.rotationAngle
+        rotationCounterClockwise: slider.rotationCounterClockwise
+        rotationAnimationDuration: slider.rotationAnimationDuration
     }
 
     states: [

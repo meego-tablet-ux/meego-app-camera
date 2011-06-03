@@ -12,6 +12,10 @@ import MeeGo.Components 0.1
 Image {
     id: bottomBarBackground
 
+    property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int rotationAnimationDuration: 0
+
     width: parent.width
     source: {
         if (orientation == 1 || orientation == 3) {
@@ -29,15 +33,11 @@ Image {
                 when: camera.recording
                 PropertyChanges {
                     target: changeCameras
-                    enabled: false
-                    //this should be an icon specific for disabled button
-                    source: "image://themedimage/images/camera/camera_rotate_up"
+                    visible: false
                 }
                 PropertyChanges {
                     target: flashButton
-                    enabled: false
-                    //this should be an icon specific for disabled button
-                    source: "image://themedimage/images/camera/camera_bottombar_up"
+                    visible: false
                 }
                 PropertyChanges {
                     target: duration
@@ -49,13 +49,11 @@ Image {
                 when: !camera.recording
                 PropertyChanges {
                     target: changeCameras
-                    enabled: true
-                    source: "image://themedimage/images/camera/camera_rotate_up"
+                    visible: true
                 }
                 PropertyChanges {
                     target: flashButton
-                    enabled: true
-                    source: "image://themedimage/images/camera/camera_bottombar_up"
+                    visible: true
                 }
                 PropertyChanges {
                     target: duration
@@ -69,28 +67,36 @@ Image {
     PushButton {
         id: changeCameras
         anchors.verticalCenter: parent.verticalCenter
-        //source: "image://themedimage/images/camera/camera_rotate_up"
-        activeSource: "image://themedimage/images/camera/camera_rotate_dn"
 
-        visible: camera.cameraCount > 1
+        iconSource: "image://themedimage/icons/actionbar/view-sync"
+        activeIconSource: "image://themedimage/icons/actionbar/view-sync-active"
+        backgroundSource: "image://themedimage/images/camera/camera_bottombar_up"
+        activeBackgroundSource: "image://themedimage/images/camera/camera_bottombar_dn"
+
+        rotationAngle: bottomBarBackground.rotationAngle
+        rotationCounterClockwise: bottomBarBackground.rotationCounterClockwise
+        rotationAnimationDuration: bottomBarBackground.rotationAnimationDuration
+
+       // visible: camera.cameraCount > 1
         onClicked: {
             camera.changeCamera ();
         }
-
-
-
     }
+
 
     FlashButton {
         id: flashButton
         x: parent.width - width
-        //y: (parent.height - height) / 2
         anchors.verticalCenter: parent.verticalCenter
         value: camera.flashMode
         visible: camera.cameraHasFlash
 
         //source: "image://themedimage/images/camera/camera_bottombar_up"
-        activeSource: "image://themedimage/images/camera/camera_bottombar_dn"
+        activeBackgroundSource: "image://themedimage/images/camera/camera_bottombar_dn"
+
+        flashMenuRotationAngle: bottomBarBackground.rotationAngle
+        flashMenuRotationCounterClockwise: bottomBarBackground.rotationCounterClockwise
+        flashMenuRotationAnimationDuration: bottomBarBackground.rotationAnimationDuration
 
         onFlashMode: {
             camera.flashMode = flashValue;
@@ -108,8 +114,11 @@ Image {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        font.family: theme.fontFamily
-        font.pixelSize: theme.fontPixelSizeLarge
-        color: theme.fontColorNormal
+//        font.family: theme.fontFamily
+//        font.pixelSize: 28 //theme.fontPixelSizeLarge
+
+//        color: theme.fontColorHighlight
+        color: "white"
+        font { pixelSize: 28; weight: Font.Bold }
     }
  }

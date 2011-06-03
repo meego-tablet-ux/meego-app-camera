@@ -6,26 +6,44 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import Qt 4.7
+import QtQuick 1.0
 
 Item {
     id: button
 
-    width: img.width
-    height: img.height
+    width: backgroundImage.width
+    height: backgroundImage.height
 
-    property string source
-    property string activeSource
+    property string iconSource: ""
+    property string activeIconSource: ""
+    property string backgroundSource: ""
+    property string activeBackgroundSource: ""
+
 
     signal clicked (variant mouse)
     signal pressed (variant mouse)
 
     state: "up"
 
+    property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int  rotationAnimationDuration: 0
+    property alias iconScale: iconImage.scale
     Image {
-        id: img
-        source: button.source
+        id: backgroundImage
     }
+
+    Image {
+        id: iconImage
+
+        anchors.centerIn: parent
+
+        smooth: true
+        transformOrigin: Item.Center
+        rotation: rotationAngle
+        Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
+    }
+
 
     MouseArea {
         id: mouse
@@ -43,15 +61,23 @@ Item {
         State {
             name: "up"
             PropertyChanges {
-                target: img
-                source: button.source
+                target: backgroundImage
+                source: backgroundSource
+            }
+            PropertyChanges {
+                target: iconImage
+                source: iconSource
             }
         },
         State {
             name: "down"
             PropertyChanges {
-                target: img
-                source: button.activeSource
+                target: backgroundImage
+                source: activeBackgroundSource
+            }
+            PropertyChanges {
+                target: iconImage
+                source: activeIconSource
             }
         }
     ]

@@ -500,10 +500,10 @@ ViewFinder::updateCameraState (QCamera::State state)
   QStringList menu;
   _cameraHasAutoFlash = _camera->exposure ()->isFlashModeSupported (QCameraExposure::FlashAuto);
   if (_cameraHasAutoFlash) {
-    menu.append (tr ("Auto"));
+    menu.append ("Auto");//menu.append (tr ("Auto"));
   }
-  menu.append (tr ("Off"));
-  menu.append (tr ("On"));
+  menu.append ("Off");//  menu.append (tr ("Off"));
+  menu.append ("On");//menu.append (tr ("On"));
   _flashModel = QVariant::fromValue (menu);
   emit flashModelChanged ();
 }

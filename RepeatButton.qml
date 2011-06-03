@@ -14,6 +14,10 @@ Item {
     property string source
     property string activeSource
 
+    property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int rotationAnimationDuration: 0
+
     width: img.width
     height: img.height
 
@@ -35,6 +39,10 @@ Item {
         source: button.source
 
         visible: true
+
+        transformOrigin: Item.Center
+        rotation: rotationAngle
+        Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
     }
 
     Image {
@@ -45,6 +53,10 @@ Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+
+        transformOrigin: Item.Center
+        rotation: rotationAngle
+        Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
     }
 
     MouseArea {

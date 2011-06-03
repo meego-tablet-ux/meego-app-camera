@@ -2,7 +2,7 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 	
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -17,6 +17,10 @@ Column {
     //visible: !camera.recording
     anchors.left: parent.left
     anchors.right: parent.right
+
+    property int rotationAngle: 0
+    property bool rotationCounterClockwise: false
+    property int rotationAnimationDuration: 0
 
     Image {
         id: topBarBackground
@@ -39,7 +43,9 @@ Column {
                 camera.state = state;
             }
 
-
+            rotationAngle: container.rotationAngle
+            rotationCounterClockwise: container.rotationCounterClockwise
+            rotationAnimationDuration: container.rotationAnimationDuration
         }
 
         PhotoReviewBin {
@@ -48,6 +54,10 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             source: camera.imageLocation
             type: camera.state
+
+            transformOrigin: Item.Center
+            rotation: rotationAngle
+            Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
             Launcher {
                 id: processLauncher;

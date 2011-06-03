@@ -12,34 +12,38 @@ import MeeGo.Components 0.1
 PushButton {
     id: button
 
+    property int flashMenuRotationAngle: 0
+    property bool flashMenuRotationCounterClockwise: false
+    property int  flashMenuRotationAnimationDuration: 0
+
+
     width: 116
+    height: parent.height
 
     property int value : 1
 
     signal flashMode (int flashValue);
 
-    Row {
-        id: row
+    Image {
+        id: flashImage
+        anchors.centerIn: parent
 
-        x: 10
-        width: parent.width - 20
-        height: parent.height
-        spacing: 3
+        anchors.verticalCenter: parent.verticalCenter
 
-        Image {
-            id: flashImage
+        transformOrigin: Item.Center
+        rotation: flashMenuRotationAngle
+        Behavior on rotation { RotationAnimation { duration: flashMenuRotationAnimationDuration; direction: flashMenuRotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
-            anchors.verticalCenter: parent.verticalCenter
-
-            source: "image://themedimage/images/camera/camera_icn_flash_dn";
-        }
-
-        Text {
-            width: row.width - flashImage.width - 3
-            anchors.verticalCenter: parent.verticalCenter
-            text: actionMenu.model[camera.flashMode]
-            color: "white"
-            font { pixelSize: 28; weight: Font.Bold }
+        property string modename: camera.flashModel[camera.flashMode]
+        source:{
+            if(modename == "Auto")
+                return "image://themedimage/icons/internal/camera-flash-auto"
+            else if(modename == "On")
+                return "image://themedimage/icons/internal/camera-flash-on"
+            else if(modename == "Off")
+                return "image://themedimage/icons/internal/camera-flash-off"
+            else
+                return ""
         }
     }
 
@@ -53,11 +57,48 @@ PushButton {
     ContextMenu {
         id: flashMenu
 
-        content: ActionMenu {
-            id: actionMenu
+        content: ListView {
             model: camera.flashModel
-            onTriggered: {
-                camera.flashMode = index
+            width: 150
+            height: 50 * model.length
+            anchors.fill: parent
+            interactive: false
+            delegate: PushButton {
+                width: 150
+                height: 50
+                anchors.horizontalCenter: parent.horizontalCenter
+                rotationAngle: flashMenuRotationAngle
+                rotationCounterClockwise: flashMenuRotationCounterClockwise
+                rotationAnimationDuration: flashMenuRotationAnimationDuration
+                property int elementIndex: index
+                property string name: modelData
+
+                iconSource:{
+                    if(name == "Auto")
+                        return "image://themedimage/icons/internal/camera-flash-auto"
+                    else if(name == "On")
+                        return "image://themedimage/icons/internal/camera-flash-on"
+                    else if(name == "Off")
+                        return "image://themedimage/icons/internal/camera-flash-off"
+                    else
+                        return ""
+                }
+                activeIconSource:{
+                    if(name == "Auto")
+                        return "image://themedimage/icons/internal/camera-flash-auto-active"
+                    else if(name == "On")
+                        return "image://themedimage/icons/internal/camera-flash-on-active"
+                    else if(name == "Off")
+                        return "image://themedimage/icons/internal/camera-flash-off-active"
+                    else
+                        return ""
+                }
+
+                onClicked: {
+                    camera.flashMode = elementIndex;
+                    flashMenu.hide();
+                }
+
             }
         }
     }
