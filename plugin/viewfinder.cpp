@@ -15,6 +15,7 @@
 #include <QtLocation/QGeoCoordinate>
 #include <QFutureWatcher>
 #include <QFuture>
+#include <QSettings>
 
 #include "cameraifadaptor.h"
 #include "viewfinder.h"
@@ -145,6 +146,53 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   _positionSource->startUpdates ();
 
   photoThread.start();
+
+
+  // retrieve pictures and videos location from user-dirs.dirs or user-dirs.defaults files
+  QString strUserDirsFile(QDir::homePath() + "/.config/user-dirs.dirs");
+  if (QFile::exists(strUserDirsFile)) {
+    QSettings userDirs(strUserDirsFile, QSettings::NativeFormat);
+    _strPicturesDir = QString::fromUtf8(userDirs.value("XDG_PICTURES_DIR").toByteArray());
+    _strVideosDir = QString::fromUtf8(userDirs.value("XDG_VIDEOS_DIR").toByteArray());
+
+  }
+
+  if (_strPicturesDir.isEmpty() || _strVideosDir.isEmpty()) {
+    strUserDirsFile = "/etc/xdg/user-dirs.defaults";
+    if (QFile::exists(strUserDirsFile)) {
+      QSettings userDirs(strUserDirsFile, QSettings::NativeFormat);
+      if (_strPicturesDir.isEmpty())
+        _strPicturesDir = QString::fromUtf8(userDirs.value("PICTURES").toByteArray());
+      if (_strVideosDir.isEmpty())
+        _strVideosDir = QString::fromUtf8(userDirs.value("VIDEOS").toByteArray());
+    }
+
+    if (_strPicturesDir.isEmpty())
+      _strPicturesDir = "Pictures";
+    if (_strVideosDir.isEmpty())
+      _strVideosDir = "Videos";
+  }
+
+  _strPicturesDir.replace("$HOME/", "");
+  _strVideosDir.replace("$HOME/", "");
+
+  _strPicturesDir += "/Camera";
+  _strVideosDir += "/Camera";
+
+  if (QDir::home().mkpath (_strPicturesDir) == false) {
+#ifdef SHOW_DEBUG
+    qDebug () << "Error making camera directory: " << QDir::homePath () << "/Pictures/Camera";
+#endif
+  }
+
+  if (QDir::home().mkpath (_strVideosDir) == false) {
+#ifdef SHOW_DEBUG
+    qDebug () << "Error making camera directory: " << QDir::homePath () << "/Pictures/Camera";
+#endif
+  }
+
+  _strPicturesDir.prepend(QDir::homePath() + '/');
+  _strVideosDir.prepend(QDir::homePath() + '/');
 }
 
 ViewFinder::~ViewFinder ()
@@ -749,7 +797,7 @@ ViewFinder::generateTemporaryImageFilename () const
 QString
 ViewFinder::generateImageFilename () const
 {
-  QString path = QDir::homePath ().append ("/Pictures/Camera/");
+  QString path(picturesDir() + '/');
 
   return path.append(generateBaseImageFilename ());
 }
@@ -765,7 +813,7 @@ ViewFinder::generateBaseImageFilename () const
 QString
 ViewFinder::generateVideoFilename () const
 {
-  QString path = QDir::homePath ().append ("/Videos/Camera/");
+  QString path(videosDir() + '/');
   QDateTime now = QDateTime::currentDateTime ();
 
   return path.append (now.toString ("yyyy.MM.dd-hh.mm.ss")).append (".%1").arg(_videoFilenameExtension);
