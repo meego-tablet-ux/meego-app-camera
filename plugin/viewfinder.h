@@ -100,6 +100,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (bool cameraHasFlash READ cameraHasFlash NOTIFY cameraHasFlashChanged);
     bool cameraHasFlash () { return _cameraHasFlash; }
 
+    Q_PROPERTY (int currentOrientation READ currentOrientation WRITE setCurrentOrientation NOTIFY currentOrientationChanged);
+    int currentOrientation() { return _currentOrientation; }
+
   Q_SIGNALS:
     void readyChanged ();
     void flashModeChanged ();
@@ -120,6 +123,8 @@ class ViewFinder : public QDeclarativeItem
     void imageCaptured ();
     void noSpaceOnDevice ();
 
+    void currentOrientationChanged();
+
   public slots:
     Q_INVOKABLE void takePhoto ();
     Q_INVOKABLE void startRecording ();
@@ -127,6 +132,7 @@ class ViewFinder : public QDeclarativeItem
     Q_INVOKABLE bool changeCamera ();
     Q_INVOKABLE void enterStandbyMode ();
     Q_INVOKABLE void leaveStandbyMode ();
+    Q_INVOKABLE void setCurrentOrientation(int orientation);
 
   protected:
     virtual void geometryChanged (const QRectF &newGeometry,
@@ -207,6 +213,8 @@ class ViewFinder : public QDeclarativeItem
     CapturePhotoThread photoThread;
 
     QString _strPicturesDir, _strVideosDir;
+
+    int _currentOrientation;
 };
 
 #endif

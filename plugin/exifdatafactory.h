@@ -12,7 +12,7 @@ QTM_USE_NAMESPACE
 class ExifDataFactory
 {
 public:
-    ExifDataFactory(const QGeoCoordinate &coord);
+    ExifDataFactory(const QGeoCoordinate &coord, int orientation);
     virtual ~ExifDataFactory();
     QByteArray data();
 

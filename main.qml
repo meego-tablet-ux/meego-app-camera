@@ -92,6 +92,8 @@ Window {
 
                 anchors.fill: parent
 
+                currentOrientation: sensorOrientation
+
                 rotateAngle: 0
                 zoom: zoomer.zoomLevel
 
