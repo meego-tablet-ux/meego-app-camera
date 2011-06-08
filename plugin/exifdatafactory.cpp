@@ -15,7 +15,7 @@ ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation) :
     m_order = exif_data_get_byte_order(m_data);
 
     //if orientation not in range do nothing
-    if(orientation > 0 && orientation < 5)
+    if(orientation >= 0 && orientation < 4)
     {
         ExifContent *orientationContent = exif_content_new();
         m_data->ifd[EXIF_IFD_0] = orientationContent;
