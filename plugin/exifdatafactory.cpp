@@ -30,9 +30,9 @@ ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation) :
         switch(orientation)
         {
         case 1: val=1; break;
-        case 2: val=5; break;
+        case 0: val=5; break;
         case 3: val=3; break;
-        case 4: val=7; break;
+        case 2: val=7; break;
         default: val = 1;
         }
 
