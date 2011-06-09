@@ -32,9 +32,9 @@ ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation, b
             switch(orientation)
             {
             case 1: val=2; break;
-            case 0: val=8; break;
+            case 0: val=7; break;
             case 3: val=4; break;
-            case 2: val=6; break;
+            case 2: val=5; break;
             default: val = 2;
             }
         }
@@ -43,9 +43,9 @@ ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation, b
             switch(orientation)
             {
             case 1: val=1; break;
-            case 0: val=5; break;
+            case 0: val=8; break;
             case 3: val=3; break;
-            case 2: val=7; break;
+            case 2: val=6; break;
             default: val = 1;
             }
         }
