@@ -7,7 +7,7 @@
 #include <QRegExp>
 #include <math.h>
 
-ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation) :
+ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation, bool frontFacingCamera) :
     m_coord(coord), m_serialized_data(0), m_serialized_data_size(0)
 {
     m_mem = exif_mem_new_default();
@@ -27,13 +27,27 @@ ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation) :
         orientationEntry->data = (unsigned char*)exif_mem_alloc(m_mem, orientationEntry->size);
 
         ExifShort val;
-        switch(orientation)
+        if(frontFacingCamera)
         {
-        case 1: val=1; break;
-        case 0: val=5; break;
-        case 3: val=3; break;
-        case 2: val=7; break;
-        default: val = 1;
+            switch(orientation)
+            {
+            case 1: val=2; break;
+            case 0: val=8; break;
+            case 3: val=4; break;
+            case 2: val=6; break;
+            default: val = 2;
+            }
+        }
+        else
+        {
+            switch(orientation)
+            {
+            case 1: val=1; break;
+            case 0: val=5; break;
+            case 3: val=3; break;
+            case 2: val=7; break;
+            default: val = 1;
+            }
         }
 
         exif_set_short(orientationEntry->data,m_order,val);

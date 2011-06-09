@@ -24,9 +24,9 @@
 #include "jpegexiferizer.h"
 
 namespace  {
-QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord, int orientation)
+QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord, int orientation, bool frontFacingCamera)
 {
-    ExifDataFactory *factory = new ExifDataFactory(coord, orientation);
+    ExifDataFactory *factory = new ExifDataFactory(coord, orientation, frontFacingCamera);
     JpegExiferizer exifer(tmpPath, destPath);
     exifer.setExifDataFactory(factory);
     exifer.doIt();
@@ -576,7 +576,7 @@ ViewFinder::imageSaved (int id, const QString &filename)
   qDebug () << "Image saved: " << id << " - " << filename;
 #endif
 
-  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, _lastPosition.coordinate(), currentOrientation());
+  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, _lastPosition.coordinate(), currentOrientation(), (currentCamera() == (cameraCount()-1)) );
   _futureWatcher.setFuture(future);
 
   //completeImage (realFileName);
