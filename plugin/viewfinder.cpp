@@ -121,7 +121,9 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   // Try to restore the last used camera
   QByteArray strDev(_settings->cameraDevice());
   int nFind;
-  if (strDev.isEmpty() || 0 <= (nFind = devs.indexOf(strDev))) {
+
+  // !!!!!!!! camera selection feature is disabled for now because if looks like not working properly in lower level
+  if (1 || strDev.isEmpty() || 0 <= (nFind = devs.indexOf(strDev))) {
       // previously used camera can't be found - set to the first available
       strDev = _cameraCount ? devs[0] : "";
       _settings->setCameraDevice(strDev);

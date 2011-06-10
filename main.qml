@@ -73,6 +73,7 @@ Window {
                     setValue("Camera.noSpace", noSpaceDialogComponent.visible)
                     setValue("Camera.thumbnail", camera.imageLocation)
                     setValue("Camera.zoom", camera.zoom)
+                    sync()
                 }
                 Component.onCompleted: {
                     if (restoreRequired) {
@@ -81,11 +82,11 @@ Window {
                         if(bNoSpaceVisible == "true") {
                             noSpaceDialogComponent.show();
                         }
-                    }
 
-                    var thumbnail = value("Camera.thumbnail", "")
-                    if (thumbnail != "") {
-                        camera.imageLocation = thumbnail
+                        var thumbnail = value("Camera.thumbnail", "")
+                        if (thumbnail != "") {
+                            camera.imageLocation = thumbnail
+                        }
                     }
                 }
             }
