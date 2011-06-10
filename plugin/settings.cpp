@@ -13,6 +13,7 @@
 
 #define FLASHMODE_KEY "/meego/app/camera/flashmode"
 #define CAPTUREMODE_KEY "/meego/app/camera/capturemode"
+#define CAMERADEVICE_KEY "/meego/app/camera/device"
 
 // Private undocumented keys
 #define VIDEO_FPS_KEY "/meego/app/camera/video-fps"
@@ -49,6 +50,19 @@ Settings::Settings () :
     error = NULL;
   }
 
+  gchar* s = gconf_client_get_string (_client, CAMERADEVICE_KEY, &error);
+  if (error != NULL) {
+#ifdef SHOW_DEBUG
+    qDebug () << "Error getting camera device:" << error->message;
+#endif
+    g_error_free (error);
+    error = NULL;
+  }
+  else {
+    _strCameraDevice = s;
+    g_free(s);
+  }
+
   _videoWidth = gconf_client_get_int
     (_client, VIDEO_RESOLUTION_WIDTH_KEY, &error);
   if (error != NULL) {
@@ -77,6 +91,7 @@ Settings::Settings () :
     g_error_free (error);
     error = NULL;
   }
+
 #ifdef SHOW_DEBUG
   qDebug () << "Settings*************";
   qDebug () << "Flash Mode: " << _flashMode;
@@ -119,3 +134,21 @@ Settings::setCaptureMode (enum ViewFinder::CaptureMode cm)
 
   _captureMode = cm;
 }
+
+void
+Settings::setCameraDevice(const QByteArray & _str)
+{
+  GError *error = NULL;
+
+  gconf_client_set_string (_client, CAMERADEVICE_KEY, _str.data(), &error);
+  if (error != NULL) {
+#ifdef SHOW_DEBUG
+    qDebug () << "Error setting camear device:" << error->message;
+#endif
+    g_error_free (error);
+  }
+
+  _strCameraDevice = _str;
+}
+
+

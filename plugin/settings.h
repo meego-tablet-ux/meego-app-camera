@@ -27,6 +27,9 @@ class Settings : public QObject
     enum ViewFinder::CaptureMode captureMode () { return _captureMode; }
     void setCaptureMode (enum ViewFinder::CaptureMode cm);
 
+    const QByteArray & cameraDevice() const { return _strCameraDevice; }
+    void setCameraDevice(const QByteArray & _str);
+
     double videoFPS () { return _videoFPS; }
     int videoWidth () { return _videoWidth; }
     int videoHeight () { return _videoHeight; }
@@ -37,6 +40,8 @@ class Settings : public QObject
 
     int _videoWidth, _videoHeight;
     double _videoFPS;
+
+    QByteArray _strCameraDevice;
 
     GConfClient *_client;
 };

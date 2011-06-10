@@ -104,7 +104,8 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 #endif
   }
 
-  _cameraCount = QCamera::availableDevices ().count ();
+  QList<QByteArray> devs(QCamera::availableDevices ());
+  _cameraCount = devs.count ();
   emit cameraCountChanged ();
 
   _thumbnailer = new Thumbnailer ();
@@ -117,9 +118,15 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 
   _viewFinder = new QGraphicsVideoItem (this);
 
-  // Set to the first camera in the list
-  // FIXME: Store/restore the last used camera
-  setCamera (QCamera::availableDevices () [0]);
+  // Try to restore the last used camera
+  QByteArray strDev(_settings->cameraDevice());
+  if (strDev.isEmpty() || !devs.contains(strDev)) {
+      // previously used camera can't be found - set to the first available
+      strDev = _cameraCount ? devs[0] : "";
+      _settings->setCameraDevice(strDev);
+  }
+
+  setCamera (strDev);
 
   // Set up a DBus service
   _cameraService = new CameraService;
@@ -436,7 +443,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   _viewFinder->setPos (x, y);
 
   _camera->setViewfinder (_viewFinder);
-  _camera->setCaptureMode (QCamera::CaptureStillImage);
+//  _camera->setCaptureMode (QCamera::CaptureStillImage);
 
   connect (_camera, SIGNAL (stateChanged (QCamera::State)),
            this, SLOT (updateCameraState (QCamera::State)));
@@ -489,11 +496,14 @@ ViewFinder::updateCameraState (QCamera::State state)
 
   if (_canFocus) {
     _maxZoom = _camera->focus()->maximumDigitalZoom() * _camera->focus()->maximumOpticalZoom();
-    emit maxZoomChanged ();
 
     // Recalculate the zoom as relative to the current camera's max zoom
     _camera->focus ()->zoomTo (1.0 + (_zoom * _camera->focus ()->maximumOpticalZoom ()), 1.0);
   }
+  else {
+      _maxZoom = 1.; // zoom not supported
+  }
+  emit maxZoomChanged ();
 
   // Generate the flash menu
   _cameraHasFlash = _camera->exposure ()->isFlashModeSupported (QCameraExposure::FlashOn);
@@ -738,6 +748,9 @@ ViewFinder::captureMode () {
 void
 ViewFinder::setZoom (qreal z)
 {
+  if (!_canFocus || _maxZoom <= 1) // return if zoom is unsupported
+      return;
+
   _zoom = z;
   _camera->focus ()->zoomTo (1.0 + (z * _camera->focus ()->maximumOpticalZoom ()), 1.0);
 
