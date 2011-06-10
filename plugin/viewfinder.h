@@ -84,8 +84,9 @@ class ViewFinder : public QDeclarativeItem
     qreal zoom () { return _zoom; }
     void setZoom (qreal z);
 
-    Q_PROPERTY (QString imageLocation READ imageLocation NOTIFY imageLocationChanged);
+    Q_PROPERTY (QString imageLocation READ imageLocation WRITE setImageLocation NOTIFY imageLocationChanged);
     QString imageLocation () { return _imageLocation; }
+    void setImageLocation(const QString & _str) { _imageLocation = _str; emit imageLocationChanged(); }
 
     Q_PROPERTY (bool canFocus READ canFocus NOTIFY canFocusChanged);
     bool canFocus () { return _canFocus; }

@@ -143,7 +143,8 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 
   connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
   _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
-  _positionSource->startUpdates ();
+  if (_positionSource)
+    _positionSource->startUpdates ();
 
   photoThread.start();
 
@@ -532,7 +533,8 @@ ViewFinder::takePhoto ()
   qDebug () << "Filename: " << filename;
 #endif
 
-  _lastPosition = _positionSource->lastKnownPosition();
+  if (_positionSource)
+    _lastPosition = _positionSource->lastKnownPosition();
 #ifdef SHOW_DEBUG
   qDebug () << "last position: " << _lastPosition;
 #endif
@@ -561,8 +563,7 @@ void ViewFinder::completeImage ()
   qDebug () << "Image completed: " << filename;
 #endif
 
-  _imageLocation = filename;
-  emit imageLocationChanged ();
+  setImageLocation(filename);
 
   _cameraService->emitImageCaptured (filename);
 }

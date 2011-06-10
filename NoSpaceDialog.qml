@@ -15,11 +15,9 @@ ModalDialog {
     title: qsTr ("Memory Full")
     acceptButtonText: qsTr ("Open Photos")
 
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.verticalCenter: parent.verticalCenter
-
     content: Text{
-        width : parent.width
+        anchors.margins: 12
+        anchors.fill: parent
         wrapMode : Text.Wrap
         text: qsTr ("There is no storage space left on the device. To take more photos or video, you may want to delete some existing content.")
     }

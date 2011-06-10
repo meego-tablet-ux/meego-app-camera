@@ -24,6 +24,24 @@ PushButton {
 
     signal flashMode (int flashValue);
 
+    SaveRestoreState {
+        // saves: context menu status
+
+        id: borromBarState
+        onSaveRequired: {
+            setValue("FlashButton.context", flashMenu.visible)
+            sync()
+        }
+        Component.onCompleted: {
+            if (restoreRequired) {
+                var bContextVisible = value("FlashButton.context", 0)
+                if(bContextVisible == "true") {
+                    button.clicked(0);
+                }
+            }
+        }
+    }
+
     Image {
         id: flashImage
         anchors.centerIn: parent

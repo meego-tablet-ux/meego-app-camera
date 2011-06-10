@@ -64,6 +64,34 @@ Window {
 
             fullScreen: true
 
+            SaveRestoreState {
+                // saves: context menu status
+
+                id: cameraPageState
+                onSaveRequired: {
+                    console.log("@@@@@ ", camera.captureMode, "=",camera.state )
+                    setValue("Camera.state", camera.state)
+                    setValue("Camera.noSpace", noSpaceDialogComponent.visible)
+                    setValue("Camera.thumbnail", camera.imageLocation)
+                }
+                Component.onCompleted: {
+                    console.log("@@@@@ !!", camera.captureMode)
+                    if (restoreRequired) {
+ //                        camera.state = value("Camera.state", "photo")
+                        var bNoSpaceVisible = value("Camera.noSpace", 0)
+                        console.log("@@@@@ !!!!!!!!!!!!!!!", camera.captureMode)
+                        if(bNoSpaceVisible == "true") {
+                            noSpaceDialogComponent.show();
+                        }
+                    }
+
+                    var thumbnail = value("Camera.thumbnail", "")
+                    if (thumbnail != "") {
+                        camera.imageLocation = thumbnail
+                    }
+                }
+            }
+
             Connections {
                 target: window
                 onIsActiveWindowChanged: {
@@ -138,7 +166,6 @@ Window {
                 onMaxZoomChanged: {
                     zoomer.visible = (camera.maxZoom > 1.0);
                 }
-
             }
 
             ShutterAnimationComponent {
@@ -269,16 +296,11 @@ Window {
                     }
                 }
             }
+
+            NoSpaceDialog {
+                id: noSpaceDialogComponent
+            }
+
         }
-    }
-
-    Loader {
-        id: dialogLoader
-        width: parent.width
-        height: parent.height + statusBar.height
-    }
-
-    NoSpaceDialog {
-        id: noSpaceDialogComponent
     }
 }
