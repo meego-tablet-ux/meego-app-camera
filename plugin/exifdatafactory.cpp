@@ -7,12 +7,53 @@
 #include <QRegExp>
 #include <math.h>
 
-ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord) :
+ExifDataFactory::ExifDataFactory(const QGeoCoordinate &coord, int orientation, bool frontFacingCamera) :
     m_coord(coord), m_serialized_data(0), m_serialized_data_size(0)
 {
     m_mem = exif_mem_new_default();
     m_data = exif_data_new();
     m_order = exif_data_get_byte_order(m_data);
+
+    //if orientation not in range do nothing
+    if(orientation >= 0 && orientation < 4)
+    {
+        ExifContent *orientationContent = exif_content_new();
+        m_data->ifd[EXIF_IFD_0] = orientationContent;
+        ExifEntry *orientationEntry = exif_entry_new();
+        orientationEntry->tag = (ExifTag)EXIF_TAG_ORIENTATION;
+        orientationEntry->components = 1;
+        orientationEntry->format = EXIF_FORMAT_SHORT;
+        orientationEntry->size = exif_format_get_size(orientationEntry->format);
+        orientationEntry->data = (unsigned char*)exif_mem_alloc(m_mem, orientationEntry->size);
+
+        ExifShort val;
+        if(frontFacingCamera)
+        {
+            switch(orientation)
+            {
+            case 1: val=2; break;
+            case 0: val=7; break;
+            case 3: val=4; break;
+            case 2: val=5; break;
+            default: val = 2;
+            }
+        }
+        else
+        {
+            switch(orientation)
+            {
+            case 1: val=1; break;
+            case 0: val=8; break;
+            case 3: val=3; break;
+            case 2: val=6; break;
+            default: val = 1;
+            }
+        }
+
+        exif_set_short(orientationEntry->data,m_order,val);
+        exif_content_add_entry(orientationContent,orientationEntry);
+    }
+
     if (m_coord.isValid()) {
         m_content = exif_content_new();
 
