@@ -120,10 +120,14 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 
   // Try to restore the last used camera
   QByteArray strDev(_settings->cameraDevice());
-  if (strDev.isEmpty() || !devs.contains(strDev)) {
+  int nFind;
+  if (strDev.isEmpty() || 0 <= (nFind = devs.indexOf(strDev))) {
       // previously used camera can't be found - set to the first available
       strDev = _cameraCount ? devs[0] : "";
       _settings->setCameraDevice(strDev);
+  }
+  else {
+      _currentCamera = nFind;
   }
 
   setCamera (strDev);
@@ -691,7 +695,9 @@ ViewFinder::changeCamera ()
     return true;
   }
 
-  if (setCamera (QCamera::availableDevices ()[nextCamera]) == true) {
+  QByteArray strDev;
+  if (setCamera (strDev = QCamera::availableDevices ()[nextCamera]) == true) {
+      _settings->setCameraDevice(strDev);
     _currentCamera = nextCamera;
 
 #if 0
