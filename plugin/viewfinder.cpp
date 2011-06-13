@@ -710,6 +710,10 @@ ViewFinder::changeCamera ()
 #endif
 
     emit cameraChanged ();
+
+    // set capture mode from settings
+    setCaptureMode(_settings->captureMode ());
+
     return true;
   }
 
