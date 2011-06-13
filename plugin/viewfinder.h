@@ -178,7 +178,7 @@ class ViewFinder : public QDeclarativeItem
     bool setCamera (const QByteArray &cameraDevice);
     void repositionViewFinder (const QRectF &geometry);
 
-    bool _ready;
+    bool _ready, _started;
     int _cameraCount;
     int _currentCamera;
     bool _recording;

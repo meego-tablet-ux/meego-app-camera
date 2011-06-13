@@ -16,6 +16,7 @@
 #include <QFutureWatcher>
 #include <QFuture>
 #include <QSettings>
+#include <QApplication>
 
 #include "cameraifadaptor.h"
 #include "viewfinder.h"
@@ -79,6 +80,7 @@ bool compare_sizes (const QSize &s1,
 ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   : QDeclarativeItem (_parent),
     _ready (false),
+    _started(false),
     _cameraCount (0),
     _currentCamera (0),
     _recording (false),
@@ -122,8 +124,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   QByteArray strDev(_settings->cameraDevice());
   int nFind;
 
-  // !!!!!!!! camera selection feature is disabled for now because if looks like not working properly in lower level
-  if (1 || strDev.isEmpty() || 0 <= (nFind = devs.indexOf(strDev))) {
+  if (strDev.isEmpty() || 0 > (nFind = devs.indexOf(strDev))) {
       // previously used camera can't be found - set to the first available
       strDev = _cameraCount ? devs[0] : "";
       _settings->setCameraDevice(strDev);
@@ -449,7 +450,6 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   _viewFinder->setPos (x, y);
 
   _camera->setViewfinder (_viewFinder);
-//  _camera->setCaptureMode (QCamera::CaptureStillImage);
 
   connect (_camera, SIGNAL (stateChanged (QCamera::State)),
            this, SLOT (updateCameraState (QCamera::State)));
@@ -479,6 +479,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   mediaRecorderStateChanged (_mediaRecorder->state ());
 
   _camera->start ();
+  _started = true; // set the flag to avoid starting camera second time
 
   // Fire this on an idle so that the signal will be picked up when the
   // object has been created
@@ -989,16 +990,20 @@ ViewFinder::metadataAvailableChanged (bool avail)
 void
 ViewFinder::enterStandbyMode ()
 {
-  if (_camera) {
+  // check that camera is started and the application actualy lost focus
+  if (_camera && _started && 0 == qApp->activeWindow ()) {
     _camera->stop ();
+    _started = false;
   }
 }
 
 void
 ViewFinder::leaveStandbyMode ()
 {
-  if (_camera) {
+  // don't start camera if it's already started
+  if (_camera && !_started) {
     _camera->start ();
+    _started = true;
   }
 }
 
