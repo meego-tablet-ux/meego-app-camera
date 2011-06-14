@@ -119,6 +119,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
                                        const QString &)));
 
   _viewFinder = new QGraphicsVideoItem (this);
+  _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
 
   // Try to restore the last used camera
   QByteArray strDev(_settings->cameraDevice());
