@@ -479,9 +479,6 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
 
-  _camera->start ();
-  _started = true; // set the flag to avoid starting camera second time
-
   // Fire this on an idle so that the signal will be picked up when the
   // object has been created
   QTimer::singleShot(0, this, SLOT(checkSpace ()));
@@ -711,6 +708,13 @@ ViewFinder::changeCamera ()
 #endif
 
     emit cameraChanged ();
+
+    // set capture mode from settings
+    _camera->setCaptureMode (Video != _settings->captureMode () ? QCamera::CaptureStillImage : QCamera::CaptureVideo);
+    _camera->start ();
+    _started = true; // set the flag to avoid starting camera second time
+
+
     return true;
   }
 
@@ -1002,7 +1006,7 @@ void
 ViewFinder::leaveStandbyMode ()
 {
   // don't start camera if it's already started
-  if (_camera && !_started) {
+  if (_camera && !_started && 0 != qApp->activeWindow ()) {
     _camera->start ();
     _started = true;
   }
