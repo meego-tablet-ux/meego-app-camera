@@ -119,7 +119,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
                                        const QString &)));
 
   _viewFinder = new QGraphicsVideoItem (this);
-  //_viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
+  _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
 
   // Try to restore the last used camera
   QByteArray strDev(_settings->cameraDevice());
@@ -332,10 +332,10 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 #ifdef SHOW_DEBUG
     qDebug () << "Using requested FPS: " << _settings->videoFPS ();
 #endif
-  } else if(_mediaRecorder->supportedFrameRates ().contains(30)) {
-    videoSettings.setFrameRate (30);
+  } else if(_mediaRecorder->supportedFrameRates ().contains(20)) {
+    videoSettings.setFrameRate (20);
 #ifdef SHOW_DEBUG
-    qDebug () << "Using preferred FPS: 30";
+    qDebug () << "Using preferred FPS: 20";
 #endif
   }
   else
