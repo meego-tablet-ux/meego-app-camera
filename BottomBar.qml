@@ -77,7 +77,7 @@ Image {
         rotationCounterClockwise: bottomBarBackground.rotationCounterClockwise
         rotationAnimationDuration: bottomBarBackground.rotationAnimationDuration
 
-       // visible: camera.cameraCount > 1
+        visible: camera.cameraCount > 1
         onClicked: {
             camera.changeCamera ();
         }

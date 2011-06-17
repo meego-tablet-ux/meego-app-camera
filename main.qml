@@ -122,7 +122,6 @@ Window {
                 currentOrientation: sensorOrientation
 
                 onImageCapturedSig: {
-                    console.debug("ADSASASASASASAS")
                     shutterAnimation.startOpeningAnimation();
                 }
 

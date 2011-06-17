@@ -137,25 +137,25 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   setCamera (strDev);
 
   // Set up a DBus service
-  _cameraService = new CameraService;
-  new CameraIfAdaptor (_cameraService);
+//  _cameraService = new CameraService;
+//  new CameraIfAdaptor (_cameraService);
 
-  QDBusConnection connection = QDBusConnection::sessionBus ();
-  bool ret = connection.registerService ("com.meego.app.camera");
-  if (ret == false) {
-#ifdef SHOW_DEBUG
-    qDebug () << "Error registering service";
-#endif
-    return;
-  }
+//  QDBusConnection connection = QDBusConnection::sessionBus ();
+//  bool ret = connection.registerService ("com.meego.app.camera");
+//  if (ret == false) {
+//#ifdef SHOW_DEBUG
+//    qDebug () << "Error registering service";
+//#endif
+//    return;
+//  }
 
-  ret = connection.registerObject ("/", _cameraService);
-  if (ret == false) {
-#ifdef SHOW_DEBUG
-    qDebug () << "Error registering object";
-#endif
-    return;
-  }
+//  ret = connection.registerObject ("/", _cameraService);
+//  if (ret == false) {
+//#ifdef SHOW_DEBUG
+//    qDebug () << "Error registering object";
+//#endif
+//    return;
+//  }
 
   connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
   _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
@@ -570,7 +570,7 @@ ViewFinder::imageCaptured (int id, const QImage &preview)
   qDebug () << "Image captured: " << id;
 #endif
 
-  emit imageCapturedSig ();
+  //emit imageCapturedSig ();
 }
 
 void ViewFinder::completeImage ()
@@ -582,22 +582,23 @@ void ViewFinder::completeImage ()
 
   setImageLocation(filename);
 
-  _cameraService->emitImageCaptured (filename);
+  //_cameraService->emitImageCaptured (filename);
 }
 
 void
 ViewFinder::imageSaved (int id, const QString &filename)
 {
-  QString realFileName = generateImageFilename();
+
+    emit imageCapturedSig();
+
+    QString realFileName = generateImageFilename();
 #ifdef SHOW_DEBUG
   qDebug () << "Image saved: " << id << " - " << filename;
 #endif
 
-  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, _lastPosition.coordinate(), currentOrientation(), (currentCamera() == (cameraCount()-1)) );
+  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, /*_lastPosition.coordinate()*/ QGeoCoordinate(2,2,2), currentOrientation(), (currentCamera() == (cameraCount()-1)) );
   _futureWatcher.setFuture(future);
 
-  //completeImage (realFileName);
-  emit imageCapturedSig();
 }
 
 void
