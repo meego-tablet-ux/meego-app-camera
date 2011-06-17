@@ -226,6 +226,7 @@ ViewFinder::~ViewFinder ()
   delete _audioSource;
   delete _mediaRecorder;
   delete _imageCapture;
+
   delete _camera;
   delete _thumbnailer;
 }
@@ -569,7 +570,7 @@ ViewFinder::imageCaptured (int id, const QImage &preview)
   qDebug () << "Image captured: " << id;
 #endif
 
-  emit imageCaptured ();
+  emit imageCapturedSig ();
 }
 
 void ViewFinder::completeImage ()
@@ -596,6 +597,7 @@ ViewFinder::imageSaved (int id, const QString &filename)
   _futureWatcher.setFuture(future);
 
   //completeImage (realFileName);
+  emit imageCapturedSig();
 }
 
 void

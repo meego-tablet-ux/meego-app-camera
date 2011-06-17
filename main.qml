@@ -121,6 +121,11 @@ Window {
 
                 currentOrientation: sensorOrientation
 
+                onImageCapturedSig: {
+                    console.debug("ADSASASASASASAS")
+                    shutterAnimation.startOpeningAnimation();
+                }
+
                 rotateAngle: 0
                 zoom: zoomer.zoomLevel
 
@@ -250,7 +255,7 @@ Window {
                 activeBackgroundSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onPressed: {
-                    shutterAnimation.start();
+                    shutterAnimation.startClosingAnimation();
                     camera.takePhoto();
                 }
             }

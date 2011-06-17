@@ -2,7 +2,7 @@
 #define SHUTTERANIMATIONCOMPONENT_H
 
 #include <QtDeclarative/QDeclarativeItem>
-#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
 #include "shutterslice.h"
 
 class ShutterAnimationComponent : public QDeclarativeItem
@@ -23,7 +23,8 @@ public:
 
     virtual void componentComplete();
 
-    Q_INVOKABLE void start();
+    Q_INVOKABLE void startClosingAnimation();
+    Q_INVOKABLE void startOpeningAnimation();
 
 signals:
     void sizeChanged();
@@ -38,7 +39,8 @@ protected slots:
 
 private:
     qreal m_size;
-    QParallelAnimationGroup animationGroup;
+    QPropertyAnimation *closingAnimation;
+    QPropertyAnimation *openingAnimation;
     QList<ShutterSlice*> shList;
 };
 

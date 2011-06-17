@@ -21,7 +21,19 @@ ShutterAnimationComponent::ShutterAnimationComponent(QDeclarativeItem *parent):
 
     // setFlag(ItemHasNoContents, false);
     setVisible(false);
-    connect(&animationGroup, SIGNAL(finished()), this, SLOT(animationEnded()));
+
+    closingAnimation = new QPropertyAnimation(this,"angle");
+    closingAnimation->setDuration(200);
+    closingAnimation->setKeyValueAt(0,90.0);
+    closingAnimation->setKeyValueAt(1.0, 0.0);
+
+    openingAnimation = new QPropertyAnimation(this, "angle");
+    openingAnimation->setDuration(200);
+    openingAnimation->setKeyValueAt(0.0, 0.0);
+    openingAnimation->setKeyValueAt(1.0, 90.0);
+
+    //connect(closingAnimation, SIGNAL(finished()), this, SLOT(animationEnded()));
+    //connect(openingAnimation, SIGNAL(finished()), this, SLOT(animationEnded()));
 }
 
 ShutterAnimationComponent::~ShutterAnimationComponent()
@@ -50,21 +62,12 @@ void ShutterAnimationComponent::componentComplete()
 
     qreal incrementAngle = 36;
 
-
     qreal b = r;
     QPolygonF poly;
     poly << QPointF(0,0) << QPointF(0,r) << QPointF(b,r) << QPointF(0,0);
 
 
-  //  QPixmap px = QPixmap(":/images/camera-bg-triangle.png").scaled(b,r,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 
-    QPropertyAnimation *anim = new QPropertyAnimation(this,"angle");
-    anim->setDuration(3500);
-    anim->setKeyValueAt(0,90.0);
-    anim->setKeyValueAt(0.15, 0.0);
-    anim->setKeyValueAt(0.8, 0.0);
-    anim->setKeyValueAt(1,90.0);
-    animationGroup.addAnimation(anim);
     int i=0;
     for (qreal angle = 0.0; angle < 360; angle += incrementAngle, i++) {
 
@@ -73,7 +76,6 @@ void ShutterAnimationComponent::componentComplete()
         polyItem->setPen(QPen(Qt::black));
         polyItem->setBrush(QColor("gray").darker().darker());
 
-//        QGraphicsPixmapItem *polyItem = new QGraphicsPixmapItem(px,this);
        ShutterSlice *sh= new ShutterSlice(r,angle,polyItem,boundingRect());
        shList.append(sh);
 
@@ -82,11 +84,20 @@ void ShutterAnimationComponent::componentComplete()
     }
 }
 
-void ShutterAnimationComponent::start()
+void ShutterAnimationComponent::startClosingAnimation()
 {
+//    if(openingAnimation->state() == QPropertyAnimation::Running)
+//        openingAnimation->stop();
     setVisible(true);
-    animationGroup.start();
+    closingAnimation->start();
+}
 
+void ShutterAnimationComponent::startOpeningAnimation()
+{
+//    if(closingAnimation->state() == QPropertyAnimation::Running)
+//        closingAnimation->stop();
+    //setVisible(true);
+    openingAnimation->start();
 }
 
 void ShutterAnimationComponent::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
@@ -102,6 +113,7 @@ void ShutterAnimationComponent::animationEnded()
 {
     setVisible(false);
 }
+
 void ShutterAnimationComponent::setAngle(qreal angle)
 {
 foreach (ShutterSlice *slice, shList) {

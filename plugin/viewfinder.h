@@ -121,7 +121,7 @@ class ViewFinder : public QDeclarativeItem
     void flashModelChanged ();
     void cameraHasFlashChanged ();
 
-    void imageCaptured ();
+    void imageCapturedSig ();
     void noSpaceOnDevice ();
 
     void currentOrientationChanged();
