@@ -596,7 +596,7 @@ ViewFinder::imageSaved (int id, const QString &filename)
   qDebug () << "Image saved: " << id << " - " << filename;
 #endif
 
-  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, /*_lastPosition.coordinate()*/ QGeoCoordinate(2,2,2), currentOrientation(), (currentCamera() == (cameraCount()-1)) );
+  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, _lastPosition.coordinate(), currentOrientation(), (currentCamera() == (cameraCount()-1)) );
   _futureWatcher.setFuture(future);
 
 }
