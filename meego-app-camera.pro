@@ -9,7 +9,10 @@ OTHER_FILES += $${QML_FILES}
 qmlfiles.files += $${QML_FILES}
 qmlfiles.path += $$INSTALL_ROOT/usr/share/$$TARGET
 
-INSTALLS += qmlfiles
+desktopfile.files += meego-app-camera.desktop
+desktopfile.path = $$INSTALL_ROOT/usr/share/applications
+
+INSTALLS += qmlfiles desktopfile
 
 PROJECT_NAME = meego-app-camera
 
