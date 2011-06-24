@@ -17,6 +17,7 @@
 #include <QFuture>
 #include <QSettings>
 #include <QApplication>
+#include <QFile>
 
 #include "cameraifadaptor.h"
 #include "viewfinder.h"
@@ -25,6 +26,7 @@
 #include "jpegexiferizer.h"
 
 namespace  {
+
 QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord, int orientation, bool frontFacingCamera)
 {
     ExifDataFactory *factory = new ExifDataFactory(coord, orientation, frontFacingCamera);
@@ -33,6 +35,7 @@ QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord, int o
     exifer.doIt();
 
     delete factory;
+    QFile::remove(tmpPath);
     return destPath;
 }
 
@@ -80,7 +83,7 @@ bool compare_sizes (const QSize &s1,
 ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   : QDeclarativeItem (_parent),
     _ready (false),
-    _started(false),
+    _started(false), _init(true),
     _cameraCount (0),
     _currentCamera (0),
     _recording (false),
@@ -110,14 +113,6 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   _cameraCount = devs.count ();
   emit cameraCountChanged ();
 
-  _thumbnailer = new Thumbnailer ();
-  connect (_thumbnailer, SIGNAL (created (const QString &, const QString &)),
-           this, SLOT (thumbnailCreated (const QString &, const QString &)));
-  connect (_thumbnailer, SIGNAL (error (const QStringList &, const int &,
-                                        const QString &)),
-           this, SLOT (thumbnailError (const QStringList &, const int &,
-                                       const QString &)));
-
   _viewFinder = new QGraphicsVideoItem (this);
   _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
 
@@ -135,6 +130,22 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   }
 
   setCamera (strDev);
+
+  qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
+  connect(&photoThread, SIGNAL(lastCoordinate(QGeoCoordinate)), this, SLOT(setLastCoordinate(QGeoCoordinate)));
+  photoThread.start();
+}
+
+
+void ViewFinder::initExtra()
+{
+  _thumbnailer = new Thumbnailer ();
+  connect (_thumbnailer, SIGNAL (created (const QString &, const QString &)),
+           this, SLOT (thumbnailCreated (const QString &, const QString &)));
+  connect (_thumbnailer, SIGNAL (error (const QStringList &, const int &,
+                                        const QString &)),
+           this, SLOT (thumbnailError (const QStringList &, const int &,
+                                       const QString &)));
 
   // Set up a DBus service
 //  _cameraService = new CameraService;
@@ -158,12 +169,6 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 //  }
 
   connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
-  _positionSource = QGeoPositionInfoSource::createDefaultSource (this);
-  if (_positionSource)
-    _positionSource->startUpdates ();
-
-  photoThread.start();
-
 
   // retrieve pictures and videos location from user-dirs.dirs or user-dirs.defaults files
   QString strUserDirsFile(QDir::homePath() + "/.config/user-dirs.dirs");
@@ -272,10 +277,10 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     qDebug () << "Metadata is not available";
 
   }
-#endif
 
   connect (_camera, SIGNAL (metaDataAvailableChanged (bool)),
            this, SLOT (metadataAvailableChanged (bool)));
+#endif
 
   _audioSource = new QAudioCaptureSource (_camera);
 
@@ -480,9 +485,12 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
 
+  _camera->start ();
+  _started = true;
+
   // Fire this on an idle so that the signal will be picked up when the
   // object has been created
-  QTimer::singleShot(0, this, SLOT(checkSpace ()));
+  QTimer::singleShot(1000, this, SLOT(checkSpace ()));
   return true;
 }
 
@@ -550,12 +558,6 @@ ViewFinder::takePhoto ()
   qDebug () << "Filename: " << filename;
 #endif
 
-  if (_positionSource)
-    _lastPosition = _positionSource->lastKnownPosition();
-#ifdef SHOW_DEBUG
-  qDebug () << "last position: " << _lastPosition;
-#endif
-
   // FIXME: Use toUTF8?
   //_imageCapture->capture (filename.toAscii ());
   photoThread.takePhoto(filename,_imageCapture);
@@ -596,7 +598,7 @@ ViewFinder::imageSaved (int id, const QString &filename)
   qDebug () << "Image saved: " << id << " - " << filename;
 #endif
 
-  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, _lastPosition.coordinate(), currentOrientation(), (currentCamera() == (cameraCount()-1)) );
+  QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, m_lastCoordinate, currentOrientation(), (currentCamera() == (cameraCount()-1)) );
   _futureWatcher.setFuture(future);
 
 }
@@ -998,6 +1000,12 @@ ViewFinder::metadataAvailableChanged (bool avail)
 void
 ViewFinder::enterStandbyMode ()
 {
+  if (_init) {
+    _init = false;
+    QTimer::singleShot(0, this, SLOT(initExtra()));
+    return;
+  }
+
   // check that camera is started and the application actualy lost focus
   if (_camera && _started && 0 == qApp->activeWindow ()) {
     _camera->stop ();
