@@ -8,15 +8,22 @@
 
 #include <QProcess>
 #include <QObject>
+#include "uxdaemoninterface.h"
 
 class Launcher : public QObject
 {
     Q_OBJECT;
 
   public:
-    Launcher (QObject *parent = 0): QObject(parent) {}
-
-    Q_INVOKABLE void launch (QString cmd) {
-        QProcess::startDetached (cmd);
+    Launcher (QObject *parent = 0): QObject(parent)
+    {
+        uxDaemonInterface = new com::lockstatus::query("com.lockstatus", "/query", QDBusConnection::sessionBus(), this);
     }
+
+    Q_INVOKABLE void launch (QString desktopFilePath, QString cmd = "", QString cdata = "" ) {
+        uxDaemonInterface->launchDesktopByName(desktopFilePath, cmd, cdata);
+    }
+
+private:
+    com::lockstatus::query *uxDaemonInterface;
 };

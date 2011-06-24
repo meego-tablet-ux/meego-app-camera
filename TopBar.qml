@@ -21,6 +21,7 @@ Column {
     property int rotationAngle: 0
     property bool rotationCounterClockwise: false
     property int rotationAnimationDuration: 0
+    property string capturedVideoPath : "/home/meego/Videos/sintel_trailer-480p.ogv"
 
     Image {
         id: topBarBackground
@@ -65,9 +66,9 @@ Column {
 
             onClicked: {
                 if (reviewBin.type == "photo") {
-                    processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-photos");
+                    processLauncher.launch ("/usr/share/applications/meego-app-photos.desktop");
                 } else {
-                    processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-video");
+                    processLauncher.launch ("/usr/share/applications/meego-app-video.desktop", "playVideo", capturedVideoPath);
                 }
             }
         }

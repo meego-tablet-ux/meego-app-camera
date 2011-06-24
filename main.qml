@@ -203,6 +203,7 @@ Window {
                 rotationAngle: componentsRotationAngle
                 rotationCounterClockwise: isCounterClockwise
                 rotationAnimationDuration: rotationAnimationSpeed
+                capturedVideoPath: camera.capturedVideoLocation
 
             }
 
