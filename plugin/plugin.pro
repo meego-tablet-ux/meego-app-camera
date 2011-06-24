@@ -26,7 +26,8 @@ SOURCES += 			\
         jpegexiferizer.cpp \
     shutterslice.cpp \
     shutteranimationcomponent.cpp \
-    capturephotothread.cpp
+    capturephotothread.cpp \
+    uxdaemoninterface.cpp
 HEADERS += 			\
 	cameraifadaptor.h	\
 	cameraservice.h		\
@@ -41,7 +42,8 @@ HEADERS += 			\
         jpegexiferizer.h \
     shutterslice.h \
     shutteranimationcomponent.h \
-    capturephotothread.h
+    capturephotothread.h \
+    uxdaemoninterface.h
 
 OTHER_FILES += \
     Camera/qmldir
