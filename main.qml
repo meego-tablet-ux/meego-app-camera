@@ -19,7 +19,7 @@ Window {
     fullContent: true
 
     Component.onCompleted: {
-        console.log("load MainPage");
+//        console.log("load MainPage");
         switchBook(cameraContent);
     }
 
@@ -281,6 +281,10 @@ Window {
                                 iconSource: "image://themedimage/images/camera/camera-record-icn-dn"
                                 activeIconSource: "image://themedimage/images/camera/camera-record-icn-dn"
                             }
+                            PropertyChanges {
+                                target: window
+                                inhibitScreenSaver: true
+                            }
                         },
                         State {
                             name: "stopped"
@@ -289,6 +293,10 @@ Window {
                                 target: recordButton
                                 iconSource: "image://themedimage/images/camera/camera-record-icn"
                                 activeIconSource: "image://themedimage/images/camera/camera-record-icn-dn"
+                            }
+                            PropertyChanges {
+                                target: window
+                                inhibitScreenSaver: false
                             }
                         }
                     ]
