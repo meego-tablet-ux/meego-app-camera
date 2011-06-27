@@ -521,7 +521,9 @@ ViewFinder::updateCameraState (QCamera::State state)
     menu.append ("Auto");//menu.append (tr ("Auto"));
   }
   menu.append ("Off");//  menu.append (tr ("Off"));
-  menu.append ("On");//menu.append (tr ("On"));
+  if (_cameraHasFlash) {
+    menu.append ("On");//menu.append (tr ("On"));
+  }
   _flashModel = QVariant::fromValue (menu);
   emit flashModelChanged ();
 }
@@ -642,12 +644,6 @@ ViewFinder::setFlashMode (int mode)
     return;
   }
 
-  // If the flash menu doesn't have an Auto option then the mode will be
-  // off by one.
-  if (_cameraHasAutoFlash == false) {
-    mode += 1;
-  }
-
   switch (mode) {
   case ViewFinder::Off:
     m = QCameraExposure::FlashOff;
@@ -672,13 +668,9 @@ ViewFinder::setFlashMode (int mode)
 }
 
 int
-ViewFinder::flashMode () {
-  int m = (int) _settings->flashMode ();
-  if (_cameraHasAutoFlash == false) {
-    m -= 1;
-  }
-
-  return qMax(m,0);
+ViewFinder::flashMode ()
+{
+  return _settings->flashMode ();
 }
 
 bool
