@@ -526,6 +526,9 @@ ViewFinder::updateCameraState (QCamera::State state)
   }
   _flashModel = QVariant::fromValue (menu);
   emit flashModelChanged ();
+
+  if ((!_cameraHasFlash && Off != flashMode()) || (!_cameraHasAutoFlash && Auto == flashMode()))
+    setFlashMode(Off);
 }
 
 void
@@ -640,7 +643,7 @@ ViewFinder::setFlashMode (int mode)
 
   // This is an ugly hack to prevent the flash when the user-facing camera
   // is selected. Qt-mobility cannot associate a camera with a flash
-  if (_currentCamera == 1) {
+  if (_currentCamera == 1 && Off != mode) {
     return;
   }
 
