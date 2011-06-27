@@ -17,7 +17,7 @@ void CapturePhotoThread::run()
     forever {
         mutex.lock();
         waitCondition.wait(&mutex);
-        imgCapture->capture(m_path.toAscii());
+        imgCapture->capture(m_path);
         mutex.unlock();
     }
 }
