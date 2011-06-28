@@ -6,6 +6,11 @@
 #include <QMutex>
 #include <QWaitCondition>
 
+#include <QtLocation/QGeoPositionInfoSource>
+#include <QtLocation/QGeoPositionInfo>
+
+QTM_USE_NAMESPACE
+
 class CapturePhotoThread : public QThread
 {
     Q_OBJECT
@@ -18,6 +23,7 @@ protected:
     void run();
 
 signals:
+    void lastCoordinate(QGeoCoordinate);
 
 public slots:
 
@@ -27,6 +33,8 @@ private:
     QMutex mutex;
     QWaitCondition waitCondition;
 
+    QGeoPositionInfoSource *_positionSource;
+    QGeoPositionInfo _lastPosition;
 };
 
 #endif // CAPTUREPHOTOTHREAD_H

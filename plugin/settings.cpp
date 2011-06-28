@@ -23,9 +23,9 @@
 Settings::Settings () :
   _flashMode (ViewFinder::Auto),
   _captureMode (ViewFinder::Still),
-  _videoFPS(0),
   _videoWidth(0),
   _videoHeight(0),
+  _videoFPS(0),
   _client (gconf_client_get_default ())
 {
   GError *error = NULL;
