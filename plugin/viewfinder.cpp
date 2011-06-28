@@ -790,6 +790,7 @@ ViewFinder::startRecording ()
 
   url = QUrl::fromLocalFile (filename);
   _currentLocation = url.toString ();
+  emit capturedVideoLocationChanged();
   _mediaRecorder->setOutputLocation (QUrl (filename));
 
   // Check if we're running out of space every 5 seconds

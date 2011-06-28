@@ -103,6 +103,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (int currentOrientation READ currentOrientation WRITE setCurrentOrientation NOTIFY currentOrientationChanged);
     int currentOrientation() { return _currentOrientation; }
 
+    Q_PROPERTY(QString capturedVideoLocation READ capturedVideoLocation NOTIFY capturedVideoLocationChanged);
+    QString capturedVideoLocation() { return _currentLocation; }
+
   Q_SIGNALS:
     void readyChanged ();
     void flashModeChanged ();
@@ -124,6 +127,7 @@ class ViewFinder : public QDeclarativeItem
     void noSpaceOnDevice ();
 
     void currentOrientationChanged();
+    void capturedVideoLocationChanged();
 
   public slots:
     Q_INVOKABLE void takePhoto ();

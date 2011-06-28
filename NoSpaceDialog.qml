@@ -27,6 +27,6 @@ ModalDialog {
     }
 
     onAccepted: {
-        processLauncher.launch ("meego-qml-launcher --opengl --fullscreen --skip-app-switcher --app meego-app-photos");
+        processLauncher.launch ("/usr/share/applications/meego-app-photos.desktop");
     }
 }
