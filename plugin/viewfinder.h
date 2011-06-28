@@ -17,8 +17,7 @@
 #include <qgraphicsvideoitem.h>
 
 #include <QDeclarativeItem>
-#include <QtLocation/QGeoPositionInfoSource>
-#include <QtLocation/QGeoPositionInfo>
+#include <QtLocation/QGeoCoordinate>
 
 #include "cameraservice.h"
 #include "thumbnailer.h"
@@ -143,6 +142,8 @@ class ViewFinder : public QDeclarativeItem
     virtual void geometryChanged (const QRectF &newGeometry,
                                   const QRectF &oldGeometry);
   private slots:
+    void initExtra();
+
     void updateCameraState (QCamera::State);
     void displayCameraError ();
     void updateLockStatus (QCamera::LockStatus status,
@@ -167,6 +168,8 @@ class ViewFinder : public QDeclarativeItem
 
     void completeImage ();
 
+    void setLastCoordinate(QGeoCoordinate _lastCoordinate) { m_lastCoordinate = _lastCoordinate; }
+
   private:
     QString generateTemporaryImageFilename () const;
     QString generateBaseImageFilename () const;
@@ -182,7 +185,7 @@ class ViewFinder : public QDeclarativeItem
     bool setCamera (const QByteArray &cameraDevice);
     void repositionViewFinder (const QRectF &geometry);
 
-    bool _ready, _started;
+    bool _ready, _started, _init;
     int _cameraCount;
     int _currentCamera;
     bool _recording;
@@ -210,8 +213,7 @@ class ViewFinder : public QDeclarativeItem
     Settings *_settings;
 
     QTimer *_freeSpaceCheckTimer;
-    QGeoPositionInfoSource *_positionSource;
-    QGeoPositionInfo _lastPosition;
+    QGeoCoordinate m_lastCoordinate;
 
     QFutureWatcher<QString> _futureWatcher;
 
