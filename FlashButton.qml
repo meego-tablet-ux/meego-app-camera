@@ -8,6 +8,7 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
+import MeeGo.App.Camera 0.1
 
 PushButton {
     id: button
@@ -21,8 +22,6 @@ PushButton {
     height: parent.height
 
     property int value : 1
-
-    signal flashMode (int flashValue);
 
     SaveRestoreState {
         // saves: context menu status
@@ -52,13 +51,13 @@ PushButton {
         rotation: flashMenuRotationAngle
         Behavior on rotation { RotationAnimation { duration: flashMenuRotationAnimationDuration; direction: flashMenuRotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
-        property string modename: camera.flashModel[camera.flashMode]
+        property int mode: camera.flashMode
         source:{
-            if(modename == "Auto")
+            if(mode == ViewFinder.Auto)
                 return "image://themedimage/icons/internal/camera-flash-auto"
-            else if(modename == "On")
+            else if(mode == ViewFinder.On)
                 return "image://themedimage/icons/internal/camera-flash-on"
-            else if(modename == "Off")
+            else if(mode == ViewFinder.Off)
                 return "image://themedimage/icons/internal/camera-flash-off"
             else
                 return ""
@@ -79,7 +78,7 @@ PushButton {
             model: camera.flashModel
             width: 150
             height: 50 * model.length
-            anchors.fill: parent
+//            anchors.fill: parent
             interactive: false
             delegate: PushButton {
                 width: 150
@@ -113,7 +112,14 @@ PushButton {
                 }
 
                 onClicked: {
-                    camera.flashMode = elementIndex;
+                    var mode;
+                    if (name == "Auto")
+                        mode = ViewFinder.Auto
+                    else if (name == "On")
+                        mode = ViewFinder.On
+                    else if (name == "Off")
+                        mode = ViewFinder.Off
+                    camera.flashMode = mode;
                     flashMenu.hide();
                 }
 
