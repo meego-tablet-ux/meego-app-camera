@@ -33,7 +33,7 @@ bool JpegExiferizer::doIt()
     cinfo_i.err = jpeg_std_error(&jerr);
     jpeg_create_decompress(&cinfo_i);
 
-    if ((infile = fopen(m_inFile.toLatin1().constData() , "rb")) == NULL) {
+    if ((infile = fopen(m_inFile.toUtf8().constData() , "rb")) == NULL) {
         return false;
     }
     jpeg_stdio_src(&cinfo_i, infile);
@@ -42,7 +42,7 @@ bool JpegExiferizer::doIt()
 
     cinfo_o.err = jpeg_std_error(&jerr);
     jpeg_create_compress(&cinfo_o);
-    if ((outfile = fopen(m_outFile.toLatin1().constData(), "wb")) == NULL) {
+    if ((outfile = fopen(m_outFile.toUtf8().constData(), "wb")) == NULL) {
       fclose(infile);
       return false;
     }
