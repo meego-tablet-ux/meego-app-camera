@@ -30,8 +30,7 @@ void CapturePhotoThread::run()
             emit lastCoordinate(_lastPosition.coordinate());
         }
 
-
-        imgCapture->capture(m_path.toAscii());
+        imgCapture->capture(m_path);
         mutex.unlock();
     }
 }

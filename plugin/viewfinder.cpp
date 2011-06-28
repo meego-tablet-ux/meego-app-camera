@@ -529,9 +529,14 @@ ViewFinder::updateCameraState (QCamera::State state)
     menu.append ("Auto");//menu.append (tr ("Auto"));
   }
   menu.append ("Off");//  menu.append (tr ("Off"));
-  menu.append ("On");//menu.append (tr ("On"));
+  if (_cameraHasFlash) {
+    menu.append ("On");//menu.append (tr ("On"));
+  }
   _flashModel = QVariant::fromValue (menu);
   emit flashModelChanged ();
+
+  if ((!_cameraHasFlash && Off != flashMode()) || (!_cameraHasAutoFlash && Auto == flashMode()))
+    setFlashMode(Off);
 }
 
 void
@@ -640,14 +645,8 @@ ViewFinder::setFlashMode (int mode)
 
   // This is an ugly hack to prevent the flash when the user-facing camera
   // is selected. Qt-mobility cannot associate a camera with a flash
-  if (_currentCamera == 1) {
+  if (_currentCamera == 1 && Off != mode) {
     return;
-  }
-
-  // If the flash menu doesn't have an Auto option then the mode will be
-  // off by one.
-  if (_cameraHasAutoFlash == false) {
-    mode += 1;
   }
 
   switch (mode) {
@@ -674,13 +673,9 @@ ViewFinder::setFlashMode (int mode)
 }
 
 int
-ViewFinder::flashMode () {
-  int m = (int) _settings->flashMode ();
-  if (_cameraHasAutoFlash == false) {
-    m -= 1;
-  }
-
-  return qMax(m,0);
+ViewFinder::flashMode ()
+{
+  return _settings->flashMode ();
 }
 
 bool

@@ -97,10 +97,6 @@ Image {
         flashMenuRotationAngle: bottomBarBackground.rotationAngle
         flashMenuRotationCounterClockwise: bottomBarBackground.rotationCounterClockwise
         flashMenuRotationAnimationDuration: bottomBarBackground.rotationAnimationDuration
-
-        onFlashMode: {
-            camera.flashMode = flashValue;
-        }
     }
 
 
