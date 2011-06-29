@@ -204,6 +204,7 @@ Window {
                 rotationCounterClockwise: isCounterClockwise
                 rotationAnimationDuration: rotationAnimationSpeed
                 capturedVideoPath: camera.capturedVideoLocation
+                capturedPhotoPath: camera.imageLocation
 
             }
 

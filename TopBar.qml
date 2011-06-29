@@ -21,6 +21,7 @@ Column {
     property int rotationAngle: 0
     property bool rotationCounterClockwise: false
     property int rotationAnimationDuration: 0
+    property string capturedPhotoPath
     property string capturedVideoPath : "/home/meego/Videos/sintel_trailer-480p.ogv"
 
     Image {
@@ -66,7 +67,7 @@ Column {
 
             onClicked: {
                 if (reviewBin.type == "photo") {
-                    processLauncher.launch ("/usr/share/applications/meego-app-photos.desktop");
+                    processLauncher.launch ("/usr/share/applications/meego-app-photos.desktop", "showPhoto", capturedPhotoPath);
                 } else {
                     processLauncher.launch ("/usr/share/applications/meego-app-video.desktop", "playVideo", capturedVideoPath);
                 }
