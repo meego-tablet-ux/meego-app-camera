@@ -22,11 +22,7 @@ ModalDialog {
         text: qsTr ("There is no storage space left on the device. To take more photos or video, you may want to delete some existing content.")
     }
 
-    Launcher {
-        id: processLauncher;
-    }
-
     onAccepted: {
-        processLauncher.launch ("/usr/share/applications/meego-app-photos.desktop");
+        qApp.launchDesktopByName ("/usr/share/applications/meego-app-photos.desktop");
     }
 }

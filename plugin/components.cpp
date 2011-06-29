@@ -10,7 +10,6 @@
 #include <QDir>
 
 #include "components.h"
-#include "launcher.h"
 #include "roundedimage.h"
 #include "viewfinder.h"
 #include "shutteranimationcomponent.h"
@@ -23,7 +22,6 @@ components::components ()
 
 void components::registerTypes(const char *uri)
 {
-  qmlRegisterType<Launcher>(uri, 0, 1, "Launcher");
   qmlRegisterType<RoundedImage>(uri, 0, 1, "RoundedImage");
   qmlRegisterType<ViewFinder>(uri, 0, 1, "ViewFinder");
   qmlRegisterType<ShutterAnimationComponent>(uri, 0, 1, "ShutterAnimationComponent");

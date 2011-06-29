@@ -8,7 +8,7 @@
 
 #include "roundedimage.h"
 
-#define IMAGE_SIZE 56
+#include <QImageReader>
 
 RoundedImage::RoundedImage (QDeclarativeItem *_parent)
   : QDeclarativeItem (_parent)
@@ -26,6 +26,7 @@ RoundedImage::paint (QPainter *painter,
   painter->drawImage (QPoint (0.0, 0.0), _image);
 }
 
+#ifdef CUT_CORNERS
 #define CORNER_SIZE 5
 static void
 cutCorners (QImage &image)
@@ -48,53 +49,20 @@ cutCorners (QImage &image)
     }
   }
 }
+#endif
 
 void
 RoundedImage::setSource (QString &s)
 {
-  QImage _tmp, _scaled;
-
   if (s.isEmpty ()) {
     return;
   }
 
-  _tmp = QImage (s);
-  if (_tmp.isNull ()) {
-#ifdef SHOW_DEBUG
-    qDebug () << "Error loading " << s;
-#endif
-    return;
-  }
-
-  int sw, sh;
-  int x, y;
-
-  if (_tmp.width () > _tmp.height ()) {
-    float ratio = (float) IMAGE_SIZE / (float) _tmp.height ();
-
-    sw = _tmp.width () * ratio;
-    sh = IMAGE_SIZE;
-
-    x = (sw - IMAGE_SIZE) / 2;
-    y = 0;
-  } else {
-    float ratio = (float) IMAGE_SIZE / (float) _tmp.width ();
-
-    sw = IMAGE_SIZE;
-    sh = _tmp.height () * ratio;
-
-    x = 0;
-    y = (sh - IMAGE_SIZE) / 2;
-  }
-#ifdef SHOW_DEBUG
-  qDebug () << "Resizing to: " << sw << "x" << sh;
-  qDebug () << "Cropping to: " << x << "," << y;
-#endif
-
-  _scaled = _tmp.scaled (sw, sh, Qt::IgnoreAspectRatio,
-                         Qt::SmoothTransformation);
-  _tmp = _scaled.copy (x, y, IMAGE_SIZE, IMAGE_SIZE);
-  _image = _tmp.convertToFormat (QImage::Format_ARGB32_Premultiplied);
+  QImageReader imageReader(s);
+  QSize imageSize = imageReader.size();
+  imageSize.scale(QSize(width(), height()), Qt::KeepAspectRatioByExpanding);
+  imageReader.setScaledSize(imageSize);
+  _image = imageReader.read();
 
   // Cut the corners off the image
 
@@ -103,7 +71,7 @@ RoundedImage::setSource (QString &s)
   // cutCorners (_image);
 
   // Force a redraw
-  update (0, 0, IMAGE_SIZE, IMAGE_SIZE);
+  update (0, 0, width(), height());
 }
 
 QML_DECLARE_TYPE(RoundedImage);

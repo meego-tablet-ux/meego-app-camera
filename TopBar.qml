@@ -61,15 +61,11 @@ Column {
             rotation: rotationAngle
             Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
 
-            Launcher {
-                id: processLauncher;
-            }
-
             onClicked: {
                 if (reviewBin.type == "photo") {
-                    processLauncher.launch ("/usr/share/applications/meego-app-photos.desktop", "showPhoto", capturedPhotoPath);
+                    qApp.launchDesktopByName("/usr/share/applications/meego-app-photos.desktop", "showPhoto", capturedPhotoPath);
                 } else {
-                    processLauncher.launch ("/usr/share/applications/meego-app-video.desktop", "playVideo", capturedVideoPath);
+                    qApp.launchDesktopByName("/usr/share/applications/meego-app-video.desktop", "playVideo", capturedVideoPath);
                 }
             }
         }

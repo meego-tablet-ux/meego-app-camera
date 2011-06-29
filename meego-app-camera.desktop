@@ -2,4 +2,4 @@
 Type=Application
 Name=Camera
 Icon=meego-app-camera
-Exec=meego-qml-launcher --opengl --fullscreen --app meego-app-camera
+Exec=invoker --type=l meego-qml-launcher --opengl --fullscreen --app meego-app-camera

@@ -24,15 +24,14 @@ SOURCES += 			\
 	zoomarea.cpp            \
         exifdatafactory.cpp     \
         jpegexiferizer.cpp \
-    shutterslice.cpp \
-    shutteranimationcomponent.cpp \
-    capturephotothread.cpp \
-    uxdaemoninterface.cpp
+        shutterslice.cpp \
+        shutteranimationcomponent.cpp \
+        capturephotothread.cpp
+
 HEADERS += 			\
 	cameraifadaptor.h	\
 	cameraservice.h		\
-	components.h		\
-	launcher.h		\
+        components.h		\
 	roundedimage.h		\
 	settings.h		\
 	thumbnailer.h		\
@@ -40,10 +39,9 @@ HEADERS += 			\
         zoomarea.h              \
         exifdatafactory.h       \
         jpegexiferizer.h \
-    shutterslice.h \
-    shutteranimationcomponent.h \
-    capturephotothread.h \
-    uxdaemoninterface.h
+        shutterslice.h \
+        shutteranimationcomponent.h \
+        capturephotothread.h
 
 OTHER_FILES += \
     Camera/qmldir
