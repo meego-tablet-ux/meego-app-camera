@@ -85,7 +85,7 @@ class ViewFinder : public QDeclarativeItem
 
     Q_PROPERTY (QString imageLocation READ imageLocation WRITE setImageLocation NOTIFY imageLocationChanged);
     QString imageLocation () { return _imageLocation; }
-    void setImageLocation(const QString & _str) { _imageLocation = _str; emit imageLocationChanged(); }
+    void setImageLocation(const QString & _str);
 
     Q_PROPERTY (bool canFocus READ canFocus NOTIFY canFocusChanged);
     bool canFocus () { return _canFocus; }

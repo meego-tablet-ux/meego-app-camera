@@ -15,6 +15,9 @@
 #define CAPTUREMODE_KEY "/meego/app/camera/capturemode"
 #define CAMERADEVICE_KEY "/meego/app/camera/device"
 
+#define CAPTUREDPHOTOPATH_KEY "/meego/app/camera/photopath"
+#define CAPTUREDPHOTOORIENTATION_KEY "/meego/app/camera/photoorientation"
+
 // Private undocumented keys
 #define VIDEO_FPS_KEY "/meego/app/camera/video-fps"
 #define VIDEO_RESOLUTION_WIDTH_KEY "/meego/app/camera/video-resolution-width"
@@ -92,6 +95,23 @@ Settings::Settings () :
     error = NULL;
   }
 
+  gchar* str = gconf_client_get_string (_client, CAPTUREDPHOTOPATH_KEY, &error);
+  if (error != NULL) {
+    g_error_free (error);
+    error = NULL;
+  }
+  else {
+      _lastCapturedPhotoPath = QString(str);
+    g_free(str);
+  }
+
+  _lastCapturedPhotoOrientation = gconf_client_get_int
+    (_client, CAPTUREDPHOTOORIENTATION_KEY, &error);
+  if (error != NULL) {
+    g_error_free (error);
+    error = NULL;
+  }
+
 #ifdef SHOW_DEBUG
   qDebug () << "Settings*************";
   qDebug () << "Flash Mode: " << _flashMode;
@@ -149,6 +169,30 @@ Settings::setCameraDevice(const QByteArray & _str)
   }
 
   _strCameraDevice = _str;
+}
+
+void Settings::setLastCapturedPhotoPath(const QString &path)
+{
+    GError *error = NULL;
+
+    gconf_client_set_string (_client, CAPTUREDPHOTOPATH_KEY, path.toAscii().data(), &error);
+    if (error != NULL) {
+      g_error_free (error);
+    }
+
+    _lastCapturedPhotoPath = path;
+}
+
+void Settings::setLastCapturedPhotoOrientation(int orientation)
+{
+    GError *error = NULL;
+
+    gconf_client_set_int (_client, CAPTUREDPHOTOORIENTATION_KEY, orientation, &error);
+    if (error != NULL) {
+      g_error_free (error);
+    }
+
+    _lastCapturedPhotoOrientation = orientation;
 }
 
 

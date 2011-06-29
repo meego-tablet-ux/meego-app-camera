@@ -25,8 +25,13 @@ class RoundedImage : public QDeclarativeItem
                 const QStyleOptionGraphicsItem *option,
                 QWidget *widget);
 
+
+
   Q_SIGNALS:
     void sourceChanged ();
+
+private slots:
+    void onResize();
 
   private:
     QString _source;

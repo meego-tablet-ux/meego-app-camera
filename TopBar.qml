@@ -24,6 +24,8 @@ Column {
     property string capturedPhotoPath
     property string capturedVideoPath : "/home/meego/Videos/sintel_trailer-480p.ogv"
 
+
+
     Image {
         id: topBarBackground
 
@@ -54,7 +56,7 @@ Column {
             id: reviewBin
             x: parent.width - width
             anchors.verticalCenter: parent.verticalCenter
-            source: camera.imageLocation
+            source: capturedPhotoPath
             type: camera.state
 
             transformOrigin: Item.Center

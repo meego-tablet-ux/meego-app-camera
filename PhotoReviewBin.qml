@@ -25,9 +25,9 @@ Item {
         id: img
         x: 1
         y: 1
-        // Keep it square
-        width: parent.height
-        height: parent.height
+        //Keep it square
+        width: 55
+        height: 55
     }
 
     Image {

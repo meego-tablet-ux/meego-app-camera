@@ -134,6 +134,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
   connect(&photoThread, SIGNAL(lastCoordinate(QGeoCoordinate)), this, SLOT(setLastCoordinate(QGeoCoordinate)));
   photoThread.start();
+
 }
 
 
@@ -215,6 +216,8 @@ void ViewFinder::initExtra()
 
   _strPicturesDir.prepend(QDir::homePath() + '/');
   _strVideosDir.prepend(QDir::homePath() + '/');
+  setImageLocation(_settings->lastCapturedPhotoPath());
+
 }
 
 ViewFinder::~ViewFinder ()
@@ -1037,5 +1040,7 @@ ViewFinder::setRotateAngle (int angle)
 
   _viewFinder->setRotation (angle);
 }
+
+void ViewFinder::setImageLocation(const QString & _str) { _imageLocation = _str; emit imageLocationChanged(); _settings->setLastCapturedPhotoPath(_imageLocation);}
 
 //QML_DECLARE_TYPE(ViewFinder);

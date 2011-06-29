@@ -34,6 +34,14 @@ class Settings : public QObject
     int videoWidth () { return _videoWidth; }
     int videoHeight () { return _videoHeight; }
 
+    QString lastCapturedPhotoPath(){ return _lastCapturedPhotoPath; }
+    void setLastCapturedPhotoPath(const QString &path);
+
+    int lastCapturedPhotoOrientation() { return _lastCapturedPhotoOrientation;}
+    void setLastCapturedPhotoOrientation(int orientation);
+
+
+
   private:
     enum ViewFinder::FlashMode _flashMode;
     enum ViewFinder::CaptureMode _captureMode;
@@ -42,6 +50,9 @@ class Settings : public QObject
     double _videoFPS;
 
     QByteArray _strCameraDevice;
+
+    QString _lastCapturedPhotoPath;
+    int _lastCapturedPhotoOrientation;
 
     GConfClient *_client;
 };

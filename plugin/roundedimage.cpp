@@ -9,11 +9,14 @@
 #include "roundedimage.h"
 
 #include <QImageReader>
+#include <QDebug>
 
 RoundedImage::RoundedImage (QDeclarativeItem *_parent)
   : QDeclarativeItem (_parent)
 {
   setFlag(QGraphicsItem::ItemHasNoContents, false);
+  //connect(this, SIGNAL(widthChanged()), this, SLOT(onResize()));
+  //connect(this, SIGNAL(heightChanged()), this, SLOT(onResize()));
 }
 
 void
@@ -72,6 +75,12 @@ RoundedImage::setSource (QString &s)
 
   // Force a redraw
   update (0, 0, width(), height());
+
+}
+
+void RoundedImage::onResize()
+{
+    update(0, 0, width(), height());
 }
 
 QML_DECLARE_TYPE(RoundedImage);
