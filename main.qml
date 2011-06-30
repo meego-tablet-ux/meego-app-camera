@@ -162,7 +162,7 @@ Window {
                 id: shutterAnimation
 
                 ShutterAnimationComponent {
-                    anchors.fill: window
+                    anchors.fill: parent
                     width: window.width
                     height: window.height
                 }
