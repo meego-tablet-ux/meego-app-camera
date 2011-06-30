@@ -9,7 +9,7 @@
 import QtQuick 1.0
 
 import QtMultimediaKit 1.1
-import MeeGo.Ux.Components 0.1
+import MeeGo.Ux.Components.Common 0.1
 import MeeGo.Ux.Kernel 0.1
 import MeeGo.App.Camera 0.1
 
