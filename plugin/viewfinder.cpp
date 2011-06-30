@@ -134,6 +134,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
   connect(&photoThread, SIGNAL(lastCoordinate(QGeoCoordinate)), this, SLOT(setLastCoordinate(QGeoCoordinate)));
   photoThread.start();
+  QTimer::singleShot(0, this, SLOT(initExtra()));
 
 }
 
@@ -1011,11 +1012,11 @@ ViewFinder::enterStandbyMode ()
 void
 ViewFinder::leaveStandbyMode ()
 {
-    if (_init) {
-      _init = false;
-      QTimer::singleShot(0, this, SLOT(initExtra()));
-      return;
-    }
+//    if (_init) {
+//      _init = false;
+//      QTimer::singleShot(0, this, SLOT(initExtra()));
+//      return;
+//    }
 
   // don't start camera if it's already started
   if (_camera && !_started && 0 != qApp->activeWindow ()) {
