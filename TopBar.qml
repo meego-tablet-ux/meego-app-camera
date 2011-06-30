@@ -24,7 +24,25 @@ Column {
     property string capturedPhotoPath
     property string capturedVideoPath : "/home/meego/Videos/sintel_trailer-480p.ogv"
 
+    function calculatePixmapRotation(_orientation){
 
+        var angle;
+        switch (_orientation) {
+            case 0:
+                angle = 270; break;
+            case 1:
+                angle = 0; break;
+            case 2:
+                angle = 90; break;
+            case 3:
+                angle = 180; break;
+        }
+        return angle
+    }
+
+    onCapturedPhotoPathChanged: {
+        reviewBin.imageRotation = calculatePixmapRotation(camera.lastPhotoOrientation);
+    }
 
     Image {
         id: topBarBackground

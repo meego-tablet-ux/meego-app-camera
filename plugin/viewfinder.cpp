@@ -98,7 +98,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     _viewFinder (0),
     _imageCapture (0),
     _settings (0),
-    _currentOrientation(0)
+    _currentOrientation(0), _lastPhotoOrientation(0)
 {
   _settings = new Settings ();
 
@@ -216,6 +216,7 @@ void ViewFinder::initExtra()
 
   _strPicturesDir.prepend(QDir::homePath() + '/');
   _strVideosDir.prepend(QDir::homePath() + '/');
+  _lastPhotoOrientation =_settings->lastCapturedPhotoOrientation();
   setImageLocation(_settings->lastCapturedPhotoPath());
 
 }
@@ -590,6 +591,7 @@ void ViewFinder::completeImage ()
   qDebug () << "Image completed: " << filename;
 #endif
 
+  _settings->setLastCapturedPhotoOrientation( _lastPhotoOrientation = currentOrientation());
   setImageLocation(filename);
 
   //_cameraService->emitImageCaptured (filename);

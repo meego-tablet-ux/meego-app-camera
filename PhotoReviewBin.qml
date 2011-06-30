@@ -17,6 +17,7 @@ Item {
     state: "up"
 
     property alias source: img.source
+    property alias imageRotation: img.rotation
     property string type: "photo"
 
     signal clicked

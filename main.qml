@@ -122,11 +122,10 @@ Window {
                 currentOrientation: sensorOrientation
 
                 onImageCapturedSig: {
-                    shutterAnimation.startOpeningAnimation();
+                    shutterLoader.item.startOpeningAnimation();
                 }
 
                 rotateAngle: 0
-                zoom: zoomer.zoomLevel
 
                 state: (camera.captureMode == 0? "photo" : "video");
 
@@ -165,19 +164,38 @@ Window {
                 }
 
                 onCameraChanged: {
-                    zoomer.resetZoom ();
+                    if (loader.sourceComponent != null) {
+                        loader.item.resetZoom ();
+                    }
                 }
 
                 onMaxZoomChanged: {
-                    zoomer.visible = (camera.maxZoom > 1.0);
+                    if (loader.sourceComponent == null) {
+                        if (camera.maxZoom <= 1.0)
+                            return
+                        loader.sourceComponent = zoomer
+                    }
+                    loader.item.visible = (camera.maxZoom > 1.0);
+                }
+
+                Component.onCompleted: {
+                    if (camera.maxZoom > 1.0)
+                        loader.sourceComponent = zoomer
                 }
             }
 
-            ShutterAnimationComponent {
+            Component {
                 id: shutterAnimation
-                anchors.fill: parent
-                width: parent.width
-                height: parent.height
+
+                ShutterAnimationComponent {
+                    anchors.fill: window
+                    width: window.width
+                    height: window.height
+                }
+            }
+
+            Loader {
+                id: shutterLoader
             }
 
             Rectangle {
@@ -208,25 +226,35 @@ Window {
 
             }
 
-            ZoomSlider {
+            Component {
                 id: zoomer
-                x: 12
-                y: (parent.height - height) / 2
-                visible: false
 
-                transitions: Transition {
-                    NumberAnimation {
-                        properties: opacity
-                        duration: 100
+                ZoomSlider {
+                    x: 12
+                    y: (window.height - height) / 2
 
+                    transitions: Transition {
+                        NumberAnimation {
+                            properties: opacity
+                            duration: 100
+
+                        }
+                    }
+
+                    state: (orientation == 0 || orientation == 2) ? "portrait" : "landscape"
+
+                    rotationAngle: componentsRotationAngle
+                    rotationCounterClockwise: isCounterClockwise
+                    rotationAnimationDuration: rotationAnimationSpeed
+
+                    onZoomLevelChanged: {
+                        camera.zoom = zoomLevel;
                     }
                 }
+            }
 
-                state: (orientation == 0 || orientation == 2) ? "portrait" : "landscape"
-
-                rotationAngle: componentsRotationAngle
-                rotationCounterClockwise: isCounterClockwise
-                rotationAnimationDuration: rotationAnimationSpeed
+            Loader {
+                id: loader
             }
 
             BottomBar {
@@ -256,7 +284,9 @@ Window {
                 activeBackgroundSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onPressed: {
-                    shutterAnimation.startClosingAnimation();
+                    if (shutterLoader.sourceComponent == null)
+                        shutterLoader.sourceComponent = shutterAnimation;
+                    shutterLoader.item.startClosingAnimation();
                     camera.takePhoto();
                 }
             }

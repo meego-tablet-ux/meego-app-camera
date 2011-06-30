@@ -103,6 +103,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (int currentOrientation READ currentOrientation WRITE setCurrentOrientation NOTIFY currentOrientationChanged);
     int currentOrientation() { return _currentOrientation; }
 
+    Q_PROPERTY (int lastPhotoOrientation READ lastPhotoOrientation);
+    int lastPhotoOrientation() { return _lastPhotoOrientation; }
+
     Q_PROPERTY(QString capturedVideoLocation READ capturedVideoLocation NOTIFY capturedVideoLocationChanged);
     QString capturedVideoLocation() { return _currentLocation; }
 
@@ -221,7 +224,7 @@ class ViewFinder : public QDeclarativeItem
 
     QString _strPicturesDir, _strVideosDir;
 
-    int _currentOrientation;
+    int _currentOrientation, _lastPhotoOrientation;
 };
 
 #endif

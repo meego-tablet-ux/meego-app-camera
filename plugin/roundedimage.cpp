@@ -65,6 +65,7 @@ RoundedImage::setSource (QString &s)
   QSize imageSize = imageReader.size();
   imageSize.scale(QSize(width(), height()), Qt::KeepAspectRatioByExpanding);
   imageReader.setScaledSize(imageSize);
+  imageReader.setScaledClipRect(QRect((imageSize.width() - width()) / 2, (imageSize.height() - height()) / 2, width(), height()));
   _image = imageReader.read();
 
   // Cut the corners off the image
