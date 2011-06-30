@@ -64,33 +64,6 @@ Window {
 
             fullScreen: true
 
-            SaveRestoreState {
-                // saves: context menu status
-
-                id: cameraPageState
-                onSaveRequired: {
-                    setValue("Camera.state", camera.state)
-//                    setValue("Camera.noSpace", noSpaceDialogComponent.visible)
-                    setValue("Camera.thumbnail", camera.imageLocation)
-                    setValue("Camera.zoom", camera.zoom)
-                    sync()
-                }
-                Component.onCompleted: {
-                    if (restoreRequired) {
- //                        camera.state = value("Camera.state", "photo")
-                        var bNoSpaceVisible = value("Camera.noSpace", 0)
-//                        if(bNoSpaceVisible == "true") {
-//                            noSpaceDialogComponent.show();
-//                        }
-
-                        var thumbnail = value("Camera.thumbnail", "")
-                        if (thumbnail != "") {
-                            camera.imageLocation = thumbnail
-                        }
-                    }
-                }
-            }
-
             Connections {
                 target: window
                 onIsActiveWindowChanged: {
