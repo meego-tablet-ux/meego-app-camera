@@ -484,7 +484,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   connect (_imageCapture, SIGNAL (readyForCaptureChanged (bool)),
            this, SLOT (imageReadyForCaptureChanged (bool)));
 
-  updateCameraState (_camera->state ());
+//  updateCameraState (_camera->state ());
   updateLockStatus (_camera->lockStatus (), QCamera::UserRequest);
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
@@ -571,6 +571,8 @@ ViewFinder::takePhoto ()
   //_imageCapture->capture (filename.toAscii ());
   photoThread.takePhoto(filename,_imageCapture);
 
+  // save orientation here as device can be rotated during long snapshot operation
+  _settings->setLastCapturedPhotoOrientation( _lastPhotoOrientation = currentOrientation());
 }
 
 void
@@ -591,7 +593,6 @@ void ViewFinder::completeImage ()
   qDebug () << "Image completed: " << filename;
 #endif
 
-  _settings->setLastCapturedPhotoOrientation( _lastPhotoOrientation = currentOrientation());
   setImageLocation(filename);
 
   //_cameraService->emitImageCaptured (filename);
@@ -974,11 +975,11 @@ ViewFinder::thumbnailCreated (const QString &url,
                               const QString &md5sum)
 {
   Q_UNUSED(url)
-  _imageLocation = QString ("%1/.thumbnails/normal/%2.jpeg").arg (QDir::homePath ()).arg (md5sum);
+  _settings->setLastCapturedPhotoOrientation(1); // no rotation
+  setImageLocation(QString ("%1/.thumbnails/normal/%2.jpeg").arg (QDir::homePath ()).arg (md5sum));
 #ifdef SHOW_DEBUG
   qDebug () << "Thumbnail completed: " << _imageLocation;
 #endif
-  emit imageLocationChanged ();
 }
 
 void
