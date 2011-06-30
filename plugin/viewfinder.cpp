@@ -976,7 +976,12 @@ ViewFinder::thumbnailCreated (const QString &url,
 {
   Q_UNUSED(url)
   _settings->setLastCapturedPhotoOrientation(1); // no rotation
-  setImageLocation(QString ("%1/.thumbnails/normal/%2.jpeg").arg (QDir::homePath ()).arg (md5sum));
+
+  // find a thumbnail - need to look into dir as we don't know file extention
+  QString strDir(QString("%1/.thumbnails/normal").arg (QDir::homePath ()));
+  QDir d(strDir);
+  QStringList list(d.entryList (QStringList() << (md5sum + ".*")));
+  setImageLocation(!list.isEmpty() ? strDir + '/' + list[0] : QString::null);
 #ifdef SHOW_DEBUG
   qDebug () << "Thumbnail completed: " << _imageLocation;
 #endif
