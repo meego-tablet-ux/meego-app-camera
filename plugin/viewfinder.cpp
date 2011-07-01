@@ -549,6 +549,8 @@ ViewFinder::updateCameraState (QCamera::State state)
 
   if ((!_cameraHasFlash && Off != flashMode()) || (!_cameraHasAutoFlash && Auto == flashMode()))
     setFlashMode(Off);
+  else
+    setFlashMode(_settings->flashMode());
 }
 
 void
