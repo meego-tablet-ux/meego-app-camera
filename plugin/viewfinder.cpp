@@ -102,6 +102,14 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 {
   _settings = new Settings ();
 
+  _viewFinder = new QGraphicsVideoItem (this);
+  _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
+
+  QTimer::singleShot(0, this, SLOT(init()));
+}
+
+void ViewFinder::init()
+{
   foreach (const QByteArray &deviceName, QCamera::availableDevices ()) {
     QString description = QCamera::deviceDescription (deviceName);
 #ifdef SHOW_DEBUG
@@ -112,9 +120,6 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   QList<QByteArray> devs(QCamera::availableDevices ());
   _cameraCount = devs.count ();
   emit cameraCountChanged ();
-
-  _viewFinder = new QGraphicsVideoItem (this);
-  _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
 
   // Try to restore the last used camera
   QByteArray strDev(_settings->cameraDevice());
@@ -134,8 +139,8 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
   connect(&photoThread, SIGNAL(lastCoordinate(QGeoCoordinate)), this, SLOT(setLastCoordinate(QGeoCoordinate)));
   photoThread.start();
-  QTimer::singleShot(0, this, SLOT(initExtra()));
 
+  QTimer::singleShot(0, this, SLOT(initExtra()));
 }
 
 
@@ -217,9 +222,9 @@ void ViewFinder::initExtra()
 
   _strPicturesDir.prepend(QDir::homePath() + '/');
   _strVideosDir.prepend(QDir::homePath() + '/');
+
   _lastPhotoOrientation =_settings->lastCapturedPhotoOrientation();
   setImageLocation(_settings->lastCapturedPhotoPath());
-
 }
 
 ViewFinder::~ViewFinder ()
@@ -490,8 +495,10 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
 
+  // set capture mode from settings
+  _camera->setCaptureMode (Video != _settings->captureMode () ? QCamera::CaptureStillImage : QCamera::CaptureVideo);
   _camera->start ();
-  _started = true;
+  _started = true; // set the flag to avoid starting camera second time
 
   // Fire this on an idle so that the signal will be picked up when the
   // object has been created
@@ -716,12 +723,6 @@ ViewFinder::changeCamera ()
 
     emit cameraChanged ();
 
-    // set capture mode from settings
-    _camera->setCaptureMode (Video != _settings->captureMode () ? QCamera::CaptureStillImage : QCamera::CaptureVideo);
-    _camera->start ();
-    _started = true; // set the flag to avoid starting camera second time
-
-
     return true;
   }
 
@@ -734,6 +735,9 @@ ViewFinder::setCaptureMode (ViewFinder::CaptureMode mode)
 #ifdef SHOW_DEBUG
   qDebug () << "Setting capture mode: " << mode;
 #endif
+
+  if (!_camera)
+      return;
 
   switch (mode) {
   case ViewFinder::Still:
@@ -1018,12 +1022,6 @@ ViewFinder::enterStandbyMode ()
 void
 ViewFinder::leaveStandbyMode ()
 {
-//    if (_init) {
-//      _init = false;
-//      QTimer::singleShot(0, this, SLOT(initExtra()));
-//      return;
-//    }
-
   // don't start camera if it's already started
   if (_camera && !_started && 0 != qApp->activeWindow ()) {
     _camera->start ();

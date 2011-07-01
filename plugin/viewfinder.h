@@ -145,6 +145,7 @@ class ViewFinder : public QDeclarativeItem
     virtual void geometryChanged (const QRectF &newGeometry,
                                   const QRectF &oldGeometry);
   private slots:
+    void init();
     void initExtra();
 
     void updateCameraState (QCamera::State);
