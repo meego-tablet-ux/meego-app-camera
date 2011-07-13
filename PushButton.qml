@@ -7,6 +7,7 @@
  */
 
 import QtQuick 1.0
+import MeeGo.Ux.Gestures 0.1
 
 Item {
     id: button
@@ -20,8 +21,8 @@ Item {
     property string activeBackgroundSource: ""
 
 
-    signal clicked (variant mouse)
-    signal pressed (variant mouse)
+    signal clicked (/*variant mouse*/)
+    signal pressed (/*variant mouse*/)
 
     state: "up"
 
@@ -44,18 +45,37 @@ Item {
         Behavior on rotation { RotationAnimation { duration: rotationAnimationDuration; direction: rotationCounterClockwise ? RotationAnimation.Counterclockwise : RotationAnimation.Clockwise}}
     }
 
-
-    MouseArea {
-        id: mouse
-        anchors.fill: parent
-
-        onClicked: parent.clicked (mouse)
-        onPressed: {
-            parent.state = "down"
-            parent.pressed(mouse)
-        }
-        onReleased: parent.state = "up"
+    Timer {
+        id: animationTimer
+        interval: 200
+        repeat: false
+        onTriggered:  button.state = "up"
     }
+
+    GestureArea {
+        anchors.fill: parent
+        Tap {
+            onStarted: {
+                button.pressed()
+                button.clicked()
+                button.state = "down"
+                animationTimer.start();
+            }
+        }
+    }
+
+
+//    MouseArea {
+//        id: mouse
+//        anchors.fill: parent
+
+//        onClicked: parent.clicked (mouse)
+//        onPressed: {
+//            parent.state = "down"
+//            parent.pressed(mouse)
+//        }
+//        onReleased: parent.state = "up"
+//    }
 
     states: [
         State {

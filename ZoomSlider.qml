@@ -7,6 +7,7 @@
  */
 
 import QtQuick 1.0
+import MeeGo.Ux.Gestures 0.1
 
 Item {
     id: slider
@@ -50,6 +51,36 @@ Item {
 //        anchors.fill: parent
     }
 
+    GestureArea {
+        id: gestureArea
+        x: 0
+        y: trough.y
+        width: slider.width
+        height: trough.height
+        property real min: troughStart - (scrub.height / 2)
+        property real max: troughEnd - (scrub.height / 2)
+
+        Tap {
+            onStarted: {
+                if((gesture.position.y <= gestureArea.max) && (gesture.position.y >= gestureArea.min))
+                    moveScrub(gesture.position.y - (scrub.height / 2));
+            }
+        }
+
+        Pan {
+            onUpdated: {
+                var newPos = scrub.y + gesture.delta.y
+                if(newPos < gestureArea.min)
+                    scrub.y = gestureArea.min
+                else if(newPos > gestureArea.max)
+                    scrub.y = gestureArea.max
+                else
+                    scrub.y = newPos
+            }
+
+        }
+    }
+
     Image {
         id: trough
         anchors.verticalCenter: parent.verticalCenter
@@ -67,21 +98,27 @@ Item {
             source: "image://themedimage/images/camera/camera_scrub_head_lrg"
         }
 
-        MouseArea {
-            id: mouse
-            anchors.fill: parent
 
-            drag.target: scrub
-            drag.axis: Drag.YAxis
-            drag.minimumY: troughStart - (scrub.height / 2)
-            drag.maximumY: troughEnd - (scrub.height / 2)
 
-            onPressed: {
-                // Move the scrubhead to the drag start point
-                moveScrub (mouse.y - (scrub.height / 2));
-            }
-        }
+
+//        MouseArea {
+//            id: mouse
+//            anchors.fill: parent
+
+//            drag.target: scrub
+//            drag.axis: Drag.YAxis
+//            drag.minimumY: troughStart - (scrub.height / 2)
+//            drag.maximumY: troughEnd - (scrub.height / 2)
+
+//            onPressed: {
+//                // Move the scrubhead to the drag start point
+//                moveScrub (mouse.y - (scrub.height / 2));
+//            }
+//        }
     }
+
+
+
 
     RepeatButton {
         id: up

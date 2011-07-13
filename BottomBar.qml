@@ -91,7 +91,6 @@ Image {
         value: camera.flashMode
         visible: camera.cameraHasFlash
 
-        //source: "image://themedimage/images/camera/camera_bottombar_up"
         activeBackgroundSource: "image://themedimage/images/camera/camera_bottombar_dn"
 
         flashMenuRotationAngle: bottomBarBackground.rotationAngle

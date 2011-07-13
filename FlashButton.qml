@@ -68,7 +68,7 @@ PushButton {
     onClicked: {
         var map = mapToItem (window, button.x + (button.width / 2), button.y);
 
-        flashMenu.setPosition( button.x + (button.width / 2), map.y)
+        flashMenu.setPosition( button.x + (button.width / 2), map.y-15)
         flashMenu.show()
     }
 

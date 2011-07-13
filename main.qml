@@ -12,6 +12,7 @@ import QtMultimediaKit 1.1
 import MeeGo.Ux.Components.Common 0.1
 import MeeGo.Ux.Kernel 0.1
 import MeeGo.App.Camera 0.1
+import MeeGo.Ux.Gestures 0.1
 
 Window {
     id: window
@@ -153,7 +154,7 @@ Window {
                 }
 
                 Component.onCompleted: {
-                    if (camera.maxZoom > 1.0)
+                    //if (camera.maxZoom > 1.0)
                         loader.sourceComponent = zoomer
                 }
             }
@@ -181,11 +182,13 @@ Window {
                 color: "black"
                 visible: false
 
-                MouseArea {
+                GestureArea {
                     anchors.fill: parent
-                    onClicked: {
-                        standbyCover.visible = false;
-                        camera.leaveStandbyMode ();
+                    Tap {
+                        onStarted: {
+                            standbyCover.visible = false;
+                            camera.leaveStandbyMode ();
+                        }
                     }
                 }
             }
@@ -224,6 +227,31 @@ Window {
                     onZoomLevelChanged: {
                         camera.zoom = zoomLevel;
                     }
+                }
+
+            }
+
+            ZoomSlider {
+                x: 12
+                y: (window.height - height) / 2
+
+                transitions: Transition {
+                    NumberAnimation {
+                        properties: opacity
+                        duration: 100
+
+                    }
+                }
+
+
+                state: (orientation == 0 || orientation == 2) ? "portrait" : "landscape"
+
+                rotationAngle: componentsRotationAngle
+                rotationCounterClockwise: isCounterClockwise
+                rotationAnimationDuration: rotationAnimationSpeed
+
+                onZoomLevelChanged: {
+                    camera.zoom = zoomLevel;
                 }
             }
 

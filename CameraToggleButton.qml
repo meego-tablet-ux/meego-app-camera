@@ -7,6 +7,7 @@
  */
 
 import QtQuick 1.0
+import MeeGo.Ux.Gestures 0.1
 
 Item {
     id: button
@@ -25,13 +26,33 @@ Item {
         anchors.fill: parent
     }
 
-    MouseArea {
-        id: mouse
-        anchors.fill: parent
-        onClicked: parent.clicked ()
-        onPressed: parent.pressed = true;
-        onReleased: parent.pressed = false;
+    Timer {
+        id: animationTimer
+        interval: 200
+        repeat: false
+        onTriggered:  button.pressed = false
     }
+
+    GestureArea {
+        anchors.fill: parent
+        Tap {
+            onStarted: {
+                button.clicked()
+                button.pressed = true
+                animationTimer.start();
+            }
+        }
+    }
+
+
+
+//    MouseArea {
+//        id: mouse
+//        anchors.fill: parent
+//        onClicked: parent.clicked ()
+//        onPressed: parent.pressed = true;
+//        onReleased: parent.pressed = false;
+//    }
 
     states: [
         State {

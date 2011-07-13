@@ -8,6 +8,7 @@
 
 import QtQuick 1.0
 import MeeGo.App.Camera 0.1
+import MeeGo.Ux.Gestures 0.1
 
 Item {
     id: bin
@@ -36,15 +37,34 @@ Item {
         anchors.fill: parent
     }
 
-    MouseArea {
-        anchors.fill: parent
+    Timer {
+        id: animationTimer
+        interval: 200
+        repeat: false
+        onTriggered:  bin.state = "up"
+    }
 
-        onPressed: { bin.state = "down"; }
-        onReleased: { bin.state = "up"; }
-        onClicked: {
-            bin.clicked ();
+    GestureArea {
+        anchors.fill: parent
+        Tap {
+            onStarted: {
+                bin.clicked()
+                bin.state = "down"
+                animationTimer.start();
+            }
         }
     }
+
+
+//    MouseArea {
+//        anchors.fill: parent
+
+//        onPressed: { bin.state = "down"; }
+//        onReleased: { bin.state = "up"; }
+//        onClicked: {
+//            bin.clicked ();
+//        }
+//    }
 
     states: [
         State {
