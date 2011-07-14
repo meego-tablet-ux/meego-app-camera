@@ -86,3 +86,22 @@ Item {
         }
     ]
 }
+
+//    RepeatButton {
+//        id: up
+
+//        anchors.horizontalCenter: parent.horizontalCenter
+//        y: (trough.y / 2) - (height / 2)
+
+//        source: "image://themedimage/images/camera/camera_icn_add_up"
+//        activeSource: "image://themedimage/images/camera/camera_icn_add_dn"
+
+//        onClicked: {
+//            moveScrub (scrub.y - stepSize);
+//        }
+
+//        rotationAngle: slider.rotationAngle
+//        rotationCounterClockwise: slider.rotationCounterClockwise
+//        rotationAnimationDuration: slider.rotationAnimationDuration
+//    }
+

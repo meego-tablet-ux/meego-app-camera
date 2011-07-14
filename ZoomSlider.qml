@@ -101,59 +101,24 @@ Item {
 
 
 
-//        MouseArea {
-//            id: mouse
-//            anchors.fill: parent
-
-//            drag.target: scrub
-//            drag.axis: Drag.YAxis
-//            drag.minimumY: troughStart - (scrub.height / 2)
-//            drag.maximumY: troughEnd - (scrub.height / 2)
-
-//            onPressed: {
-//                // Move the scrubhead to the drag start point
-//                moveScrub (mouse.y - (scrub.height / 2));
-//            }
-//        }
     }
 
-
-
-
-    RepeatButton {
+    Image {
         id: up
 
         anchors.horizontalCenter: parent.horizontalCenter
         y: (trough.y / 2) - (height / 2)
 
         source: "image://themedimage/images/camera/camera_icn_add_up"
-        activeSource: "image://themedimage/images/camera/camera_icn_add_dn"
-
-        onClicked: {
-            moveScrub (scrub.y - stepSize);
-        }
-
-        rotationAngle: slider.rotationAngle
-        rotationCounterClockwise: slider.rotationCounterClockwise
-        rotationAnimationDuration: slider.rotationAnimationDuration
     }
 
-    RepeatButton {
+    Image {
         id: down
 
         anchors.horizontalCenter: parent.horizontalCenter
         y: trough.y + trough.height + (((parent.height - (trough.y + trough.height)) / 2) - (height / 2)) - 9 // -9 for dropshadow
 
         source: "image://themedimage/images/camera/camera_icn_minus_up"
-        activeSource: "image://themedimage/images/camera/camera_icn_minus_dn"
-
-        onClicked: {
-            moveScrub (scrub.y + stepSize);
-        }
-
-        rotationAngle: slider.rotationAngle
-        rotationCounterClockwise: slider.rotationCounterClockwise
-        rotationAnimationDuration: slider.rotationAnimationDuration
     }
 
     states: [

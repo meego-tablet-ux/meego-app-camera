@@ -154,7 +154,7 @@ Window {
                 }
 
                 Component.onCompleted: {
-                    //if (camera.maxZoom > 1.0)
+                    if (camera.maxZoom > 1.0)
                         loader.sourceComponent = zoomer
                 }
             }
@@ -231,29 +231,6 @@ Window {
 
             }
 
-            ZoomSlider {
-                x: 12
-                y: (window.height - height) / 2
-
-                transitions: Transition {
-                    NumberAnimation {
-                        properties: opacity
-                        duration: 100
-
-                    }
-                }
-
-
-                state: (orientation == 0 || orientation == 2) ? "portrait" : "landscape"
-
-                rotationAngle: componentsRotationAngle
-                rotationCounterClockwise: isCounterClockwise
-                rotationAnimationDuration: rotationAnimationSpeed
-
-                onZoomLevelChanged: {
-                    camera.zoom = zoomLevel;
-                }
-            }
 
             Loader {
                 id: loader

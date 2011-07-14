@@ -55,17 +55,6 @@ Item {
         }
     }
 
-
-//    MouseArea {
-//        anchors.fill: parent
-
-//        onPressed: { bin.state = "down"; }
-//        onReleased: { bin.state = "up"; }
-//        onClicked: {
-//            bin.clicked ();
-//        }
-//    }
-
     states: [
         State {
             name: "up"

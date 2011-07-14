@@ -44,16 +44,6 @@ Item {
         }
     }
 
-
-
-//    MouseArea {
-//        id: mouse
-//        anchors.fill: parent
-//        onClicked: parent.clicked ()
-//        onPressed: parent.pressed = true;
-//        onReleased: parent.pressed = false;
-//    }
-
     states: [
         State {
             name: "unchecked"

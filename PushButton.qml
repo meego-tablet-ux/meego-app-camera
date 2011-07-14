@@ -65,18 +65,6 @@ Item {
     }
 
 
-//    MouseArea {
-//        id: mouse
-//        anchors.fill: parent
-
-//        onClicked: parent.clicked (mouse)
-//        onPressed: {
-//            parent.state = "down"
-//            parent.pressed(mouse)
-//        }
-//        onReleased: parent.state = "up"
-//    }
-
     states: [
         State {
             name: "up"
