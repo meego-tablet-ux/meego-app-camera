@@ -19,6 +19,8 @@
 #include <QDeclarativeItem>
 #include <QtLocation/QGeoCoordinate>
 
+#include <policy/resource-set.h>
+
 #include "cameraservice.h"
 #include "thumbnailer.h"
 
@@ -144,6 +146,16 @@ class ViewFinder : public QDeclarativeItem
   protected:
     virtual void geometryChanged (const QRectF &newGeometry,
                                   const QRectF &oldGeometry);
+
+    void releaseCamera();
+
+    // policy-aware support
+    void initResourcePolicy();
+    bool policyAware() const { return _bPolicyAware; }
+  private slots:
+    void acquire();
+    void release();
+
   private slots:
     void init();
     void initExtra();
@@ -173,6 +185,10 @@ class ViewFinder : public QDeclarativeItem
     void completeImage ();
 
     void setLastCoordinate(QGeoCoordinate _lastCoordinate) { m_lastCoordinate = _lastCoordinate; }
+
+    // policy-aware support
+    void resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType> &);
+    void resourceLostHandler();
 
   private:
     QString generateTemporaryImageFilename () const;
@@ -226,6 +242,11 @@ class ViewFinder : public QDeclarativeItem
     QString _strPicturesDir, _strVideosDir;
 
     int _currentOrientation, _lastPhotoOrientation;
+
+    // policy-aware support
+    bool _bPolicyAware;
+    ResourcePolicy::ResourceSet *_resourceSet;
+    bool _bSkipCameraReset;
 };
 
 #endif
