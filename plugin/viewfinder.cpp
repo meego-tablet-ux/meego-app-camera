@@ -253,6 +253,8 @@ ViewFinder::~ViewFinder ()
 void
 ViewFinder::releaseCamera()
 {
+  _ready = false;
+
   // Shut down the camera
   if (_camera) {
     _camera->stop ();
@@ -590,6 +592,11 @@ ViewFinder::updateLockStatus (QCamera::LockStatus status,
 void
 ViewFinder::takePhoto ()
 {
+  if (!ready())
+      return;
+
+  _ready = false; // disable while image taking is in a process
+
   QString filename = generateTemporaryImageFilename();
 
 #ifdef SHOW_DEBUG
@@ -630,6 +637,7 @@ void ViewFinder::completeImage ()
 void
 ViewFinder::imageSaved (int id, const QString &filename)
 {
+    _ready = _imageCapture->isReadyForCapture();
 
     emit imageCapturedSig();
 
@@ -648,6 +656,8 @@ ViewFinder::imageCaptureError (int id,
                                QCameraImageCapture::Error error,
                                const QString &message)
 {
+    _ready = _imageCapture->isReadyForCapture();
+
   if (error == QCameraImageCapture::OutOfSpaceError) {
     emit noSpaceOnDevice ();
   }
@@ -716,6 +726,11 @@ ViewFinder::flashMode ()
 bool
 ViewFinder::changeCamera ()
 {
+  if (!ready()) {
+      // wait for a ready state before allowing to change camera again as it leads to crash sometimes
+      return false;
+  }
+
   int nextCamera = _currentCamera + 1;
 
   if (nextCamera >= _cameraCount) {

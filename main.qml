@@ -263,6 +263,9 @@ Window {
                 activeBackgroundSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onPressed: {
+                    if (!camera.ready)
+                        return
+
                     if (shutterLoader.sourceComponent == null)
                         shutterLoader.sourceComponent = shutterAnimation;
                     shutterLoader.item.startClosingAnimation();
