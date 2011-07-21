@@ -103,7 +103,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
 {
   _settings = new Settings ();
 
-  QTimer::singleShot(0, this, SLOT(init()));
+  init();//QTimer::singleShot(0, this, SLOT(init()));
 }
 
 void ViewFinder::init()
