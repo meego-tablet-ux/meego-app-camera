@@ -89,7 +89,7 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     _recording (false),
     _duration (0),
     _zoom (0.0),
-    _canFocus (false),
+    _canFocus (false), _canLockFocus(false),
     _rotateAngle (0),
     _cameraHasFlash (true),
     _thumbnailer (0),
@@ -254,6 +254,7 @@ void
 ViewFinder::releaseCamera()
 {
   _ready = false;
+  _canFocus = _canLockFocus = false;
 
   // Shut down the camera
   if (_camera) {
@@ -497,6 +498,8 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
                                                QCamera::LockChangeReason)),
            this, SLOT (updateLockStatus (QCamera::LockStatus,
                                          QCamera::LockChangeReason)));
+  connect (_camera, SIGNAL(locked()), this, SLOT(locked()));
+  connect (_camera, SIGNAL(lockFailed()), this, SLOT(locked())); // still do a shot even if focus locking failed
 
   connect (_imageCapture, SIGNAL (imageCaptured (int, const QImage &)),
            this, SLOT (imageCaptured (int, const QImage &)));
@@ -515,6 +518,13 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   updateLockStatus (_camera->lockStatus (), QCamera::UserRequest);
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
+
+  // set focus mode
+  QCameraFocus *cameraFocus(_camera->focus ());
+  if (cameraFocus->isFocusModeSupported(QCameraFocus::AutoFocus))
+    cameraFocus->setFocusMode(QCameraFocus::AutoFocus);
+  if (cameraFocus->isFocusPointModeSupported(QCameraFocus::FocusPointCenter))
+    cameraFocus->setFocusPointMode(QCameraFocus::FocusPointCenter);
 
   // set capture mode from settings
   _camera->setCaptureMode (Video != _settings->captureMode () ? QCamera::CaptureStillImage : QCamera::CaptureVideo);
@@ -541,11 +551,16 @@ ViewFinder::updateCameraState (QCamera::State state)
   _canFocus = _camera->focus ()->isAvailable ();
   emit canFocusChanged ();
 
+  _canLockFocus = _canFocus && _camera->supportedLocks().testFlag(QCamera::LockFocus);
+  if (_canLockFocus && 2 == _cameraCount && 1 == _currentCamera) // mrst hack: front camera doesn't support focus
+      _canLockFocus = false;
+
   if (_canFocus) {
     _maxZoom = _camera->focus()->maximumDigitalZoom() * _camera->focus()->maximumOpticalZoom();
 
     // Recalculate the zoom as relative to the current camera's max zoom
-    _camera->focus ()->zoomTo (1.0 + (_zoom * _camera->focus ()->maximumOpticalZoom ()), 1.0);
+    if (_maxZoom > 1.0)
+        _camera->focus ()->zoomTo (1.0 + (_zoom * _camera->focus ()->maximumOpticalZoom ()), 1.0);
   }
   else {
       _maxZoom = 1.; // zoom not supported
@@ -649,6 +664,8 @@ ViewFinder::imageSaved (int id, const QString &filename)
   QFuture<QString> future = QtConcurrent::run(addGeoTag, filename, realFileName, m_lastCoordinate, currentOrientation(), (currentCamera() == (cameraCount()-1)) );
   _futureWatcher.setFuture(future);
 
+  if (_canLockFocus)
+    _camera->unlock(QCamera::LockFocus);
 }
 
 void
@@ -746,10 +763,10 @@ ViewFinder::changeCamera ()
     return true;
   }
 
+  int _lastCamera = _currentCamera;
   QByteArray strDev;
-  if (setCamera (strDev = QCamera::availableDevices ()[nextCamera]) == true) {
+  if (setCamera (strDev = QCamera::availableDevices ()[_currentCamera = nextCamera]) == true) {
       _settings->setCameraDevice(strDev);
-    _currentCamera = nextCamera;
 
 #if 0
     // Compiling this will pretend that the camera can focus.
@@ -762,6 +779,8 @@ ViewFinder::changeCamera ()
     return true;
   }
 
+  // error switching cameras
+  _currentCamera = _lastCamera;
   return false;
 }
 
@@ -1161,5 +1180,20 @@ void ViewFinder::resourceLostHandler()
   releaseCamera();
 }
 
+void ViewFinder::startFocus()
+{
+  if (_camera) {
+    _camera->unlock(QCamera::LockFocus);
+    _camera->searchAndLock(QCamera::LockFocus);
+  }
+}
+
+void ViewFinder::locked()
+{
+    if (_camera->requestedLocks().testFlag(QCamera::LockFocus))
+    {
+        emit focusLocked();
+    }
+}
 
 //QML_DECLARE_TYPE(ViewFinder);

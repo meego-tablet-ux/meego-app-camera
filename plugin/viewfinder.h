@@ -92,6 +92,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (bool canFocus READ canFocus NOTIFY canFocusChanged);
     bool canFocus () { return _canFocus; }
 
+    Q_PROPERTY (bool canLockFocus READ canLockFocus);
+    bool canLockFocus () const { return _canLockFocus; }
+
     Q_PROPERTY (int rotateAngle READ rotateAngle WRITE setRotateAngle NOTIFY rotateAngleChanged);
     int rotateAngle () { return _rotateAngle; }
     void setRotateAngle (int angle);
@@ -131,6 +134,8 @@ class ViewFinder : public QDeclarativeItem
     void imageCapturedSig ();
     void noSpaceOnDevice ();
 
+    void focusLocked();
+
     void currentOrientationChanged();
     void capturedVideoLocationChanged();
 
@@ -142,6 +147,7 @@ class ViewFinder : public QDeclarativeItem
     Q_INVOKABLE void enterStandbyMode ();
     Q_INVOKABLE void leaveStandbyMode ();
     Q_INVOKABLE void setCurrentOrientation(int orientation);
+    Q_INVOKABLE void startFocus();
 
   protected:
     virtual void geometryChanged (const QRectF &newGeometry,
@@ -164,6 +170,7 @@ class ViewFinder : public QDeclarativeItem
     void displayCameraError ();
     void updateLockStatus (QCamera::LockStatus status,
                            QCamera::LockChangeReason reason);
+    void locked();
     void imageCaptured (int id, const QImage &preview);
     void imageSaved (int id, const QString &filename);
     void imageCaptureError (int id,
@@ -214,7 +221,7 @@ class ViewFinder : public QDeclarativeItem
     qreal _maxZoom;
     QString _imageLocation;
     QString _currentLocation;
-    bool _canFocus;
+    bool _canFocus, _canLockFocus;
     bool _rotateAngle;
 
     bool _cameraHasFlash;
