@@ -93,21 +93,21 @@ PushButton {
 
                 iconSource:{
                     if(name == "Auto")
-                        return "image://themedimage/icons/internal/camera-flash-auto"
+                        return "image://themedimage/icons/internal/camera-flash-auto-menu"
                     else if(name == "On")
-                        return "image://themedimage/icons/internal/camera-flash-on"
+                        return "image://themedimage/icons/internal/camera-flash-on-menu"
                     else if(name == "Off")
-                        return "image://themedimage/icons/internal/camera-flash-off"
+                        return "image://themedimage/icons/internal/camera-flash-off-menu"
                     else
                         return ""
                 }
                 activeIconSource:{
                     if(name == "Auto")
-                        return "image://themedimage/icons/internal/camera-flash-auto-active"
+                        return "image://themedimage/icons/internal/camera-flash-auto-selected"
                     else if(name == "On")
-                        return "image://themedimage/icons/internal/camera-flash-on-active"
+                        return "image://themedimage/icons/internal/camera-flash-on-selected"
                     else if(name == "Off")
-                        return "image://themedimage/icons/internal/camera-flash-off-active"
+                        return "image://themedimage/icons/internal/camera-flash-off-selected"
                     else
                         return ""
                 }
