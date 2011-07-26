@@ -98,10 +98,16 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     _viewFinder (0),
     _imageCapture (0),
     _settings (0),
-    _currentOrientation(0), _lastPhotoOrientation(0)
+    _currentOrientation(0), _lastPhotoOrientation(0),
+    _bPolicyAware(true), _resourceSet(0), _bSkipCameraReset(false)
 {
   _settings = new Settings ();
 
+  init();//QTimer::singleShot(0, this, SLOT(init()));
+}
+
+void ViewFinder::init()
+{
   foreach (const QByteArray &deviceName, QCamera::availableDevices ()) {
     QString description = QCamera::deviceDescription (deviceName);
 #ifdef SHOW_DEBUG
@@ -112,9 +118,6 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
   QList<QByteArray> devs(QCamera::availableDevices ());
   _cameraCount = devs.count ();
   emit cameraCountChanged ();
-
-  _viewFinder = new QGraphicsVideoItem (this);
-  _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
 
   // Try to restore the last used camera
   QByteArray strDev(_settings->cameraDevice());
@@ -129,13 +132,19 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
       _currentCamera = nFind;
   }
 
-  setCamera (strDev);
+  if (policyAware()) {
+      initResourcePolicy();
+      acquire();
+  }
+  else {
+    setCamera (strDev);
+  }
 
   qRegisterMetaType<QGeoCoordinate>("QGeoCoordinate");
   connect(&photoThread, SIGNAL(lastCoordinate(QGeoCoordinate)), this, SLOT(setLastCoordinate(QGeoCoordinate)));
   photoThread.start();
-  QTimer::singleShot(0, this, SLOT(initExtra()));
 
+  QTimer::singleShot(0, this, SLOT(initExtra()));
 }
 
 
@@ -217,9 +226,9 @@ void ViewFinder::initExtra()
 
   _strPicturesDir.prepend(QDir::homePath() + '/');
   _strVideosDir.prepend(QDir::homePath() + '/');
+
   _lastPhotoOrientation =_settings->lastCapturedPhotoOrientation();
   setImageLocation(_settings->lastCapturedPhotoPath());
-
 }
 
 ViewFinder::~ViewFinder ()
@@ -241,8 +250,8 @@ ViewFinder::~ViewFinder ()
   delete _thumbnailer;
 }
 
-bool
-ViewFinder::setCamera (const QByteArray &cameraDevice)
+void
+ViewFinder::releaseCamera()
 {
   // Shut down the camera
   if (_camera) {
@@ -253,6 +262,16 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   delete _audioSource;
   delete _mediaRecorder;
   delete _camera;
+  _imageCapture = 0;
+  _audioSource = 0;
+  _mediaRecorder = 0;
+  _camera = 0;
+}
+
+bool
+ViewFinder::setCamera (const QByteArray &cameraDevice)
+{
+  releaseCamera();
 
   if (cameraDevice.isEmpty ()) {
 #ifdef SHOW_DEBUG
@@ -451,6 +470,11 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   qDebug () << "Using resolution: " << _imageCapture->encodingSettings ().resolution ().width () << "x" << _imageCapture->encodingSettings ().resolution ().height ();
 #endif
 
+  if (_viewFinder == 0) {
+    _viewFinder = new QGraphicsVideoItem (this);
+    _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
+  }
+
   QSize viewFinderSize(1280, 800);
   _viewFinder->setSize (viewFinderSize);
   _viewFinder->setTransformOriginPoint (viewFinderSize.width () / 2, viewFinderSize.height () / 2);
@@ -490,8 +514,10 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
   mediaRecorderStateChanged (_mediaRecorder->state ());
 
+  // set capture mode from settings
+  _camera->setCaptureMode (Video != _settings->captureMode () ? QCamera::CaptureStillImage : QCamera::CaptureVideo);
   _camera->start ();
-  _started = true;
+  _started = true; // set the flag to avoid starting camera second time
 
   // Fire this on an idle so that the signal will be picked up when the
   // object has been created
@@ -542,6 +568,8 @@ ViewFinder::updateCameraState (QCamera::State state)
 
   if ((!_cameraHasFlash && Off != flashMode()) || (!_cameraHasAutoFlash && Auto == flashMode()))
     setFlashMode(Off);
+  else
+    setFlashMode(_settings->flashMode());
 }
 
 void
@@ -716,12 +744,6 @@ ViewFinder::changeCamera ()
 
     emit cameraChanged ();
 
-    // set capture mode from settings
-    _camera->setCaptureMode (Video != _settings->captureMode () ? QCamera::CaptureStillImage : QCamera::CaptureVideo);
-    _camera->start ();
-    _started = true; // set the flag to avoid starting camera second time
-
-
     return true;
   }
 
@@ -734,6 +756,15 @@ ViewFinder::setCaptureMode (ViewFinder::CaptureMode mode)
 #ifdef SHOW_DEBUG
   qDebug () << "Setting capture mode: " << mode;
 #endif
+
+  if (!_camera)
+      return;
+
+  if (policyAware()) {
+    _bSkipCameraReset = true; // don't need to reset camera object just release and acquire resources needed
+    release();
+    QTimer::singleShot(0, this, SLOT(acquire()));
+  }
 
   switch (mode) {
   case ViewFinder::Still:
@@ -894,6 +925,9 @@ QString ViewFinder::durationString()
 void
 ViewFinder::repositionViewFinder (const QRectF &geometry)
 {
+  if (_viewFinder == 0)
+    return;
+
   QSizeF size = _viewFinder->size ();
 #ifdef SHOW_DEBUG
   qDebug () << "Viewfinder size: " << size.width () << "x" << size.height ();
@@ -1018,16 +1052,14 @@ ViewFinder::enterStandbyMode ()
 void
 ViewFinder::leaveStandbyMode ()
 {
-//    if (_init) {
-//      _init = false;
-//      QTimer::singleShot(0, this, SLOT(initExtra()));
-//      return;
-//    }
-
   // don't start camera if it's already started
   if (_camera && !_started && 0 != qApp->activeWindow ()) {
     _camera->start ();
     _started = true;
+  }
+
+  if (0 == _camera && policyAware()) {
+      acquire();
   }
 }
 
@@ -1051,5 +1083,68 @@ ViewFinder::setRotateAngle (int angle)
 }
 
 void ViewFinder::setImageLocation(const QString & _str) { _imageLocation = _str; emit imageLocationChanged(); _settings->setLastCapturedPhotoPath(_imageLocation);}
+
+void ViewFinder::initResourcePolicy()
+{
+  _resourceSet = new ResourcePolicy::ResourceSet("camera", this);
+  _resourceSet->setAlwaysReply();
+  ResourcePolicy::VideoResource *videoResource = new ResourcePolicy::VideoResource();
+//  videoResource->setProcessID(QCoreApplication::applicationPid());
+  _resourceSet->addResourceObject(videoResource);
+  _resourceSet->addResource(ResourcePolicy::VideoRecorderType);
+
+  connect(_resourceSet, SIGNAL(resourcesGranted(const QList<ResourcePolicy::ResourceType>&)),
+    this, SLOT(resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType>&)));
+  connect(_resourceSet, SIGNAL(lostResources()), this, SLOT(resourceLostHandler()));
+}
+
+void ViewFinder::acquire()
+{
+  // for video capturing need both audio and video resources
+  if (Video == captureMode()) {
+    // audio playback should be limited during recording - we don't need other sounds to desturb video recording
+    if (!_resourceSet->contains(ResourcePolicy::AudioPlaybackType)) {
+      ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("camera");
+      audioResource->setProcessID(QCoreApplication::applicationPid());
+      _resourceSet->addResourceObject(audioResource);
+
+      _resourceSet->addResource(ResourcePolicy::AudioRecorderType);
+    }
+  } else {
+    if (_resourceSet->contains(ResourcePolicy::AudioPlaybackType)) {
+      _resourceSet->deleteResource(ResourcePolicy::AudioPlaybackType);
+      _resourceSet->deleteResource(ResourcePolicy::AudioRecorderType);
+    }
+  }
+  _resourceSet->acquire();
+}
+
+void ViewFinder::release()
+{
+  _resourceSet->release();
+}
+
+void ViewFinder::resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType> &)
+{
+  if (_bSkipCameraReset) {
+    _bSkipCameraReset = false;
+    return;
+  }
+
+  if (_cameraCount > _currentCamera) {
+    setCamera(QCamera::availableDevices()[_currentCamera]);
+  }
+}
+
+void ViewFinder::resourceLostHandler()
+{
+  // some other app requested to release all resources
+  if (recording()) {
+    endRecording();
+  }
+
+  releaseCamera();
+}
+
 
 //QML_DECLARE_TYPE(ViewFinder);

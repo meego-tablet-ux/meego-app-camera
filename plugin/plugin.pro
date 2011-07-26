@@ -3,7 +3,8 @@ TARGET = Camera
 QT += declarative dbus
 CONFIG += qt plugin mobility dbus link_pkgconfig
 MOBILITY += multimedia location
-PKGCONFIG += gconf-2.0 libexif
+PKGCONFIG += gconf-2.0 libexif libresourceqt1
+
 
 QMAKE_LFLAGS += -ljpeg
 
