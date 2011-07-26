@@ -65,6 +65,14 @@ Window {
 
             fullScreen: true
 
+            function cameraTakePhoto(){
+                if (shutterLoader.sourceComponent == null)
+                    shutterLoader.sourceComponent = shutterAnimation;
+                shutterLoader.item.startClosingAnimation();
+
+                camera.takePhoto();
+            }
+
             Connections {
                 target: window
                 onIsActiveWindowChanged: {
@@ -150,6 +158,10 @@ Window {
                         loader.sourceComponent = zoomer
                     }
                     loader.item.visible = (camera.maxZoom > 1.0);
+                }
+
+                onFocusLocked: {
+                    cameraTakePhoto()
                 }
 
                 Component.onCompleted: {
@@ -258,10 +270,13 @@ Window {
                 activeBackgroundSource: "image://themedimage/images/camera/camera_takephoto_dn"
 
                 onPressed: {
-                    if (shutterLoader.sourceComponent == null)
-                        shutterLoader.sourceComponent = shutterAnimation;
-                    shutterLoader.item.startClosingAnimation();
-                    camera.takePhoto();
+                    if (!camera.ready)
+                        return
+
+                    if (!camera.canLockFocus)
+                        cameraTakePhoto()
+                    else
+                        camera.startFocus()
                 }
             }
 
