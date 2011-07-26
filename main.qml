@@ -99,7 +99,10 @@ Window {
             ViewFinder {
                 id: camera
 
-                anchors.fill: parent
+                x: 0
+                y: topBar.height - 4
+                width: parent.width - photoButton.width
+                height: parent.height - topBar.height - bottomBar.height
 
                 currentOrientation: sensorOrientation
 
