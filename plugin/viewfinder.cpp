@@ -478,6 +478,19 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
   }
 
+  QRectF itemBounds = this->boundingRect ();
+  QSize viewFinderSize(itemBounds.width(), itemBounds.height());
+  if (viewFinderSize.isEmpty())
+    viewFinderSize = QSize(1280, 800);
+
+  _viewFinder->setSize (viewFinderSize);
+  _viewFinder->setTransformOriginPoint (viewFinderSize.width () / 2, viewFinderSize.height () / 2);
+
+  // Centre this in the view
+  float x = (itemBounds.width () - viewFinderSize.width ()) / 2;
+  float y = (itemBounds.height () - viewFinderSize.height ()) / 2;
+  _viewFinder->setPos (x, y);
+
   _camera->setViewfinder (_viewFinder);
 
   connect (_camera, SIGNAL (stateChanged (QCamera::State)),
@@ -952,18 +965,14 @@ ViewFinder::repositionViewFinder (const QRectF &geometry)
   if (_viewFinder == 0)
     return;
 
-  // Centre this in the view
-  QRectF itemBounds = this->boundingRect ();
+  QSizeF size = _viewFinder->size (); 
+  float x, y;
 
-  QSize viewFinderSize(itemBounds.width(), itemBounds.height());
-  if (viewFinderSize.isEmpty())
-    viewFinderSize = QSize(1280, 800);
-  _viewFinder->setSize (viewFinderSize);
-  _viewFinder->setTransformOriginPoint (viewFinderSize.width () / 2, viewFinderSize.height () / 2);
+  x = (geometry.width () - size.width ()) / 2;
+  y = (geometry.height () - size.height ()) / 2;
 
-  float x = (itemBounds.width () - viewFinderSize.width ()) / 2;
-  float y = (itemBounds.height () - viewFinderSize.height ()) / 2;
   _viewFinder->setPos (x, y);
+ 
 }
 
 void
