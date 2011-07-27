@@ -25,6 +25,9 @@
 #include "exifdatafactory.h"
 #include "jpegexiferizer.h"
 
+#include <QGLFramebufferObject>
+#include <QStyleOptionGraphicsItem>
+
 namespace  {
 
 QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord, int orientation, bool frontFacingCamera)
@@ -287,6 +290,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 #endif
     _camera = new QCamera (cameraDevice);
   }
+  connect(_camera, SIGNAL(statusChanged(QCamera::Status)), this, SLOT(onCameraStatusChanged(QCamera::Status)));
 
 #ifdef SHOW_DEBUG
   if (_camera->isMetaDataAvailable ()) {
@@ -592,6 +596,12 @@ ViewFinder::updateCameraState (QCamera::State state)
     setFlashMode(_settings->flashMode());
 }
 
+void ViewFinder::onCameraStatusChanged(QCamera::Status status)
+{
+    if(status == QCamera::ActiveStatus)
+        emit cameraReady();
+}
+
 void
 ViewFinder::displayCameraError ()
 {
@@ -750,6 +760,19 @@ ViewFinder::changeCamera ()
       // wait for a ready state before allowing to change camera again as it leads to crash sometimes
       return false;
   }
+
+  //viewfinder snapshot capture func should go here
+  QGLFramebufferObject buf(this->boundingRect().size().toSize());
+  QPainter painter(&buf);
+  this->paint(&painter,0,0);
+//  _viewFinder->paint(&painter,0,0);
+  _snapshot = QPixmap::fromImage(buf.toImage());
+  _snapshot.save("/home/meego/tst2.png");
+
+  QTimer::singleShot(300, this, SIGNAL(cameraReady()));
+
+  emit snapshotChanged();
+  emit snapshotReady();
 
   int nextCamera = _currentCamera + 1;
 

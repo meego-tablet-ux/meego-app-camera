@@ -97,81 +97,140 @@ Window {
                 color: "black"
             }
 
-            ViewFinder {
-                id: camera
+            Flipable {
 
+                id:flipArea
                 x: 0
                 y: topBar.height - 4
                 width: parent.width - photoButton.width
                 height: parent.height - topBar.height - bottomBar.height
 
-                currentOrientation: sensorOrientation
+                property bool flipped: false
 
-                onImageCapturedSig: {
-                    shutterLoader.item.startOpeningAnimation();
+                transform: Rotation {
+                    id: rotationItem
+                    origin.x: flipArea.width/2
+                    origin.y: flipArea.height/2
+                    axis.x: 0
+                    axis.y: 1
+                    axis.z: 0
                 }
-
-                rotateAngle: 0
-
-                state: (camera.captureMode == 0? "photo" : "video");
 
                 states: [
                     State {
-                        name: "photo"
+                        name: "front"
+                        when: !flipArea.flipped
                         PropertyChanges {
-                            target: camera
-                            captureMode: 0
-                        }
-                        PropertyChanges {
-                            target: window
-                            isInRecordingMode: false
+                            target: rotationItem
+                            angle: 0
+
                         }
                     },
                     State {
-                        name: "video"
+                        name: "back"
+                        when: flipArea.flipped
                         PropertyChanges {
-                            target: camera
-                            captureMode: 1
-                        }
-                        PropertyChanges {
-                            target: window
-                            isInRecordingMode: true
+                            target: rotationItem
+                            angle: 180
                         }
                     }
                 ]
 
-                //onImageCaptured: { console.log ("Photo taken"); }
-                onNoSpaceOnDevice: {
-                    // Stop the recording
-                    if (camera.recording) {
-                        camera.endRecording ();
+                transitions: [
+                    Transition {
+                        from: "back"
+                        to: "front"
+                        RotationAnimation {target: rotationItem; property: "angle"; direction: "Counterclockwise"; duration: 600}
                     }
-                    noSpaceDialogComponent.show()
+                ]
+
+                back: QmlPixmap {
+                    id: snapshotPixmap
+                    anchors.fill: parent
+                    pixmap: camera.snapshot
                 }
 
-                onCameraChanged: {
-                    if (loader.sourceComponent != null) {
-                        loader.item.resetZoom ();
+                front: ViewFinder {
+                    id: camera
+
+                    anchors.fill: parent
+
+                    currentOrientation: sensorOrientation
+
+                    onImageCapturedSig: {
+                        shutterLoader.item.startOpeningAnimation();
+                    }
+                    onSnapshotReady: flipArea.flipped = true
+                    onCameraReady: {
+                        if(flipArea.flipped)
+                            flipArea.flipped = false;
+                        console.log(camera.width, " ", camera.height)
+                        console.log(snapshotPixmap.width, " ", snapshotPixmap.height)
+                    }
+
+                    rotateAngle: 0
+
+                    state: (camera.captureMode == 0? "photo" : "video");
+
+                    states: [
+                        State {
+                            name: "photo"
+                            PropertyChanges {
+                                target: camera
+                                captureMode: 0
+                            }
+                            PropertyChanges {
+                                target: window
+                                isInRecordingMode: false
+                            }
+                        },
+                        State {
+                            name: "video"
+                            PropertyChanges {
+                                target: camera
+                                captureMode: 1
+                            }
+                            PropertyChanges {
+                                target: window
+                                isInRecordingMode: true
+                            }
+                        }
+                    ]
+
+                    //onImageCaptured: { console.log ("Photo taken"); }
+                    onNoSpaceOnDevice: {
+                        // Stop the recording
+                        if (camera.recording) {
+                            camera.endRecording ();
+                        }
+                        noSpaceDialogComponent.show()
+                    }
+
+                    onCameraChanged: {
+                        if (loader.sourceComponent != null) {
+                            loader.item.resetZoom ();
+                        }
+                    }
+
+                    onMaxZoomChanged: {
+                        if (loader.sourceComponent == null) {
+                            if (camera.maxZoom <= 1.0)
+                                return
+                            loader.sourceComponent = zoomer
+                        }
+                        loader.item.visible = (camera.maxZoom > 1.0);
+                    }
+
+                    onFocusLocked: {
+                        cameraTakePhoto()
+                    }
+
+                    Component.onCompleted: {
+                        if (camera.maxZoom > 1.0)
+                            loader.sourceComponent = zoomer
                     }
                 }
 
-                onMaxZoomChanged: {
-                    if (loader.sourceComponent == null) {
-                        if (camera.maxZoom <= 1.0)
-                            return
-                        loader.sourceComponent = zoomer
-                    }
-                    loader.item.visible = (camera.maxZoom > 1.0);
-                }
-
-                onFocusLocked: {
-                    cameraTakePhoto()
-                }
-
-                Component.onCompleted: {
-                    if (camera.maxZoom > 1.0)
-                        loader.sourceComponent = zoomer
-                }
             }
 
             Component {

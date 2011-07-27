@@ -13,6 +13,7 @@
 #include "roundedimage.h"
 #include "viewfinder.h"
 #include "shutteranimationcomponent.h"
+#include "qmlpixmap.h"
 
 components::components ()
 {
@@ -25,6 +26,7 @@ void components::registerTypes(const char *uri)
   qmlRegisterType<RoundedImage>(uri, 0, 1, "RoundedImage");
   qmlRegisterType<ViewFinder>(uri, 0, 1, "ViewFinder");
   qmlRegisterType<ShutterAnimationComponent>(uri, 0, 1, "ShutterAnimationComponent");
+  qmlRegisterType<QmlPixmap>(uri, 0, 1, "QmlPixmap");
 }
 
 
