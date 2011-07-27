@@ -114,6 +114,7 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY(QString capturedVideoLocation READ capturedVideoLocation NOTIFY capturedVideoLocationChanged);
     QString capturedVideoLocation() { return _currentLocation; }
 
+
   Q_SIGNALS:
     void readyChanged ();
     void flashModeChanged ();
@@ -138,6 +139,8 @@ class ViewFinder : public QDeclarativeItem
 
     void currentOrientationChanged();
     void capturedVideoLocationChanged();
+
+    void cameraReady();
 
   public slots:
     Q_INVOKABLE void takePhoto ();
@@ -167,6 +170,7 @@ class ViewFinder : public QDeclarativeItem
     void initExtra();
 
     void updateCameraState (QCamera::State);
+    void onCameraStatusChanged(QCamera::Status status);
     void displayCameraError ();
     void updateLockStatus (QCamera::LockStatus status,
                            QCamera::LockChangeReason reason);
@@ -196,6 +200,8 @@ class ViewFinder : public QDeclarativeItem
     // policy-aware support
     void resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType> &);
     void resourceLostHandler();
+
+
 
   private:
     QString generateTemporaryImageFilename () const;

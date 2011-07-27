@@ -96,81 +96,90 @@ Window {
                 color: "black"
             }
 
-            ViewFinder {
-                id: camera
+            Item {
 
+                id: livePreviewContainer
                 x: 0
                 y: topBar.height - 4
                 width: parent.width - photoButton.width
                 height: parent.height - topBar.height - bottomBar.height
 
-                currentOrientation: sensorOrientation
+                ViewFinder {
+                    id: camera
 
-                onImageCapturedSig: {
-                    shutterLoader.item.startOpeningAnimation();
-                }
+                    anchors.fill: parent
 
-                rotateAngle: 0
+                    currentOrientation: sensorOrientation
 
-                state: (camera.captureMode == 0? "photo" : "video");
+                    onImageCapturedSig: {
+                        shutterLoader.item.startOpeningAnimation();
+                    }
 
-                states: [
-                    State {
-                        name: "photo"
-                        PropertyChanges {
-                            target: camera
-                            captureMode: 0
+                    onCameraReady: {
+                        bottomBar.cameraSwitchBtnEnabled = true
+                    }
+
+                    state: (camera.captureMode == 0? "photo" : "video");
+
+                    states: [
+                        State {
+                            name: "photo"
+                            PropertyChanges {
+                                target: camera
+                                captureMode: 0
+                            }
+                            PropertyChanges {
+                                target: window
+                                isInRecordingMode: false
+                            }
+                        },
+                        State {
+                            name: "video"
+                            PropertyChanges {
+                                target: camera
+                                captureMode: 1
+                            }
+                            PropertyChanges {
+                                target: window
+                                isInRecordingMode: true
+                            }
                         }
-                        PropertyChanges {
-                            target: window
-                            isInRecordingMode: false
+                    ]
+
+                    //onImageCaptured: { console.log ("Photo taken"); }
+                    onNoSpaceOnDevice: {
+                        // Stop the recording
+                        if (camera.recording) {
+                            camera.endRecording ();
                         }
-                    },
-                    State {
-                        name: "video"
-                        PropertyChanges {
-                            target: camera
-                            captureMode: 1
-                        }
-                        PropertyChanges {
-                            target: window
-                            isInRecordingMode: true
+                        noSpaceDialogComponent.show()
+                    }
+
+                    onCameraChanged: {
+                        if (loader.sourceComponent != null) {
+                            loader.item.resetZoom ();
                         }
                     }
-                ]
 
-                //onImageCaptured: { console.log ("Photo taken"); }
-                onNoSpaceOnDevice: {
-                    // Stop the recording
-                    if (camera.recording) {
-                        camera.endRecording ();
+                    onMaxZoomChanged: {
+                        if (loader.sourceComponent == null) {
+                            if (camera.maxZoom <= 1.0)
+                                return
+                            loader.sourceComponent = zoomer
+                        }
+                        loader.item.visible = (camera.maxZoom > 1.0);
                     }
-                    noSpaceDialogComponent.show()
-                }
 
-                onCameraChanged: {
-                    if (loader.sourceComponent != null) {
-                        loader.item.resetZoom ();
+                    onFocusLocked: {
+                        cameraTakePhoto()
+                    }
+
+                    Component.onCompleted: {
+                        if (camera.maxZoom > 1.0)
+                            loader.sourceComponent = zoomer
                     }
                 }
 
-                onMaxZoomChanged: {
-                    if (loader.sourceComponent == null) {
-                        if (camera.maxZoom <= 1.0)
-                            return
-                        loader.sourceComponent = zoomer
-                    }
-                    loader.item.visible = (camera.maxZoom > 1.0);
-                }
-
-                onFocusLocked: {
-                    cameraTakePhoto()
-                }
-
-                Component.onCompleted: {
-                    if (camera.maxZoom > 1.0)
-                        loader.sourceComponent = zoomer
-                }
             }
 
             Component {
@@ -253,6 +262,10 @@ Window {
                 rotationAngle: componentsRotationAngle
                 rotationCounterClockwise: isCounterClockwise
                 rotationAnimationDuration: window.rotationAnimationSpeed
+                onSwitchCamera: {
+                    cameraSwitchBtnEnabled = false;
+                    camera.changeCamera();
+                }
             }
 
             PushButton {

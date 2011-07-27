@@ -16,6 +16,9 @@ Image {
     property bool rotationCounterClockwise: false
     property int rotationAnimationDuration: 0
 
+    signal switchCamera();
+    property bool cameraSwitchBtnEnabled: true
+
     width: parent.width
     source: {
         if (orientation == 1 || orientation == 3) {
@@ -77,9 +80,12 @@ Image {
         rotationCounterClockwise: bottomBarBackground.rotationCounterClockwise
         rotationAnimationDuration: bottomBarBackground.rotationAnimationDuration
 
+        enabled: cameraSwitchBtnEnabled
+
         visible: camera.cameraCount > 1
         onClicked: {
-            camera.changeCamera ();
+//            camera.changeCamera ();
+            switchCamera();
         }
     }
 

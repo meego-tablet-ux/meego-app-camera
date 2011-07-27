@@ -25,6 +25,9 @@
 #include "exifdatafactory.h"
 #include "jpegexiferizer.h"
 
+#include <QGLFramebufferObject>
+#include <QStyleOptionGraphicsItem>
+
 namespace  {
 
 QString addGeoTag(QString tmpPath, QString destPath, QGeoCoordinate coord, int orientation, bool frontFacingCamera)
@@ -287,6 +290,7 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 #endif
     _camera = new QCamera (cameraDevice);
   }
+  connect(_camera, SIGNAL(statusChanged(QCamera::Status)), this, SLOT(onCameraStatusChanged(QCamera::Status)));
 
 #ifdef SHOW_DEBUG
   if (_camera->isMetaDataAvailable ()) {
@@ -590,6 +594,12 @@ ViewFinder::updateCameraState (QCamera::State state)
     setFlashMode(Off);
   else
     setFlashMode(_settings->flashMode());
+}
+
+void ViewFinder::onCameraStatusChanged(QCamera::Status status)
+{
+    if(status == QCamera::ActiveStatus)
+        emit cameraReady();
 }
 
 void
