@@ -177,6 +177,7 @@ class ViewFinder : public QDeclarativeItem
                             QCameraImageCapture::Error error,
                             const QString &message);
     void imageReadyForCaptureChanged (bool ready);
+    void readyForCaptureChanged(bool);
 
     void mediaRecorderStateChanged (QMediaRecorder::State state);
     void mediaRecorderError (QMediaRecorder::Error error);

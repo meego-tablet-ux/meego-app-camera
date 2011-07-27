@@ -517,6 +517,13 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   connect (_imageCapture, SIGNAL (readyForCaptureChanged (bool)),
            this, SLOT (imageReadyForCaptureChanged (bool)));
 
+  connect( _imageCapture,
+          SIGNAL(readyForCaptureChanged (bool)),
+          this,
+          SLOT(readyForCaptureChanged(bool)));
+
+
+
 //  updateCameraState (_camera->state ());
   updateLockStatus (_camera->lockStatus (), QCamera::UserRequest);
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
@@ -613,7 +620,7 @@ ViewFinder::takePhoto ()
   if (!ready())
       return;
 
-  _ready = false; // disable while image taking is in a process
+  _ready = false;
 
   QString filename = generateTemporaryImageFilename();
 
@@ -657,8 +664,6 @@ ViewFinder::imageSaved (int id, const QString &filename)
 {
     _ready = _imageCapture->isReadyForCapture();
 
-    emit imageCapturedSig();
-
     QString realFileName = generateImageFilename();
 #ifdef SHOW_DEBUG
   qDebug () << "Image saved: " << id << " - " << filename;
@@ -686,6 +691,17 @@ ViewFinder::imageCaptureError (int id,
   qDebug () << "Image error: " << id << " - " << message << "(" << error << ")";
 #endif
 }
+
+void
+ViewFinder::readyForCaptureChanged(bool isReady)
+{
+
+    _ready = isReady;
+    if ( isReady )
+        emit imageCapturedSig ();
+
+}
+
 
 void
 ViewFinder::imageReadyForCaptureChanged (bool ready)
