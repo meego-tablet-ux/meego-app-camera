@@ -762,14 +762,10 @@ ViewFinder::changeCamera ()
   }
 
   //viewfinder snapshot capture func should go here
-  QGLFramebufferObject buf(this->boundingRect().size().toSize());
-  QPainter painter(&buf);
-  this->paint(&painter,0,0);
+//  QGLFramebufferObject buf(_viewFinder->boundingRect().size().toSize());
+//  QPainter painter(&buf);
 //  _viewFinder->paint(&painter,0,0);
-  _snapshot = QPixmap::fromImage(buf.toImage());
-  _snapshot.save("/home/meego/tst2.png");
-
-  QTimer::singleShot(300, this, SIGNAL(cameraReady()));
+//  _snapshot = QPixmap::fromImage(buf.toImage());
 
   emit snapshotChanged();
   emit snapshotReady();
