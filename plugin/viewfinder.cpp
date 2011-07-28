@@ -93,7 +93,6 @@ ViewFinder::ViewFinder (QDeclarativeItem *_parent)
     _duration (0),
     _zoom (0.0),
     _canFocus (false), _canLockFocus(false),
-    _rotateAngle (0),
     _cameraHasFlash (true),
     _thumbnailer (0),
     _cameraService (0),
@@ -482,18 +481,15 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
     _viewFinder->setVideoRenderingMode(VideoRenderingHintOverlay);
   }
 
+
   QRectF itemBounds = this->boundingRect ();
   QSize viewFinderSize(itemBounds.width(), itemBounds.height());
   if (viewFinderSize.isEmpty())
     viewFinderSize = QSize(1280, 800);
 
   _viewFinder->setSize (viewFinderSize);
-  _viewFinder->setTransformOriginPoint (viewFinderSize.width () / 2, viewFinderSize.height () / 2);
 
-  // Centre this in the view
-  float x = (itemBounds.width () - viewFinderSize.width ()) / 2;
-  float y = (itemBounds.height () - viewFinderSize.height ()) / 2;
-  _viewFinder->setPos (x, y);
+  _viewFinder->setPos (0, 0);
 
   _camera->setViewfinder (_viewFinder);
 
@@ -970,22 +966,6 @@ QString ViewFinder::durationString()
 }
 
 void
-ViewFinder::repositionViewFinder (const QRectF &geometry)
-{
-  if (_viewFinder == 0)
-    return;
-
-  QSizeF size = _viewFinder->size (); 
-  float x, y;
-
-  x = (geometry.width () - size.width ()) / 2;
-  y = (geometry.height () - size.height ()) / 2;
-
-  _viewFinder->setPos (x, y);
- 
-}
-
-void
 ViewFinder::geometryChanged (const QRectF &newGeometry,
                              const QRectF &oldGeometry)
 {
@@ -993,11 +973,11 @@ ViewFinder::geometryChanged (const QRectF &newGeometry,
   qDebug () << "Geometry changed: " << oldGeometry.width () << "x" << oldGeometry.height () << " -> " << newGeometry.width () << "x" << newGeometry.height ();
 #endif
 
-  if (newGeometry != oldGeometry) {
-    if (newGeometry.width () > 0 && newGeometry.height () > 0) {
-      repositionViewFinder (newGeometry);
-    }
-  }
+  if (newGeometry != oldGeometry)
+    if (newGeometry.width () > 0 && newGeometry.height () > 0)
+        if(_viewFinder)
+            _viewFinder->setSize(newGeometry.size().toSize());
+
 
   QDeclarativeItem::geometryChanged (newGeometry, oldGeometry);
 }
@@ -1093,18 +1073,6 @@ ViewFinder::setCurrentOrientation(int orientation)
 {
     _currentOrientation = orientation;
     emit currentOrientationChanged();
-}
-
-void
-ViewFinder::setRotateAngle (int angle)
-{
-  if (_rotateAngle == angle) {
-    return;
-  }
-
-  _rotateAngle = angle;
-
-  _viewFinder->setRotation (angle);
 }
 
 void ViewFinder::setImageLocation(const QString & _str) { _imageLocation = _str; emit imageLocationChanged(); _settings->setLastCapturedPhotoPath(_imageLocation);}

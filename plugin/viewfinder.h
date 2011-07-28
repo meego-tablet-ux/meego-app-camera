@@ -95,10 +95,6 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY (bool canLockFocus READ canLockFocus);
     bool canLockFocus () const { return _canLockFocus; }
 
-    Q_PROPERTY (int rotateAngle READ rotateAngle WRITE setRotateAngle NOTIFY rotateAngleChanged);
-    int rotateAngle () { return _rotateAngle; }
-    void setRotateAngle (int angle);
-
     Q_PROPERTY (QVariant flashModel READ flashModel NOTIFY flashModelChanged);
     QVariant flashModel () { return _flashModel; }
 
@@ -228,7 +224,6 @@ class ViewFinder : public QDeclarativeItem
     QString _imageLocation;
     QString _currentLocation;
     bool _canFocus, _canLockFocus;
-    bool _rotateAngle;
 
     bool _cameraHasFlash;
     bool _cameraHasAutoFlash;
