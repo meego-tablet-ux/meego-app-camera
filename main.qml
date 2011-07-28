@@ -97,60 +97,15 @@ Window {
                 color: "black"
             }
 
-            Flipable {
+            Item {
 
-                id:flipArea
+                id: livePreviewContainer
                 x: 0
                 y: topBar.height - 4
                 width: parent.width - photoButton.width
                 height: parent.height - topBar.height - bottomBar.height
 
-                property bool flipped: false
-
-                transform: Rotation {
-                    id: rotationItem
-                    origin.x: flipArea.width/2
-                    origin.y: flipArea.height/2
-                    axis.x: 0
-                    axis.y: 1
-                    axis.z: 0
-                }
-
-                states: [
-                    State {
-                        name: "front"
-                        when: !flipArea.flipped
-                        PropertyChanges {
-                            target: rotationItem
-                            angle: 0
-
-                        }
-                    },
-                    State {
-                        name: "back"
-                        when: flipArea.flipped
-                        PropertyChanges {
-                            target: rotationItem
-                            angle: 180
-                        }
-                    }
-                ]
-
-                transitions: [
-                    Transition {
-                        from: "back"
-                        to: "front"
-                        RotationAnimation {target: rotationItem; property: "angle"; direction: "Counterclockwise"; duration: 600}
-                    }
-                ]
-
-                back: QmlPixmap {
-                    id: snapshotPixmap
-                    anchors.fill: parent
-                    pixmap: camera.snapshot
-                }
-
-                front: ViewFinder {
+                ViewFinder {
                     id: camera
 
                     anchors.fill: parent
@@ -160,15 +115,10 @@ Window {
                     onImageCapturedSig: {
                         shutterLoader.item.startOpeningAnimation();
                     }
-                    onSnapshotReady: flipArea.flipped = true
-                    onCameraReady: {
-                        if(flipArea.flipped)
-                            flipArea.flipped = false;
-                        console.log(camera.width, " ", camera.height)
-                        console.log(snapshotPixmap.width, " ", snapshotPixmap.height)
-                    }
 
-                    rotateAngle: 0
+                    onCameraReady: {
+                        bottomBar.cameraSwitchBtnEnabled = true
+                    }
 
                     state: (camera.captureMode == 0? "photo" : "video");
 
@@ -317,6 +267,10 @@ Window {
                 rotationAngle: componentsRotationAngle
                 rotationCounterClockwise: isCounterClockwise
                 rotationAnimationDuration: window.rotationAnimationSpeed
+                onSwitchCamera: {
+                    cameraSwitchBtnEnabled = false;
+                    camera.changeCamera();
+                }
             }
 
             PushButton {

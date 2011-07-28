@@ -761,15 +761,6 @@ ViewFinder::changeCamera ()
       return false;
   }
 
-  //viewfinder snapshot capture func should go here
-//  QGLFramebufferObject buf(_viewFinder->boundingRect().size().toSize());
-//  QPainter painter(&buf);
-//  _viewFinder->paint(&painter,0,0);
-//  _snapshot = QPixmap::fromImage(buf.toImage());
-
-  emit snapshotChanged();
-  emit snapshotReady();
-
   int nextCamera = _currentCamera + 1;
 
   if (nextCamera >= _cameraCount) {

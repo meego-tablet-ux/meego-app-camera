@@ -114,8 +114,6 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY(QString capturedVideoLocation READ capturedVideoLocation NOTIFY capturedVideoLocationChanged);
     QString capturedVideoLocation() { return _currentLocation; }
 
-    Q_PROPERTY(QPixmap snapshot READ snapshot NOTIFY snapshotChanged)
-    QPixmap snapshot() { return _snapshot; }
 
   Q_SIGNALS:
     void readyChanged ();
@@ -142,9 +140,7 @@ class ViewFinder : public QDeclarativeItem
     void currentOrientationChanged();
     void capturedVideoLocationChanged();
 
-    void snapshotReady();
     void cameraReady();
-    void snapshotChanged();
 
   public slots:
     Q_INVOKABLE void takePhoto ();
@@ -264,7 +260,6 @@ class ViewFinder : public QDeclarativeItem
     bool _bPolicyAware;
     ResourcePolicy::ResourceSet *_resourceSet;
     bool _bSkipCameraReset;
-    QPixmap _snapshot;
 };
 
 #endif
