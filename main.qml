@@ -101,10 +101,101 @@ Window {
                 width: parent.width - photoButton.width
                 height: parent.height - topBar.height - bottomBar.height
 
+                property bool livePreviewVisible: true
+
+                function switchCameras() {
+                    livePreviewVisible = false
+                }
+
+                states: [
+                    State {
+                        name: "shown"
+                        when: livePreviewContainer.livePreviewVisible == true
+                        PropertyChanges {
+                            target: camera
+                            width: livePreviewContainer.width
+                            height: livePreviewContainer.height
+                        }
+                    },
+                    State {
+                        name: "hidden"
+                        when: livePreviewContainer.livePreviewVisible == false
+                        PropertyChanges {
+                            target: camera
+                            width: 1
+                            height: 1
+
+                        }
+                    }
+                ]
+
+                transitions: [
+                    Transition {
+                        from: "shown"
+                        to: "hidden"
+                        SequentialAnimation {
+                            ScriptAction {
+                                script:{
+                                    bottomBar.cameraSwitchBtnEnabled = false;
+                                    centerImage.visible = true;
+                                }
+                            }
+                            ParallelAnimation{
+                            NumberAnimation {
+                                target: camera;
+                                property: "width";
+                                duration: 100
+                            }
+                            NumberAnimation {
+                                target: camera;
+                                property: "height";
+                                duration: 100
+                            }
+                            }
+                            ScriptAction {
+                                script: {
+                                    camera.changeCamera();
+                                }
+                            }
+                        }
+
+                    },
+                    Transition {
+                        from: "hidden"
+                        to: "shown"
+                        SequentialAnimation {
+                            ParallelAnimation{
+                            NumberAnimation {
+                                target: camera;
+                                property: "width";
+                                duration: 100
+                            }
+                            NumberAnimation {
+                                target: camera;
+                                property: "height";
+                                duration: 100
+                            }
+                            }
+                            ScriptAction {
+                                script: {
+                                    centerImage.visible = false
+                                    bottomBar.cameraSwitchBtnEnabled = true
+                                }
+                            }
+                        }
+
+                    }
+                ]
+
+
                 ViewFinder {
                     id: camera
 
-                    anchors.fill: parent
+//                    width: 300// livePreviewContainer.width
+//                    height: 300//livePreviewContainer.height
+//                    //anchors.top: livePreviewContainer.top
+                    //anchors.bottom: livePreviewContainer.bottom
+                    anchors.centerIn: parent
 
                     currentOrientation: sensorOrientation
 
@@ -113,7 +204,8 @@ Window {
                     }
 
                     onCameraReady: {
-                        bottomBar.cameraSwitchBtnEnabled = true
+
+                        livePreviewContainer.livePreviewVisible = true
                     }
 
                     state: (camera.captureMode == 0? "photo" : "video");
@@ -175,6 +267,16 @@ Window {
                         if (camera.maxZoom > 1.0)
                             loader.sourceComponent = zoomer
                     }
+                }
+
+                Image {
+                    id: centerImage
+                    source: "image://themedimage/icons/actionbar/view-sync-active"
+                    anchors.centerIn: parent
+                    width: 100
+                    height: 100
+                    smooth: true
+                    visible: false
                 }
 
             }
@@ -266,8 +368,7 @@ Window {
                 rotationCounterClockwise: isCounterClockwise
                 rotationAnimationDuration: window.rotationAnimationSpeed
                 onSwitchCamera: {
-                    cameraSwitchBtnEnabled = false;
-                    camera.changeCamera();
+                    livePreviewContainer.switchCameras();
                 }
             }
 
