@@ -114,6 +114,9 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY(QString capturedVideoLocation READ capturedVideoLocation NOTIFY capturedVideoLocationChanged);
     QString capturedVideoLocation() { return _currentLocation; }
 
+    Q_PROPERTY(bool flashSettingsAvaliable READ flashSettingsAvaliable NOTIFY flashSettingsAvaliableChanged);
+    bool flashSettingsAvaliable() { return _flashSettingsAvaliable; }
+
   Q_SIGNALS:
     void readyChanged ();
     void flashModeChanged ();
@@ -138,6 +141,8 @@ class ViewFinder : public QDeclarativeItem
 
     void currentOrientationChanged();
     void capturedVideoLocationChanged();
+
+    void flashSettingsAvaliableChanged();
 
   public slots:
     Q_INVOKABLE void takePhoto ();
@@ -254,6 +259,8 @@ class ViewFinder : public QDeclarativeItem
     bool _bPolicyAware;
     ResourcePolicy::ResourceSet *_resourceSet;
     bool _bSkipCameraReset;
+
+    bool _flashSettingsAvaliable;
 };
 
 #endif
