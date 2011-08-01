@@ -28,6 +28,7 @@ public:
 
 signals:
     void sizeChanged();
+    void closingAnimationFinished();
 
 protected:
    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);

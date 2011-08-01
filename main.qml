@@ -67,11 +67,7 @@ Window {
             fullScreen: true
 
             function cameraTakePhoto(){
-                if (shutterLoader.sourceComponent == null)
-                    shutterLoader.sourceComponent = shutterAnimation;
-                shutterLoader.item.startClosingAnimation();
-
-                camera.takePhoto();
+                shutterAnimation.startClosingAnimation();
             }
 
             Connections {
@@ -183,18 +179,20 @@ Window {
 
             }
 
-            Component {
+            ShutterAnimationComponent {
                 id: shutterAnimation
 
-                ShutterAnimationComponent {
                     anchors.fill: parent
                     width: window.width
                     height: window.height
-                }
             }
 
-            Loader {
-                id: shutterLoader
+
+            Connections{
+                target: shutterAnimation
+                onClosingAnimationFinished :{
+                    camera.takePhoto();
+                }
             }
 
             Rectangle {
@@ -346,7 +344,7 @@ Window {
                 onClicked: {
                     if (camera.recording) {
                         camera.endRecording ();
-                    } else {
+                        } else {
                         camera.startRecording ();
                     }
                 }

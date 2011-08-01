@@ -161,27 +161,6 @@ void ViewFinder::initExtra()
            this, SLOT (thumbnailError (const QStringList &, const int &,
                                        const QString &)));
 
-  // Set up a DBus service
-//  _cameraService = new CameraService;
-//  new CameraIfAdaptor (_cameraService);
-
-//  QDBusConnection connection = QDBusConnection::sessionBus ();
-//  bool ret = connection.registerService ("com.meego.app.camera");
-//  if (ret == false) {
-//#ifdef SHOW_DEBUG
-//    qDebug () << "Error registering service";
-//#endif
-//    return;
-//  }
-
-//  ret = connection.registerObject ("/", _cameraService);
-//  if (ret == false) {
-//#ifdef SHOW_DEBUG
-//    qDebug () << "Error registering object";
-//#endif
-//    return;
-//  }
-
   connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
 
   // retrieve pictures and videos location from user-dirs.dirs or user-dirs.defaults files
@@ -290,7 +269,21 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 #endif
     _camera = new QCamera (cameraDevice);
   }
+
   connect(_camera, SIGNAL(statusChanged(QCamera::Status)), this, SLOT(onCameraStatusChanged(QCamera::Status)));
+
+  int flashModesNumber = 0;
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashOn);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashAuto);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashRedEyeReduction);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashFill);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashTorch);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashSlowSyncFrontCurtain);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashSlowSyncRearCurtain);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashManual);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashOff);
+   _flashSettingsAvaliable = (flashModesNumber > 1);
+   emit flashSettingsAvaliableChanged();
 
 #ifdef SHOW_DEBUG
   if (_camera->isMetaDataAvailable ()) {
@@ -521,6 +514,13 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
   connect (_imageCapture, SIGNAL (readyForCaptureChanged (bool)),
            this, SLOT (imageReadyForCaptureChanged (bool)));
 
+  connect( _imageCapture,
+          SIGNAL(readyForCaptureChanged (bool)),
+          this,
+          SLOT(readyForCaptureChanged(bool)));
+
+
+
 //  updateCameraState (_camera->state ());
   updateLockStatus (_camera->lockStatus (), QCamera::UserRequest);
   imageReadyForCaptureChanged (_imageCapture->isReadyForCapture ());
@@ -623,7 +623,7 @@ ViewFinder::takePhoto ()
   if (!ready())
       return;
 
-  _ready = false; // disable while image taking is in a process
+  _ready = false;
 
   QString filename = generateTemporaryImageFilename();
 
@@ -667,8 +667,6 @@ ViewFinder::imageSaved (int id, const QString &filename)
 {
     _ready = _imageCapture->isReadyForCapture();
 
-    emit imageCapturedSig();
-
     QString realFileName = generateImageFilename();
 #ifdef SHOW_DEBUG
   qDebug () << "Image saved: " << id << " - " << filename;
@@ -696,6 +694,17 @@ ViewFinder::imageCaptureError (int id,
   qDebug () << "Image error: " << id << " - " << message << "(" << error << ")";
 #endif
 }
+
+void
+ViewFinder::readyForCaptureChanged(bool isReady)
+{
+
+    _ready = isReady;
+    if ( isReady )
+        emit imageCapturedSig ();
+
+}
+
 
 void
 ViewFinder::imageReadyForCaptureChanged (bool ready)

@@ -114,6 +114,8 @@ class ViewFinder : public QDeclarativeItem
     Q_PROPERTY(QString capturedVideoLocation READ capturedVideoLocation NOTIFY capturedVideoLocationChanged);
     QString capturedVideoLocation() { return _currentLocation; }
 
+    Q_PROPERTY(bool flashSettingsAvaliable READ flashSettingsAvaliable NOTIFY flashSettingsAvaliableChanged);
+    bool flashSettingsAvaliable() { return _flashSettingsAvaliable; }
 
   Q_SIGNALS:
     void readyChanged ();
@@ -141,6 +143,7 @@ class ViewFinder : public QDeclarativeItem
     void capturedVideoLocationChanged();
 
     void cameraReady();
+    void flashSettingsAvaliableChanged();
 
   public slots:
     Q_INVOKABLE void takePhoto ();
@@ -181,6 +184,7 @@ class ViewFinder : public QDeclarativeItem
                             QCameraImageCapture::Error error,
                             const QString &message);
     void imageReadyForCaptureChanged (bool ready);
+    void readyForCaptureChanged(bool);
 
     void mediaRecorderStateChanged (QMediaRecorder::State state);
     void mediaRecorderError (QMediaRecorder::Error error);
@@ -260,6 +264,8 @@ class ViewFinder : public QDeclarativeItem
     bool _bPolicyAware;
     ResourcePolicy::ResourceSet *_resourceSet;
     bool _bSkipCameraReset;
+
+    bool _flashSettingsAvaliable;
 };
 
 #endif

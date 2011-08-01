@@ -52,11 +52,11 @@ Image {
                 when: !camera.recording
                 PropertyChanges {
                     target: changeCameras
-                    visible: true
+                    visible: camera.cameraCount > 1
                 }
                 PropertyChanges {
                     target: flashButton
-                    visible: true
+                    visible: camera.flashSettingsAvaliable
                 }
                 PropertyChanges {
                     target: duration
@@ -82,11 +82,11 @@ Image {
 
         enabled: cameraSwitchBtnEnabled
 
-        visible: camera.cameraCount > 1
         onClicked: {
 //            camera.changeCamera ();
             switchCamera();
         }
+
     }
 
 
@@ -95,7 +95,6 @@ Image {
         x: parent.width - width
         anchors.verticalCenter: parent.verticalCenter
         value: camera.flashMode
-        visible: camera.cameraHasFlash
 
         activeBackgroundSource: "image://themedimage/images/camera/camera_bottombar_dn"
 
