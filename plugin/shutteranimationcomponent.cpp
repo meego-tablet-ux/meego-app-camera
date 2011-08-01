@@ -32,7 +32,7 @@ ShutterAnimationComponent::ShutterAnimationComponent(QDeclarativeItem *parent):
     openingAnimation->setKeyValueAt(0.0, 0.0);
     openingAnimation->setKeyValueAt(1.0, 90.0);
 
-    //connect(closingAnimation, SIGNAL(finished()), this, SLOT(animationEnded()));
+    connect(closingAnimation, SIGNAL(finished()), this, SIGNAL(closingAnimationFinished()));
     connect(openingAnimation, SIGNAL(finished()), this, SLOT(animationEnded()));
 }
 
