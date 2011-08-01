@@ -49,11 +49,11 @@ Image {
                 when: !camera.recording
                 PropertyChanges {
                     target: changeCameras
-                    visible: true
+                    visible: camera.cameraCount > 1
                 }
                 PropertyChanges {
                     target: flashButton
-                    visible: true
+                    visible: camera.flashSettingsAvaliable
                 }
                 PropertyChanges {
                     target: duration
@@ -77,10 +77,11 @@ Image {
         rotationCounterClockwise: bottomBarBackground.rotationCounterClockwise
         rotationAnimationDuration: bottomBarBackground.rotationAnimationDuration
 
-        visible: camera.cameraCount > 1
+        visible: false // camera.cameraCount > 1
         onClicked: {
             camera.changeCamera ();
         }
+
     }
 
 
@@ -89,7 +90,6 @@ Image {
         x: parent.width - width
         anchors.verticalCenter: parent.verticalCenter
         value: camera.flashMode
-        visible: camera.cameraHasFlash
 
         activeBackgroundSource: "image://themedimage/images/camera/camera_bottombar_dn"
 

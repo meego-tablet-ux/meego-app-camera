@@ -158,27 +158,6 @@ void ViewFinder::initExtra()
            this, SLOT (thumbnailError (const QStringList &, const int &,
                                        const QString &)));
 
-  // Set up a DBus service
-//  _cameraService = new CameraService;
-//  new CameraIfAdaptor (_cameraService);
-
-//  QDBusConnection connection = QDBusConnection::sessionBus ();
-//  bool ret = connection.registerService ("com.meego.app.camera");
-//  if (ret == false) {
-//#ifdef SHOW_DEBUG
-//    qDebug () << "Error registering service";
-//#endif
-//    return;
-//  }
-
-//  ret = connection.registerObject ("/", _cameraService);
-//  if (ret == false) {
-//#ifdef SHOW_DEBUG
-//    qDebug () << "Error registering object";
-//#endif
-//    return;
-//  }
-
   connect(&_futureWatcher, SIGNAL(finished()),this,SLOT(completeImage()));
 
   // retrieve pictures and videos location from user-dirs.dirs or user-dirs.defaults files
@@ -287,6 +266,19 @@ ViewFinder::setCamera (const QByteArray &cameraDevice)
 #endif
     _camera = new QCamera (cameraDevice);
   }
+   int flashModesNumber = 0;
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashOn);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashAuto);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashRedEyeReduction);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashFill);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashTorch);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashSlowSyncFrontCurtain);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashSlowSyncRearCurtain);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashManual);
+   flashModesNumber += _camera->exposure()->isFlashModeSupported(QCameraExposure::FlashOff);
+   _flashSettingsAvaliable = (flashModesNumber > 1);
+   qDebug() << flashModesNumber << " " << +flashSettingsAvaliable() << " $%^&*(&^%$#$$$$$^^%^%^%^%^%^%^" ;
+   emit flashSettingsAvaliableChanged();
 
 #ifdef SHOW_DEBUG
   if (_camera->isMetaDataAvailable ()) {
