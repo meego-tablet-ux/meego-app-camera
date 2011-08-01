@@ -1,10 +1,10 @@
 /*
-* Copyright 2011 Intel Corporation.
-*
-* This program is licensed under the terms and conditions of the
-* Apache License, version 2.0.  The full text of the Apache License is at
-* http://www.apache.org/licenses/LICENSE-2.0
-*/
+ * Copyright 2011 Intel Corporation.
+ *
+ * This program is licensed under the terms and conditions of the
+ * Apache License, version 2.0.  The full text of the Apache License is at 	
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 
 import QtQuick 1.0
 
@@ -21,7 +21,7 @@ Window {
     fullContent: true
 
     Component.onCompleted: {
-        //        console.log("load MainPage");
+//        console.log("load MainPage");
         switchBook(cameraContent);
     }
 
@@ -37,23 +37,23 @@ Window {
     onIsInRecordingModeChanged: calculateRotation()
 
     function calculateRotation(){
-        //rotating this element might not be required, do nothing when in video record mode
-        var angle;
-        switch (sensorOrientation) {
-            case 0:
-            angle = 90; break;
-            case 1:
-            angle = 0; break;
-            case 2:
-            angle = 270; break;
-            case 3:
-            angle = 180; break;
-            }
+            //rotating this element might not be required, do nothing when in video record mode
+            var angle;
+            switch (sensorOrientation) {
+                case 0:
+                    angle = 90; break;
+                case 1:
+                    angle = 0; break;
+                case 2:
+                    angle = 270; break;
+                case 3:
+                    angle = 180; break;
+        }
             if(isInRecordingMode)  angle = 0;
             if((angle > componentsRotationAngle && !(angle == 270 && componentsRotationAngle == 0)) || (componentsRotationAngle == 270 && angle == 0) )
-            isCounterClockwise = false;
+                isCounterClockwise = false;
             else
-            isCounterClockwise = true;
+                isCounterClockwise = true;
             componentsRotationAngle = angle;
     }
 
@@ -66,7 +66,7 @@ Window {
 
             fullScreen: true
 
-            function cameraTakePhoto(){                
+            function cameraTakePhoto(){
                 shutterAnimation.startClosingAnimation();
             }
 
@@ -104,8 +104,8 @@ Window {
                 currentOrientation: sensorOrientation
 
                 onImageCapturedSig: {
-		if(camera.ready) 
-                    shutterAnimation.startOpeningAnimation();
+                    if(camera.ready) 
+                        shutterAnimation.startOpeningAnimation();
                 }
 
                 rotateAngle: 0
@@ -123,18 +123,18 @@ Window {
                             target: window
                             isInRecordingMode: false
                         }
-                        },
-                        State {
-                            name: "video"
-                            PropertyChanges {
-                                target: camera
-                                captureMode: 1
-                            }
-                            PropertyChanges {
-                                target: window
-                                isInRecordingMode: true
-                            }
+                    },
+                    State {
+                        name: "video"
+                        PropertyChanges {
+                            target: camera
+                            captureMode: 1
                         }
+                        PropertyChanges {
+                            target: window
+                            isInRecordingMode: true
+                        }
+                    }
                 ]
 
                 //onImageCaptured: { console.log ("Photo taken"); }
@@ -155,7 +155,7 @@ Window {
                 onMaxZoomChanged: {
                     if (loader.sourceComponent == null) {
                         if (camera.maxZoom <= 1.0)
-                        return
+                            return
                         loader.sourceComponent = zoomer
                     }
                     loader.item.visible = (camera.maxZoom > 1.0);
@@ -167,16 +167,16 @@ Window {
 
                 Component.onCompleted: {
                     if (camera.maxZoom > 1.0)
-                    loader.sourceComponent = zoomer
+                        loader.sourceComponent = zoomer
                 }
             }
 
             ShutterAnimationComponent {
                 id: shutterAnimation
 
-                anchors.fill: parent
-                width: window.width
-                height: window.height
+                    anchors.fill: parent
+                    width: window.width
+                    height: window.height
             }
 
 
@@ -278,12 +278,12 @@ Window {
 
                 onPressed: {
                     if (!camera.ready)
-                    return
+                        return
 
                     if (!camera.canLockFocus)
-                    cameraTakePhoto()
+                        cameraTakePhoto()
                     else
-                    camera.startFocus()
+                        camera.startFocus()
                 }
             }
 
@@ -312,20 +312,20 @@ Window {
                                 target: window
                                 inhibitScreenSaver: true
                             }
-                            },
-                            State {
-                                name: "stopped"
-                                when: !camera.recording
-                                PropertyChanges {
-                                    target: recordButton
-                                    iconSource: "image://themedimage/images/camera/camera-record-icn"
-                                    activeIconSource: "image://themedimage/images/camera/camera-record-icn-dn"
-                                }
-                                PropertyChanges {
-                                    target: window
-                                    inhibitScreenSaver: false
-                                }
+                        },
+                        State {
+                            name: "stopped"
+                            when: !camera.recording
+                            PropertyChanges {
+                                target: recordButton
+                                iconSource: "image://themedimage/images/camera/camera-record-icn"
+                                activeIconSource: "image://themedimage/images/camera/camera-record-icn-dn"
                             }
+                            PropertyChanges {
+                                target: window
+                                inhibitScreenSaver: false
+                            }
+                        }
                     ]
                 }
 
@@ -334,7 +334,7 @@ Window {
                         camera.endRecording ();
                         } else {
                         camera.startRecording ();
-                        }
+                    }
                 }
             }
 
